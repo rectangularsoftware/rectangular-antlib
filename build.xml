@@ -32,7 +32,6 @@
   </target>
 
   <target name="dist">
-    <module:defaults />
     <module:compile module="uncommons-antlib" />
     <module:jar module="uncommons-antlib">
       <additionalcontents>

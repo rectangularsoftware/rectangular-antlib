@@ -20,21 +20,16 @@
     <sequential>
       <!-- The directory under which each of the modules directories are found. -->
       <property name="modules.dir" location="." />
-
-      <!-- Per-module locations. -->
-      <property name="src.dir" value="src" />
-      <property name="java.dir" value="${src.dir}/java" />
-      <property name="build.dir" value="build"/>
-      <property name="classes.dir" value="${build.dir}/classes" />
     </sequential>
   </macrodef>
 
+  
   <!-- This macro deletes all build artifacts from a module. -->
   <macrodef name="clean">
     <attribute name="module"/>
     <sequential>
       <current:defaults />
-      <delete dir="${modules.dir}/@{module}/${build.dir}"/>
+      <delete dir="${modules.dir}/@{module}/build"/>
     </sequential>
   </macrodef>
 
@@ -47,14 +42,14 @@
     <element name="treeclasspath" optional="true"/>
     <sequential>
       <current:defaults />
-      <mkdir dir="${modules.dir}/@{module}/${classes.dir}/@{tree}" />
-      <javac destdir="${modules.dir}/@{module}/${classes.dir}/@{tree}"
+      <mkdir dir="${modules.dir}/@{module}/build/classes/@{tree}" />
+      <javac destdir="${modules.dir}/@{module}/build/classes/@{tree}"
              debug="on"
              deprecation="on"
              optimize="on"
              source="1.5"
              target="1.5"
-             srcdir="${modules.dir}/@{module}/${java.dir}/@{tree}">
+             srcdir="${modules.dir}/@{module}/src/java/@{tree}">
         <classpath>
           <treeclasspath/>
           <fileset dir="./lib">
@@ -82,7 +77,7 @@
       <current:compile.tree module="@{module}" tree="test">
         <treeclasspath>
           <!-- Add the main classes to the classpath for unit test compilation. -->
-          <path location="${modules.dir}/@{module}/${classes.dir}/main" />
+          <path location="${modules.dir}/@{module}/build/classes/main" />
           <moduleclasspath />
         </treeclasspath>
       </current:compile.tree>
@@ -100,8 +95,8 @@
     <element name="additionalcontents" optional="true"/>
     <sequential>
       <current:defaults />
-      <jar destfile="${modules.dir}/@{module}/${build.dir}/@{jarfile}">
-        <fileset dir="${modules.dir}/@{module}/${classes.dir}/main"/>
+      <jar destfile="${modules.dir}/@{module}/build/@{jarfile}">
+        <fileset dir="${modules.dir}/@{module}/build/classes/main"/>
         <additionalcontents/>
       </jar>
     </sequential>
