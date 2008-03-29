@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<!-- =========================================================================
+  Copyright 2008 Daniel W. Dyer
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may notP use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+========================================================================== -->
+<antlib xmlns:current="ant:current">
+
+  <macrodef name="defaults">
+    <sequential>
+      <!-- The directory under which each of the modules directories are found. -->
+      <property name="modules.dir" location="." />
+
+      <!-- Per-module locations. -->
+      <property name="src.dir" value="src" />
+      <property name="java.dir" value="${src.dir}/java" />
+      <property name="build.dir" value="build"/>
+      <property name="classes.dir" value="${build.dir}/classes" />
+    </sequential>
+  </macrodef>
+
+  <!-- This macro deletes all build artifacts from a module. -->
+  <macrodef name="clean">
+    <attribute name="module"/>
+    <sequential>
+      <current:defaults />
+      <delete dir="${modules.dir}/@{module}/${build.dir}"/>
+    </sequential>
+  </macrodef>
+
+  
+  <!-- This macro compiles one source tree (i.e. the main source tree
+       or the unit test source tree) of a given module. -->
+  <macrodef name="compile.tree">
+    <attribute name="module"/>
+    <attribute name="tree"/>
+    <element name="treeclasspath" optional="true"/>
+    <sequential>
+      <current:defaults />
+      <mkdir dir="${modules.dir}/@{module}/${classes.dir}/@{tree}" />
+      <javac destdir="${modules.dir}/@{module}/${classes.dir}/@{tree}"
+             debug="on"
+             deprecation="on"
+             optimize="on"
+             source="1.5"
+             target="1.5"
+             srcdir="${modules.dir}/@{module}/${java.dir}/@{tree}">
+        <classpath>
+          <treeclasspath/>
+          <fileset dir="./lib">
+            <include name="**/*.jar" />
+          </fileset>
+        </classpath>
+        <compilerarg value="-Xlint:unchecked" />
+      </javac>
+    </sequential>
+  </macrodef>
+
+
+  <!-- This macro compiles all source (including unit tests) for a
+       single module.  -->
+  <macrodef name="compile">
+    <attribute name="module"/>
+    <element name="moduleclasspath" optional="true"/>
+    <sequential>
+      <current:defaults />
+      <current:compile.tree module="@{module}" tree="main">
+        <treeclasspath>
+          <moduleclasspath />
+        </treeclasspath>
+      </current:compile.tree>
+      <current:compile.tree module="@{module}" tree="test">
+        <treeclasspath>
+          <!-- Add the main classes to the classpath for unit test compilation. -->
+          <path location="${modules.dir}/@{module}/${classes.dir}/main" />
+          <moduleclasspath />
+        </treeclasspath>
+      </current:compile.tree>
+    </sequential>
+  </macrodef>
+
+  
+  <!-- This macro builds a JAR file for a module, containing all of
+       the classes in the main source group for the module
+       (i.e. unit test classes are excluded).  The JAR file name is
+       derived from the module name. -->
+  <macrodef name="jar">
+    <attribute name="module"/>
+    <attribute name="jarfile" default="@{module}.jar"/>
+    <element name="additionalcontents" optional="true"/>
+    <sequential>
+      <current:defaults />
+      <jar destfile="${modules.dir}/@{module}/${build.dir}/@{jarfile}">
+        <fileset dir="${modules.dir}/@{module}/${classes.dir}/main"/>
+        <additionalcontents/>
+      </jar>
+    </sequential>
+  </macrodef>
+  
+</antlib>
