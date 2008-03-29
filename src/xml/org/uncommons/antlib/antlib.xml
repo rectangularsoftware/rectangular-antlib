@@ -16,11 +16,18 @@
 ========================================================================== -->
 <antlib xmlns:current="ant:current">
 
+  <taskdef name="once" classname="org.uncommons.antlib.tasks.Once" />
+
   <macrodef name="defaults">
-    <sequential>
+    <current:once property="uncommons-antlib.defaults">
       <!-- The directory under which each of the modules directories are found. -->
       <property name="modules.dir" location="." />
-    </sequential>
+      <!-- Per-module locations. -->
+      <property name="src.dir" value="src" />
+      <property name="java.dir" value="${src.dir}/java" />
+      <property name="build.dir" value="build"/>
+      <property name="classes.dir" value="${build.dir}/classes" />
+    </current:once>
   </macrodef>
 
   
@@ -29,7 +36,7 @@
     <attribute name="module"/>
     <sequential>
       <current:defaults />
-      <delete dir="${modules.dir}/@{module}/build"/>
+      <delete dir="${modules.dir}/@{module}/${build.dir}"/>
     </sequential>
   </macrodef>
 
@@ -42,14 +49,14 @@
     <element name="treeclasspath" optional="true"/>
     <sequential>
       <current:defaults />
-      <mkdir dir="${modules.dir}/@{module}/build/classes/@{tree}" />
-      <javac destdir="${modules.dir}/@{module}/build/classes/@{tree}"
+      <mkdir dir="${modules.dir}/@{module}/${classes.dir}/@{tree}" />
+      <javac destdir="${modules.dir}/@{module}/${classes.dir}/@{tree}"
              debug="on"
              deprecation="on"
              optimize="on"
              source="1.5"
              target="1.5"
-             srcdir="${modules.dir}/@{module}/src/java/@{tree}">
+             srcdir="${modules.dir}/@{module}/${java.dir}/@{tree}">
         <classpath>
           <treeclasspath/>
           <fileset dir="./lib">
@@ -77,7 +84,7 @@
       <current:compile.tree module="@{module}" tree="test">
         <treeclasspath>
           <!-- Add the main classes to the classpath for unit test compilation. -->
-          <path location="${modules.dir}/@{module}/build/classes/main" />
+          <path location="${modules.dir}/@{module}/${classes.dir}/main" />
           <moduleclasspath />
         </treeclasspath>
       </current:compile.tree>
@@ -91,12 +98,18 @@
        derived from the module name. -->
   <macrodef name="jar">
     <attribute name="module"/>
-    <attribute name="jarfile" default="@{module}.jar"/>
+    <attribute name="jarfile" default="@{module}.jar" description="JAR file name"/>
+    <attribute name="classpath" default="" description="Manifest class path"/>
+    <attribute name="mainclass" default="" description="Manifest main class"/>
     <element name="additionalcontents" optional="true"/>
     <sequential>
       <current:defaults />
-      <jar destfile="${modules.dir}/@{module}/build/@{jarfile}">
-        <fileset dir="${modules.dir}/@{module}/build/classes/main"/>
+      <jar destfile="${modules.dir}/@{module}/${build.dir}/@{jarfile}">
+        <fileset dir="${modules.dir}/@{module}/${classes.dir}/main"/>
+        <manifest>
+          <attribute name="Class-Path" value="@{classpath}"/>
+          <attribute name="Main-Class" value="@{mainclass}"/>
+        </manifest>
         <additionalcontents/>
       </jar>
     </sequential>

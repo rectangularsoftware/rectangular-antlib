@@ -14,30 +14,42 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 ========================================================================== -->
-<project xmlns:module="antlib:org.uncommons.antlib"
-         name="uncommons-antlib"
-         default="dist"
-         basedir=".">
+<project name="uncommons-antlib" default="dist" basedir=".">
 
   <description>Ant build file for the Uncommons Antlib project.</description>
 
-  <property name="modules.dir" value=".." />
-
-  <taskdef uri="antlib:org.uncommons.antlib"
-           resource="org/uncommons/antlib/antlib.xml"
-           classpath="./src/xml"/>
-
   <target name="clean">
-    <module:clean module="uncommons-antlib" />
+    <delete dir="./build"/>
   </target>
 
-  <target name="dist">
-    <module:compile module="uncommons-antlib" />
-    <module:jar module="uncommons-antlib">
-      <additionalcontents>
-        <fileset dir="src/xml" includes="**/*.xml" />
-      </additionalcontents>
-    </module:jar>
+  
+  <target name="compile">
+    <mkdir dir="./build/classes/main" />
+    <javac destdir="./build/classes/main"
+           debug="on"
+           deprecation="on"
+           optimize="on"
+           source="1.5"
+           target="1.5"
+           srcdir="./src/java/main">
+      <classpath>
+        <fileset dir="./lib">
+          <include name="**/*.jar" />
+        </fileset>
+      </classpath>
+      <compilerarg value="-Xlint:unchecked" />
+    </javac>
   </target>
+
+
+  <target name="jar" depends="compile">
+    <jar destfile="./build/uncommons-antlib.jar">
+      <fileset dir="build/classes/main"/>
+      <fileset dir="src/xml" includes="**/*.xml" />
+    </jar>
+  </target>
+
+
+  <target name="dist" depends="clean, jar" />
 
 </project>

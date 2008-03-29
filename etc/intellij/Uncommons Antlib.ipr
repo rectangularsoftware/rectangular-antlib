@@ -470,7 +470,15 @@
     <option name="cycleTableSpecificationString" value="" />
     <option name="shortCycleTableSpecificationString" value="" />
   </component>
-  <component name="libraryTable" />
+  <component name="libraryTable">
+    <library name="ant">
+      <CLASSES>
+        <root url="jar:///Users/dan/Projects/uncommons-antlib/lib/compiletime/ant.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+  </component>
   <component name="uidesigner-configuration">
     <option name="INSTRUMENT_CLASSES" value="true" />
     <option name="COPY_FORMS_RUNTIME_TO_OUTPUT" value="true" />
