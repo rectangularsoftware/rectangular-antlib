@@ -140,7 +140,7 @@
 
   <!-- Runs TestNG against all modules (requires TestNG and ReportNG to be
        in the project lib directory). -->
-  <macrodef name="testng">
+  <macrodef name="test-all">
     <attribute name="suites" />
     <attribute name="title" default="Unit Test Report" />
     <attribute name="haltonfailure" default="false" />
