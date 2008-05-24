@@ -19,15 +19,17 @@
   <taskdef name="once" classname="org.uncommons.antlib.tasks.Once" />
 
   <macrodef name="defaults">
-    <current:once property="uncommons-antlib.defaults">
-      <!-- The directory under which each of the modules directories are found. -->
-      <property name="modules.dir" location="." />
-      <!-- Per-module locations. -->
-      <property name="src.dir" value="src" />
-      <property name="java.dir" value="${src.dir}/java" />
-      <property name="build.dir" value="build"/>
-      <property name="classes.dir" value="${build.dir}/classes" />
-    </current:once>
+    <sequential>
+      <current:once property="uncommons-antlib.defaults">
+        <!-- The directory under which each of the modules directories are found. -->
+        <property name="modules.dir" location="." />
+        <!-- Per-module locations. -->
+        <property name="src.dir" value="src" />
+        <property name="java.dir" value="${src.dir}/java" />
+        <property name="build.dir" value="build"/>
+        <property name="classes.dir" value="${build.dir}/classes" />
+      </current:once>
+    </sequential>
   </macrodef>
 
   
@@ -46,6 +48,8 @@
   <macrodef name="compile.tree">
     <attribute name="module"/>
     <attribute name="tree"/>
+    <attribute name="source"/>
+    <attribute name="target"/>
     <element name="treeclasspath" optional="true"/>
     <sequential>
       <current:defaults />
@@ -54,8 +58,8 @@
              debug="on"
              deprecation="on"
              optimize="on"
-             source="1.5"
-             target="1.5"
+             source="@{source}"
+             target="@{target}"
              srcdir="${modules.dir}/@{module}/${java.dir}/@{tree}">
         <classpath>
           <treeclasspath/>
@@ -73,15 +77,23 @@
        single module.  -->
   <macrodef name="compile">
     <attribute name="module"/>
+    <attribute name="source" default="1.5"/>
+    <attribute name="target" default="1.5"/>
     <element name="moduleclasspath" optional="true"/>
     <sequential>
       <current:defaults />
-      <current:compile.tree module="@{module}" tree="main">
+      <current:compile.tree module="@{module}"
+                            tree="main"
+                            source="@{source}"
+                            target="@{target}">
         <treeclasspath>
           <moduleclasspath />
         </treeclasspath>
       </current:compile.tree>
-      <current:compile.tree module="@{module}" tree="test">
+      <current:compile.tree module="@{module}"
+                            tree="test"
+                            source="@{source}"
+                            target="@{target}">
         <treeclasspath>
           <!-- Add the main classes to the classpath for unit test compilation. -->
           <path location="${modules.dir}/@{module}/${classes.dir}/main" />
