@@ -28,6 +28,8 @@
         <property name="java.dir" value="${src.dir}/java" />
         <property name="build.dir" value="build"/>
         <property name="classes.dir" value="${build.dir}/classes" />
+        <property name="lib.dir" value="lib"/>
+        <property name="docs.dir" value="docs"/>
       </current:once>
     </sequential>
   </macrodef>
@@ -79,15 +81,22 @@
     <attribute name="module"/>
     <attribute name="source" default="1.5"/>
     <attribute name="target" default="1.5"/>
-    <element name="moduleclasspath" optional="true"/>
     <sequential>
       <current:defaults />
+
+      <path id="moduleclasspath">
+        <!-- Module-specific libraries. -->
+        <fileset dir="${modules.dir}/@{module}/${lib.dir}" includes="**/*.jar"/>
+        <!-- Global project libraries. -->
+        <fileset dir="${lib.dir}" includes="**/*.jar"/>
+      </path>
+
       <current:compile.tree module="@{module}"
                             tree="main"
                             source="@{source}"
                             target="@{target}">
         <treeclasspath>
-          <moduleclasspath />
+          <path refid="moduleclasspath" />
         </treeclasspath>
       </current:compile.tree>
       <current:compile.tree module="@{module}"
@@ -97,7 +106,7 @@
         <treeclasspath>
           <!-- Add the main classes to the classpath for unit test compilation. -->
           <path location="${modules.dir}/@{module}/${classes.dir}/main" />
-          <moduleclasspath />
+          <path refid="moduleclasspath" />
         </treeclasspath>
       </current:compile.tree>
     </sequential>
@@ -124,6 +133,46 @@
         </manifest>
         <additionalcontents/>
       </jar>
+    </sequential>
+  </macrodef>
+
+
+
+  <!-- Runs TestNG against all modules (requires TestNG and ReportNG to be
+       in the project lib directory). -->
+  <macrodef name="testng">
+    <attribute name="suites" />
+    <attribute name="title" default="Unit Test Report" />
+    <attribute name="haltonfailure" default="false" />
+    <sequential>
+      <path id="test.path">
+        <!-- Test classes. -->
+        <dirset dir="${modules.dir}">
+          <include name="**/${classes.dir}/test" />
+        </dirset>
+        <!-- Built module JAR files. -->
+        <fileset dir="${modules.dir}" includes="**/${build.dir}/*.jar" />
+        <!-- Module-specific libraries. -->
+        <fileset dir="${modules.dir}" includes="**/${lib.dir}/**/*.jar" />
+        <!-- Global project libraries. -->
+        <fileset dir="${lib.dir}" includes="**/*.jar" />
+      </path>
+
+      <mkdir dir="${docs.dir}/test-results" />
+
+      <taskdef resource="testngtasks" classpathref="test.path"/>
+      <testng classpathref="test.path"
+              outputdir="${docs.dir}/test-results"
+              haltonfailure="false"
+              useDefaultListeners="@{haltonfailure}"
+              listeners="org.uncommons.reportng.HTMLReporter,org.uncommons.reportng.JUnitXMLReporter">
+        <xmlfileset dir="." includes="@{suites}"/>
+        <sysproperty key="org.uncommons.reportng.title"
+                     value="@{title}" />
+        <!--<sysproperty key="org.uncommons.reportng.coverage-report"
+                     value="../../coverage/index.html" />-->
+      </testng>
+      
     </sequential>
   </macrodef>
   
