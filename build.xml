@@ -46,10 +46,19 @@
     <jar destfile="./build/uncommons-antlib.jar">
       <fileset dir="build/classes/main"/>
       <fileset dir="src/xml" includes="**/*.xml" />
+      <manifest>
+        <attribute name="Class-Path" value="fop.jar saxon9.jar"/>
+      </manifest>
     </jar>
   </target>
 
 
-  <target name="dist" depends="clean, jar" />
+  <target name="dist" depends="clean, jar">
+    <mkdir dir="dist" />
+    <copy todir="dist">
+      <fileset dir="build" includes="*.jar" />
+      <fileset dir="lib/runtime" includes="*.jar" />
+    </copy>
+  </target>
 
 </project>

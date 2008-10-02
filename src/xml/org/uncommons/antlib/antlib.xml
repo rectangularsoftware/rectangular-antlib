@@ -17,6 +17,7 @@
 <antlib xmlns:current="ant:current">
 
   <taskdef name="once" classname="org.uncommons.antlib.tasks.Once" />
+  <taskdef name="docbook" classname="org.uncommons.antlib.tasks.DocBook" />
 
   <macrodef name="defaults">
     <sequential>
@@ -89,6 +90,8 @@
         <fileset dir="${modules.dir}/@{module}/${lib.dir}" includes="**/*.jar"/>
         <!-- Global project libraries. -->
         <fileset dir="${lib.dir}" includes="**/*.jar"/>
+        <!-- Other modules. -->
+        <fileset dir="${modules.dir}" includes="*/${build.dir}/*.jar"/>
       </path>
 
       <current:compile.tree module="@{module}"
