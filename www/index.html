@@ -26,9 +26,39 @@
     The guiding principle behind the design of the Uncommons Antlib is <em>convention over configuration</em>.
     Ant build scripts are greatly simplified by relying on consistent directory structures and naming conventions.
   </p>
+  <p>UNCOMMONS ANTLIB REQUIRES <strong>APACHE ANT VERSION 1.7.1</strong> OR LATER</p>
+  <h3>
+    Macros
+  </h3>
+  <ul>
+    <li>
+      <strong>Clean Module</strong> - Deletes all build artifacts for a specified module.</li>
+    <li>
+      <strong>Compile Module</strong> - Compiles the main source tree and test source tree for a specified module
+      (dealing with all necessary classpath configuration).
+    </li>
+    <li>
+      <strong>JAR Module</strong> - Builds a JAR file for a specified module.  Includes main classes and omits test
+      class.  Sets the Class-Path and Main-Class manifest properties as required.
+    </li>
+    <li>
+      <strong>Test All Modules</strong> - Runs <a href="http://www.testng.org">TestNG</a> unit tests and generates
+      reports using <a href="http://reportng.dev.java.net">ReportNG</a>.
+    </li>
+  </ul>
+  <h3>
+    Custom Tasks
+  </h3>
+  <ul>
+    <li><strong>DocBook</strong></li> - Generates PDF documentation from DocBook XML files using
+    <a href="http://saxon.sourceforge.net/">Saxon</a> and <a href="http://xmlgraphics.apache.org/fop/">Apache FOP</a>. 
+  </ul>
   <hr />
   <p>
-    This project has not yet released any files.  Check back soon for the first release.
+    This project has not yet released any files.  Check back soon for the first release.  In the meantime,
+    experimental builds can be downloaded from the
+    <a href="http://hudson.uncommons.org/job/Uncommons%20Antlib/">Uncommons Hudson server</a>.  These are
+    unsupported and subject to change.
   </p>
   <ul>
     <li><a href="http://blog.uncommons.org/?p=25">15 Tips for Better Ant Builds</a></li>

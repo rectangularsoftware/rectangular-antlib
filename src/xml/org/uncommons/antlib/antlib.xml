@@ -66,9 +66,6 @@
              srcdir="${modules.dir}/@{module}/${java.dir}/@{tree}">
         <classpath>
           <treeclasspath/>
-          <fileset dir="./lib">
-            <include name="**/*.jar" />
-          </fileset>
         </classpath>
         <compilerarg value="-Xlint:unchecked" />
       </javac>
@@ -86,8 +83,10 @@
       <current:defaults />
 
       <path id="moduleclasspath">
-        <!-- Module-specific libraries. -->
-        <fileset dir="${modules.dir}/@{module}/${lib.dir}" includes="**/*.jar"/>
+        <!-- Module-specific libraries (if any). -->
+        <fileset dir="${modules.dir}/@{module}/${lib.dir}"
+                 includes="**/*.jar"
+                 erroronmissingdir="false" />
         <!-- Global project libraries. -->
         <fileset dir="${lib.dir}" includes="**/*.jar"/>
         <!-- Other modules. -->
