@@ -13,7 +13,7 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 // ============================================================================
-package org.uncommons.antlib.tasks;
+package org.uncommons.antlib.tasks.docbook;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -35,7 +35,6 @@ import javax.xml.transform.sax.TemplatesHandler;
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
-import org.apache.fop.apps.MimeConstants;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -51,6 +50,8 @@ public class DocBookPublisher
      * Path to DocBook FO stylesheet on the classpath.
      */
     private static final String STYLESHEET_PATH = "docbook-xsl/fo/docbook.xsl";
+
+    private static final String PAPER_SIZE_PROPERTY = "paper.type";
 
     private static final TransformerFactory TRANSFORMER_FACTORY;
     static
@@ -91,15 +92,17 @@ public class DocBookPublisher
     {
         new DocBookPublisher().createDocument(new File(args[0]),
                                               new File(args[1]),
-                                              MimeConstants.MIME_PDF);
+                                              "application/pdf",
+                                              "A4");
     }
 
 
     public void createDocument(File docbookSourceFile,
                                File outputFile,
-                               String type) throws IOException,
-                                                   TransformerException,
-                                                   FOPException
+                               String outputFormat,
+                               String paperSize) throws IOException,
+                                                           TransformerException,
+                                                           FOPException
     {
         InputStream docbookInputStream = null;
         OutputStream pdfOutputStream = null;
@@ -111,7 +114,8 @@ public class DocBookPublisher
             docbookSource.setSystemId(docbookSourceFile.getPath());
 
             FopFactory fopFactory = FopFactory.newInstance();
-            Fop fop = fopFactory.newFop(type, pdfOutputStream);
+            Fop fop = fopFactory.newFop(outputFormat, pdfOutputStream);
+            formattingObjectsTransformer.setParameter(PAPER_SIZE_PROPERTY, paperSize);
             formattingObjectsTransformer.transform(docbookSource,
                                                    new SAXResult(fop.getDefaultHandler()));
         }

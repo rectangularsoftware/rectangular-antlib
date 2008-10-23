@@ -13,7 +13,7 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 // ============================================================================
-package org.uncommons.antlib.tasks;
+package org.uncommons.antlib.tasks.docbook;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -30,27 +30,52 @@ import org.apache.tools.ant.types.Reference;
  */
 public class DocBook extends Task
 {
-    private static final String PUBLISHER_CLASS = "org.uncommons.antlib.tasks.DocBookPublisher";
+    private static final String PUBLISHER_CLASS = "org.uncommons.antlib.tasks.docbook.DocBookPublisher";
+
+    private static final String DEFAULT_FORMAT = "application/pdf";
+    private static final String DEFAULT_PAPER_SIZE = "A4";
 
     /** Classpath to use when trying to load the XSL processor */
     private Path classpath = null;
-
     private File source;
     private File output;
-    private static final String DEFAULT_OUTPUT = "application/pdf";
+    private String format = DEFAULT_FORMAT;
+    private String paper = DEFAULT_PAPER_SIZE;
 
-
+    /**
+     * @param source The path of the DocBook root source file.
+     */
     public void setSource(String source)
     {
         this.source = new File(source);
     }
 
 
+    /**
+     * @param output The path of the target output file.
+     */
     public void setOutput(String output)
     {
         this.output = new File(output);
     }
 
+
+    /**
+     * @param format An output format mime-type recognised by FOP (defaults to "application/pdf").
+     */
+    public void setFormat(String format)
+    {
+        this.format = format;
+    }
+
+
+    /**
+     * @param paper A paper size recognised by the DocBook stylesheets (defaults to "A4").
+     */
+    public void setPaper(String paper)
+    {
+        this.paper = paper;
+    }
 
     /**
      * Set the optional classpath to the XSL processor
@@ -116,8 +141,9 @@ public class DocBook extends Task
             Method method = publisherClass.getMethod("createDocument",
                                                      File.class,
                                                      File.class,
+                                                     String.class,
                                                      String.class);
-            method.invoke(publisher, source, output, DEFAULT_OUTPUT);
+            method.invoke(publisher, source, output, format, paper);
         }
         catch (Exception ex)
         {
