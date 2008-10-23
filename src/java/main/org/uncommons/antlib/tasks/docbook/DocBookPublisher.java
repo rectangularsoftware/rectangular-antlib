@@ -30,6 +30,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.sax.SAXTransformerFactory;
@@ -51,7 +52,7 @@ public class DocBookPublisher
     /**
      * Path to DocBook FO stylesheet on the classpath.
      */
-    private static final String STYLESHEET_PATH = "docbook-xsl/fo/docbook.xsl";
+    private static final String STYLESHEET_PATH = "docbook-xsl/";
 
     private static final TransformerFactory TRANSFORMER_FACTORY;
     static
@@ -63,64 +64,74 @@ public class DocBookPublisher
         TRANSFORMER_FACTORY = TransformerFactory.newInstance();
     }
 
-    private final Transformer formattingObjectsTransformer;
+    private final OutputFormat format;
+    private final Transformer docBookTransformer;
 
 
     /**
      * Create a DocBookPublisher that uses the specified XSL stylesheet to generate
      * its output.
      */
-    public DocBookPublisher() throws IOException,
-                                     TransformerConfigurationException,
-                                     SAXException
+    public DocBookPublisher(String outputFormat) throws IOException,
+                                                        TransformerConfigurationException,
+                                                        SAXException
     {
+        format = OutputFormat.valueOf(outputFormat.toUpperCase());
+
         SAXTransformerFactory saxTransformerFactory = (SAXTransformerFactory) TRANSFORMER_FACTORY;
 
         TemplatesHandler templatesHandler = saxTransformerFactory.newTemplatesHandler();
         XMLReader reader = XMLReaderFactory.createXMLReader();
         reader.setContentHandler(templatesHandler);
 
-        URL styleSheetURL = getClass().getClassLoader().getResource(STYLESHEET_PATH);
+        URL styleSheetURL = getClass().getClassLoader().getResource(STYLESHEET_PATH + format.getStylesheet());
         InputSource inputSource = new InputSource(styleSheetURL.openStream());
         inputSource.setSystemId(styleSheetURL.toExternalForm());
         Source styleSheetSource = new SAXSource(reader, inputSource);
-        formattingObjectsTransformer = TRANSFORMER_FACTORY.newTransformer(styleSheetSource);
+        docBookTransformer = TRANSFORMER_FACTORY.newTransformer(styleSheetSource);
     }
 
 
     public static void main(String[] args) throws Exception
     {
-        new DocBookPublisher().createDocument(new File(args[0]),
-                                              new File(args[1]),
-                                              "application/pdf",
-                                              new HashMap<String, String>(0));
+        new DocBookPublisher(OutputFormat.PDF.name()).createDocument(new File(args[0]),
+                                                                     new File(args[1]),
+                                                                     new HashMap<String, String>(0));
     }
 
 
     public void createDocument(File docbookSourceFile,
                                File outputFile,
-                               String outputFormat,
                                Map<String, String> parameters) throws IOException,
                                                                       TransformerException,
                                                                       FOPException
     {
         InputStream docbookInputStream = null;
-        OutputStream pdfOutputStream = null;
+        OutputStream outputStream = null;
         try
         {
-            pdfOutputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
+            outputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
             docbookInputStream = new FileInputStream(docbookSourceFile);
             Source docbookSource = new SAXSource(new InputSource(docbookInputStream));
             docbookSource.setSystemId(docbookSourceFile.getPath());
 
-            FopFactory fopFactory = FopFactory.newInstance();
-            Fop fop = fopFactory.newFop(outputFormat, pdfOutputStream);
+            // Set DocBook XSL parameters.
             for (Map.Entry<String, String> entry : parameters.entrySet())
             {
-                formattingObjectsTransformer.setParameter(entry.getKey(), entry.getValue());
+                docBookTransformer.setParameter(entry.getKey(), entry.getValue());
             }
-            formattingObjectsTransformer.transform(docbookSource,
-                                                   new SAXResult(fop.getDefaultHandler()));
+
+            if (format.getFopMimeType() == null) // FO is not used as an intermediate representation.
+            {
+                docBookTransformer.transform(docbookSource, new StreamResult(outputFile));
+            }
+            else
+            {
+                FopFactory fopFactory = FopFactory.newInstance();
+                Fop fop = fopFactory.newFop(format.getFopMimeType(), outputStream);
+                docBookTransformer.transform(docbookSource,
+                                                       new SAXResult(fop.getDefaultHandler()));
+            }
         }
         finally
         {
@@ -128,9 +139,9 @@ public class DocBookPublisher
             {
                 docbookInputStream.close();
             }
-            if (pdfOutputStream != null)
+            if (outputStream != null)
             {
-                pdfOutputStream.close();
+                outputStream.close();
             }
         }
     }

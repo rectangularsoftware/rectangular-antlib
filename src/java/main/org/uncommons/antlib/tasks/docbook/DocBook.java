@@ -34,13 +34,11 @@ public class DocBook extends Task
 {
     private static final String PUBLISHER_CLASS = "org.uncommons.antlib.tasks.docbook.DocBookPublisher";
 
-    private static final String DEFAULT_FORMAT = "application/pdf";
-
     /** Classpath to use when trying to load the XSL processor */
     private Path classpath = null;
     private File source;
     private File output;
-    private String format = DEFAULT_FORMAT;
+    private String format = "PDF"; // Default to PDF, can be over-riden in build script.
 
     private Map<String, String> parameters = new HashMap<String, String>();
 
@@ -141,14 +139,13 @@ public class DocBook extends Task
             Class<?> publisherClass = classLoader == null
                                       ? Class.forName(PUBLISHER_CLASS)
                                       : Class.forName(PUBLISHER_CLASS, true, classLoader);
-            Constructor<?> constructor = publisherClass.getConstructor();
-            Object publisher = constructor.newInstance();
+            Constructor<?> constructor = publisherClass.getConstructor(String.class);
+            Object publisher = constructor.newInstance(format);
             Method method = publisherClass.getMethod("createDocument",
                                                      File.class,
                                                      File.class,
-                                                     String.class,
                                                      Map.class);
-            method.invoke(publisher, source, output, format, parameters);
+            method.invoke(publisher, source, output, parameters);
         }
         catch (Exception ex)
         {
@@ -179,9 +176,19 @@ public class DocBook extends Task
         {
             throw new BuildException("Output file must be specified.");
         }
+        if (!format.equalsIgnoreCase("PDF")
+            && !format.equalsIgnoreCase("RTF")
+            && !format.equalsIgnoreCase("HTML")
+            && !format.equalsIgnoreCase("TEXT"))
+        {
+            throw new BuildException("Unsupported output format: " + format);
+        }
     }
 
 
+    /**
+     * Models parameters passed to the DocBook stylesheets.
+     */
     public static class Parameter
     {
         private String name;
