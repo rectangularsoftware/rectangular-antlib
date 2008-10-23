@@ -18,6 +18,8 @@ package org.uncommons.antlib.tasks.docbook;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.tools.ant.AntClassLoader;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
@@ -33,14 +35,14 @@ public class DocBook extends Task
     private static final String PUBLISHER_CLASS = "org.uncommons.antlib.tasks.docbook.DocBookPublisher";
 
     private static final String DEFAULT_FORMAT = "application/pdf";
-    private static final String DEFAULT_PAPER_SIZE = "A4";
 
     /** Classpath to use when trying to load the XSL processor */
     private Path classpath = null;
     private File source;
     private File output;
     private String format = DEFAULT_FORMAT;
-    private String paper = DEFAULT_PAPER_SIZE;
+
+    private Map<String, String> parameters = new HashMap<String, String>();
 
     /**
      * @param source The path of the DocBook root source file.
@@ -68,14 +70,6 @@ public class DocBook extends Task
         this.format = format;
     }
 
-
-    /**
-     * @param paper A paper size recognised by the DocBook stylesheets (defaults to "A4").
-     */
-    public void setPaper(String paper)
-    {
-        this.paper = paper;
-    }
 
     /**
      * Set the optional classpath to the XSL processor
@@ -115,6 +109,17 @@ public class DocBook extends Task
     }
 
 
+    /**
+     * Adds a parameter to control the DocBook XSL translation.  These parameters
+     * can over-ride defaults such as paper size, margins, fonts, page orientation, etc.
+     * @param parameter Name and value of the DocBook parameter.
+     */
+    public void addConfiguredParameter(Parameter parameter)
+    {
+        parameters.put(parameter.getName(), parameter.getValue());
+    }
+
+
     @Override
     public void execute() throws BuildException
     {
@@ -142,8 +147,8 @@ public class DocBook extends Task
                                                      File.class,
                                                      File.class,
                                                      String.class,
-                                                     String.class);
-            method.invoke(publisher, source, output, format, paper);
+                                                     Map.class);
+            method.invoke(publisher, source, output, format, parameters);
         }
         catch (Exception ex)
         {
@@ -173,6 +178,34 @@ public class DocBook extends Task
         if (output == null)
         {
             throw new BuildException("Output file must be specified.");
+        }
+    }
+
+
+    public static class Parameter
+    {
+        private String name;
+        private String value;
+
+
+        public String getName()
+        {
+            return name;
+        }
+
+        public void setName(String name)
+        {
+            this.name = name;
+        }
+
+        public String getValue()
+        {
+            return value;
+        }
+
+        public void setValue(String value)
+        {
+            this.value = value;
         }
     }
 }

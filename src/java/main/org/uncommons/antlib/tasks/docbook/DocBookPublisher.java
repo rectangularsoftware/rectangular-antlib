@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -50,8 +52,6 @@ public class DocBookPublisher
      * Path to DocBook FO stylesheet on the classpath.
      */
     private static final String STYLESHEET_PATH = "docbook-xsl/fo/docbook.xsl";
-
-    private static final String PAPER_SIZE_PROPERTY = "paper.type";
 
     private static final TransformerFactory TRANSFORMER_FACTORY;
     static
@@ -93,16 +93,16 @@ public class DocBookPublisher
         new DocBookPublisher().createDocument(new File(args[0]),
                                               new File(args[1]),
                                               "application/pdf",
-                                              "A4");
+                                              new HashMap<String, String>(0));
     }
 
 
     public void createDocument(File docbookSourceFile,
                                File outputFile,
                                String outputFormat,
-                               String paperSize) throws IOException,
-                                                           TransformerException,
-                                                           FOPException
+                               Map<String, String> parameters) throws IOException,
+                                                                      TransformerException,
+                                                                      FOPException
     {
         InputStream docbookInputStream = null;
         OutputStream pdfOutputStream = null;
@@ -115,7 +115,10 @@ public class DocBookPublisher
 
             FopFactory fopFactory = FopFactory.newInstance();
             Fop fop = fopFactory.newFop(outputFormat, pdfOutputStream);
-            formattingObjectsTransformer.setParameter(PAPER_SIZE_PROPERTY, paperSize);
+            for (Map.Entry<String, String> entry : parameters.entrySet())
+            {
+                formattingObjectsTransformer.setParameter(entry.getKey(), entry.getValue());
+            }
             formattingObjectsTransformer.transform(docbookSource,
                                                    new SAXResult(fop.getDefaultHandler()));
         }
