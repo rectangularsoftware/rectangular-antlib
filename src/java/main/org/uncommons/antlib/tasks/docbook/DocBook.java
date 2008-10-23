@@ -178,8 +178,7 @@ public class DocBook extends Task
         }
         if (!format.equalsIgnoreCase("PDF")
             && !format.equalsIgnoreCase("RTF")
-            && !format.equalsIgnoreCase("HTML")
-            && !format.equalsIgnoreCase("TEXT"))
+            && !format.equalsIgnoreCase("HTML"))
         {
             throw new BuildException("Unsupported output format: " + format);
         }

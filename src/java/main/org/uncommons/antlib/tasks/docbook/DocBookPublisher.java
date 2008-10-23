@@ -115,17 +115,19 @@ public class DocBookPublisher
             Source docbookSource = new SAXSource(new InputSource(docbookInputStream));
             docbookSource.setSystemId(docbookSourceFile.getPath());
 
+            docBookTransformer.setParameter("base.dir", outputFile.getParent());
+            docBookTransformer.setParameter("fop1.extensions", 1);
             // Set DocBook XSL parameters.
             for (Map.Entry<String, String> entry : parameters.entrySet())
             {
                 docBookTransformer.setParameter(entry.getKey(), entry.getValue());
             }
 
-            if (format.getFopMimeType() == null) // FO is not used as an intermediate representation.
+            if (format.getFopMimeType() == null) // FO is not used as an intermediate representation (e.g. HTML).
             {
                 docBookTransformer.transform(docbookSource, new StreamResult(outputFile));
             }
-            else
+            else  // FO is used as an intermediate representation (e.g PDF/RTF).
             {
                 FopFactory fopFactory = FopFactory.newInstance();
                 Fop fop = fopFactory.newFop(format.getFopMimeType(), outputStream);
