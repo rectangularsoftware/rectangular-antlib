@@ -51,16 +51,21 @@
   </h3>
   <h4>DocBook</h4>
   <p>
-    Generates PDF documentation from DocBook XML files using
-    <a href="http://saxon.sourceforge.net/">Saxon</a> and
+    Generates formatted documentation from <a href="http://www.docbook.org/">DocBook</a> XML
+    files using <a href="http://saxon.sourceforge.net/">Saxon</a> and
     <a href="http://xmlgraphics.apache.org/fop/">Apache FOP</a>.
   </p>
+  <p>Usage looks something like this:</p>
   <pre>
+    &lt;taskdef uri="antlib:org.uncommons.antlib"
+             resource="org/uncommons/antlib/antlib.xml"
+             classpathref="antlib.classpath"/&gt;
+
     &lt;uncommons:docbook classpathref="antlib.classpath"
                        source="book/src/book.xml"
                        format="pdf"
-                       outputDir="book/output" &gt;
-      &lt;parameter name="paper.type" value="A4" /&gt;
+                       outputDir="book/output"&gt;
+      &lt;parameter name="paper.type" value="A4"/&gt;
     &lt;/uncommons:docbook&gt;
   </pre>
   <p>
