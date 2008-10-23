@@ -137,7 +137,7 @@ public class DocBook extends Task
 
         // We have to use a new class loader here because, unless Saxon or Xalan
         // is already in the Ant lib directory, we won't be able to load a working
-        // XSLT2 transformer.
+        // XSLT transformer.
         AntClassLoader classLoader = null;
         try
         {

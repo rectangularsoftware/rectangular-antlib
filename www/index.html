@@ -49,10 +49,25 @@
   <h3>
     Custom Tasks
   </h3>
-  <ul>
-    <li><strong>DocBook</strong> - Generates PDF documentation from DocBook XML files using
-    <a href="http://saxon.sourceforge.net/">Saxon</a> and <a href="http://xmlgraphics.apache.org/fop/">Apache FOP</a>.</li> 
-  </ul>
+  <h4>DocBook</h4>
+  <p>
+    Generates PDF documentation from DocBook XML files using
+    <a href="http://saxon.sourceforge.net/">Saxon</a> and
+    <a href="http://xmlgraphics.apache.org/fop/">Apache FOP</a>.
+  </p>
+  <pre>
+    &lt;uncommons:docbook classpathref="antlib.classpath"
+                       source="book/src/book.xml"
+                       format="pdf"
+                       outputDir="book/output" &gt;
+      &lt;parameter name="paper.type" value="A4" /&gt;
+    &lt;/uncommons:docbook&gt;
+  </pre>
+  <p>
+    The task supports PDF, RTF and HTML output.  Output can be customised with nested
+    <a href="http://docbook.sourceforge.net/release/xsl/current/doc/param.html">parameters</a>
+    that are passed to the bundled DocBook 5.0 XSL stylesheets.
+  </p>
   <hr />
   <p>
     This project has not yet released any files.  Check back soon for the first release.  In the meantime,
