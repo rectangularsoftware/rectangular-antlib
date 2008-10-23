@@ -48,7 +48,7 @@
       <fileset dir="src/xml" includes="**/*.xml" />
       <fileset dir="src" includes="docbook-xsl/**/*" />
       <manifest>
-        <attribute name="Class-Path" value="fop.jar saxon9.jar"/>
+        <attribute name="Class-Path" value="fop.jar saxon.jar"/>
       </manifest>
     </jar>
   </target>

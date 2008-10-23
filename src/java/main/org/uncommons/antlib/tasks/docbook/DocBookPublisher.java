@@ -115,7 +115,7 @@ public class DocBookPublisher
             Source docbookSource = new SAXSource(new InputSource(docbookInputStream));
             docbookSource.setSystemId(docbookSourceFile.getPath());
 
-            docBookTransformer.setParameter("base.dir", outputFile.getParent());
+            docBookTransformer.setParameter("base.dir", outputFile.getParent() + File.separator);
             docBookTransformer.setParameter("fop1.extensions", 1);
             // Set DocBook XSL parameters.
             for (Map.Entry<String, String> entry : parameters.entrySet())
