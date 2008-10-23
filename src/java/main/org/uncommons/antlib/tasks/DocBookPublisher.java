@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -46,6 +47,11 @@ import org.xml.sax.helpers.XMLReaderFactory;
  */
 public class DocBookPublisher
 {
+    /**
+     * Path to DocBook FO stylesheet on the classpath.
+     */
+    private static final String STYLESHEET_PATH = "docbook-xsl/fo/docbook.xsl";
+
     private static final TransformerFactory TRANSFORMER_FACTORY;
     static
     {
@@ -63,52 +69,29 @@ public class DocBookPublisher
      * Create a DocBookPublisher that uses the specified XSL stylesheet to generate
      * its output.
      */
-    public DocBookPublisher(File stylesheetFile) throws IOException,
-                                                        TransformerConfigurationException,
-                                                        SAXException
+    public DocBookPublisher() throws IOException,
+                                     TransformerConfigurationException,
+                                     SAXException
     {
-        InputStream styleSheetInputStream = null;
-        try
-        {
-            SAXTransformerFactory saxTransformerFactory = (SAXTransformerFactory) TRANSFORMER_FACTORY;
+        SAXTransformerFactory saxTransformerFactory = (SAXTransformerFactory) TRANSFORMER_FACTORY;
 
-            TemplatesHandler templatesHandler = saxTransformerFactory.newTemplatesHandler();
-            XMLReader reader = XMLReaderFactory.createXMLReader();
-            reader.setContentHandler(templatesHandler);
+        TemplatesHandler templatesHandler = saxTransformerFactory.newTemplatesHandler();
+        XMLReader reader = XMLReaderFactory.createXMLReader();
+        reader.setContentHandler(templatesHandler);
 
-            styleSheetInputStream = new FileInputStream(stylesheetFile);
-            InputSource inputSource = new InputSource(styleSheetInputStream);
-            inputSource.setSystemId(stylesheetFile.getPath());
-            Source styleSheetSource = new SAXSource(reader, inputSource);
-            formattingObjectsTransformer = TRANSFORMER_FACTORY.newTransformer(styleSheetSource);
-        }
-        finally
-        {
-            if (styleSheetInputStream != null)
-            {
-                styleSheetInputStream.close();
-            }
-        }
-    }
-
-
-    /**
-     * Create a DocBookPublisher that uses the specified XSL stylesheet to generate
-     * its output.
-     */
-    public DocBookPublisher(String stylesheetPath) throws IOException,
-                                                          TransformerConfigurationException,
-                                                          SAXException
-    {
-        this(new File(stylesheetPath));
+        URL styleSheetURL = getClass().getClassLoader().getResource(STYLESHEET_PATH);
+        InputSource inputSource = new InputSource(styleSheetURL.openStream());
+        inputSource.setSystemId(styleSheetURL.toExternalForm());
+        Source styleSheetSource = new SAXSource(reader, inputSource);
+        formattingObjectsTransformer = TRANSFORMER_FACTORY.newTransformer(styleSheetSource);
     }
 
 
     public static void main(String[] args) throws Exception
     {
-        new DocBookPublisher(args[0]).createDocument(new File(args[1]),
-                                                     new File(args[2]),
-                                                     MimeConstants.MIME_PDF);
+        new DocBookPublisher().createDocument(new File(args[0]),
+                                              new File(args[1]),
+                                              MimeConstants.MIME_PDF);
     }
 
 

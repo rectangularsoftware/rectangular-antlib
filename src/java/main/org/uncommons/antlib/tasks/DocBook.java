@@ -35,20 +35,9 @@ public class DocBook extends Task
     /** Classpath to use when trying to load the XSL processor */
     private Path classpath = null;
 
-    private File stylesheet;
     private File source;
     private File output;
     private static final String DEFAULT_OUTPUT = "application/pdf";
-
-
-    /**
-     * Sets the path to the DocBook stylesheet used to generate the FO output.
-     * @param stylesheet Path to the XSLT stylesheet.
-     */
-    public void setStylesheet(String stylesheet)
-    {
-        this.stylesheet = new File(stylesheet);
-    }
 
 
     public void setSource(String source)
@@ -122,8 +111,8 @@ public class DocBook extends Task
             Class<?> publisherClass = classLoader == null
                                       ? Class.forName(PUBLISHER_CLASS)
                                       : Class.forName(PUBLISHER_CLASS, true, classLoader);
-            Constructor<?> constructor = publisherClass.getConstructor(File.class);
-            Object publisher = constructor.newInstance(stylesheet);
+            Constructor<?> constructor = publisherClass.getConstructor();
+            Object publisher = constructor.newInstance();
             Method method = publisherClass.getMethod("createDocument",
                                                      File.class,
                                                      File.class,
@@ -151,10 +140,6 @@ public class DocBook extends Task
      */
     private void checkArguments() throws BuildException
     {
-        if (stylesheet == null)
-        {
-            throw new BuildException("Location of DocBook FO stylesheet must be specified.");
-        }
         if (source == null)
         {
             throw new BuildException("Location of document source must be specified.");
