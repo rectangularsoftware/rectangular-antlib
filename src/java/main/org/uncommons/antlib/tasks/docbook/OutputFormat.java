@@ -23,28 +23,42 @@ import org.apache.fop.apps.MimeConstants;
  */
 enum OutputFormat
 {
-    PDF("fo/docbook.xsl", MimeConstants.MIME_PDF),
-    RTF("fo/docbook.xsl", MimeConstants.MIME_RTF),
-    HTML("html/docbook.xsl", null);
+    PDF("fo/docbook.xsl", null, MimeConstants.MIME_PDF, ".pdf"),
+    RTF("fo/docbook.xsl", null, MimeConstants.MIME_RTF, ".rtf"),
+    HTML("html/docbook.xsl", "html/chunk.xsl", null, ".html");
 
     private final String stylesheet;
-
+    private final String chunkedStylesheet;
     private final String fopMimeType;
+    private final String fileExtension;
 
-    private OutputFormat(String stylesheet, String fopMimeType)
+    private OutputFormat(String stylesheet,
+                         String chunkedStyleSheet,
+                         String fopMimeType,
+                         String fileExtension)
     {
         this.stylesheet = stylesheet;
+        this.chunkedStylesheet = chunkedStyleSheet;
         this.fopMimeType = fopMimeType;
+        this.fileExtension = fileExtension;
     }
 
 
-    public String getStylesheet()
+    public String getStylesheet(boolean chunked)
     {
-        return stylesheet;
+        // Chunking is ignored if it is not supported for this format.
+        return chunked && chunkedStylesheet != null ? chunkedStylesheet : stylesheet;
     }
 
+    
     public String getFopMimeType()
     {
         return fopMimeType;
+    }
+
+
+    public String getFileExtension()
+    {
+        return fileExtension;
     }
 }

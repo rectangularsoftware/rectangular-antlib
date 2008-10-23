@@ -37,8 +37,9 @@ public class DocBook extends Task
     /** Classpath to use when trying to load the XSL processor */
     private Path classpath = null;
     private File source;
-    private File output;
+    private File outputDir;
     private String format = "PDF"; // Default to PDF, can be over-riden in build script.
+    private boolean chunked = false;
 
     private Map<String, String> parameters = new HashMap<String, String>();
 
@@ -54,9 +55,9 @@ public class DocBook extends Task
     /**
      * @param output The path of the target output file.
      */
-    public void setOutput(String output)
+    public void setOutputDir(String output)
     {
-        this.output = new File(output);
+        this.outputDir = new File(output);
     }
 
 
@@ -69,6 +70,17 @@ public class DocBook extends Task
     }
 
 
+    /**
+     * If the output format supports it (e.g. HTML), then the output is chunked if this
+     * property is set to true.
+     * @param chunked Whether or not to divide the output into multiple files (or "chunks").
+     */
+    public void setChunked(boolean chunked)
+    {
+        this.chunked = chunked;
+    }
+
+    
     /**
      * Set the optional classpath to the XSL processor
      *
@@ -139,13 +151,13 @@ public class DocBook extends Task
             Class<?> publisherClass = classLoader == null
                                       ? Class.forName(PUBLISHER_CLASS)
                                       : Class.forName(PUBLISHER_CLASS, true, classLoader);
-            Constructor<?> constructor = publisherClass.getConstructor(String.class);
-            Object publisher = constructor.newInstance(format);
+            Constructor<?> constructor = publisherClass.getConstructor(String.class, Boolean.TYPE);
+            Object publisher = constructor.newInstance(format, chunked);
             Method method = publisherClass.getMethod("createDocument",
                                                      File.class,
                                                      File.class,
                                                      Map.class);
-            method.invoke(publisher, source, output, parameters);
+            method.invoke(publisher, source, outputDir, parameters);
         }
         catch (Exception ex)
         {
@@ -172,9 +184,9 @@ public class DocBook extends Task
         {
             throw new BuildException("Location of document source must be specified.");
         }
-        if (output == null)
+        if (outputDir == null || !outputDir.isDirectory())
         {
-            throw new BuildException("Output file must be specified.");
+            throw new BuildException("Output directory must be specified.");
         }
         if (!format.equalsIgnoreCase("PDF")
             && !format.equalsIgnoreCase("RTF")
