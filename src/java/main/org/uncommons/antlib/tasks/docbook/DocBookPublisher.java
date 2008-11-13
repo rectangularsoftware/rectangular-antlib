@@ -76,6 +76,15 @@ public class DocBookPublisher
 
     /**
      * Create a DocBookPublisher that generates output in the specified format.
+     * @param outputFormat A String contant representing one of the values of
+     * {@link OutputFormat}.
+     * @param chunked Whether the output should be divided into multiple files
+     * (specifically for HTML output).
+     * @throws IOException If there is a problem reading the XSL stylesheet from
+     * the classpath.
+     * @throws SAXException If there is a problem parsing the XSL stylesheet.
+     * @throws TransformerConfigurationException If there is a problem setting up
+     * the XSL processor that will be used for transforming the DocBook source.
      */
     public DocBookPublisher(String outputFormat,
                             boolean chunked) throws IOException,
@@ -170,6 +179,7 @@ public class DocBookPublisher
      * from the name of this file).
      * @param outputDirectory The directory in which the output will be written.
      * @return The output stream.
+     * @throws FileNotFoundException If the output directory does not exist.
      */
     private OutputStream getFileOutputStream(File docbookSourceFile,
                                              File outputDirectory) throws FileNotFoundException

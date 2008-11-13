@@ -17,6 +17,7 @@
 <antlib xmlns:current="ant:current">
 
   <taskdef name="once" classname="org.uncommons.antlib.tasks.Once" />
+  <taskdef name="gzip" classname="org.uncommons.antlib.tasks.GZip" />
   <taskdef name="docbook" classname="org.uncommons.antlib.tasks.docbook.DocBook" />
 
   <macrodef name="defaults">
