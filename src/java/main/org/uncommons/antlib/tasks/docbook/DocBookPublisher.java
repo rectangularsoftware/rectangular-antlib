@@ -18,25 +18,28 @@ package org.uncommons.antlib.tasks.docbook;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.FileNotFoundException;
 import java.net.URL;
-import java.util.HashMap;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.URIResolver;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TemplatesHandler;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
@@ -72,8 +75,7 @@ public class DocBookPublisher
 
 
     /**
-     * Create a DocBookPublisher that uses the specified XSL stylesheet to generate
-     * its output.
+     * Create a DocBookPublisher that generates output in the specified format.
      */
     public DocBookPublisher(String outputFormat,
                             boolean chunked) throws IOException,
@@ -94,14 +96,6 @@ public class DocBookPublisher
         inputSource.setSystemId(styleSheetURL.toExternalForm());
         Source styleSheetSource = new SAXSource(reader, inputSource);
         docBookTransformer = TRANSFORMER_FACTORY.newTransformer(styleSheetSource);
-    }
-
-
-    public static void main(String[] args) throws Exception
-    {
-        new DocBookPublisher(OutputFormat.PDF.name(), false).createDocument(new File(args[0]),
-                                                                            new File(args[1]),
-                                                                            new HashMap<String, String>(0));
     }
 
 
@@ -147,6 +141,8 @@ public class DocBookPublisher
                 docBookTransformer.setParameter("fop1.extensions", 1);
                 
                 FopFactory fopFactory = FopFactory.newInstance();
+                fopFactory.setBaseURL(docbookSourceFile.getParentFile().toURL().toString());
+                fopFactory.setURIResolver(new ImageURIResolver());
 
                 outputStream = getFileOutputStream(docbookSourceFile, outputDirectory);
                 Fop fop = fopFactory.newFop(format.getFopMimeType(), outputStream);
@@ -181,5 +177,39 @@ public class DocBookPublisher
         String root = docbookSourceFile.getName().substring(0, docbookSourceFile.getName().lastIndexOf("."));
         File outputFile = new File(outputDirectory, root + format.getFileExtension());
         return new BufferedOutputStream(new FileOutputStream(outputFile));
+    }
+
+
+    
+    private static class ImageURIResolver implements URIResolver
+    {
+        public Source resolve(String href, String base) throws TransformerException
+        {
+            // If the resource doesn't exist on the file system but is on the
+            // classpath, it's probably one of the DocBook images, so we return a
+            // stream for accessing it. Otherwise, leave it for something else to deal with.
+            try
+            {
+                File file = new File(new URI(base + href));
+                if (!file.exists())
+                {
+                    URL resource = getClass().getClassLoader().getResource(STYLESHEET_PATH + href);
+                    if (resource != null)
+                    {
+                        return new StreamSource(resource.openStream());
+                    }
+                }
+                return null;
+            }
+            catch (URISyntaxException ex)
+            {
+                throw new IllegalStateException(ex);
+            }
+            catch (IOException ex)
+            {
+                ex.printStackTrace();
+                return null;
+            }
+        }
     }
 }
