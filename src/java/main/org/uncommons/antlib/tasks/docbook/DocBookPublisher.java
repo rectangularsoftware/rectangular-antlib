@@ -59,6 +59,11 @@ public class DocBookPublisher
      */
     private static final String STYLESHEET_PATH = "docbook-xsl/";
 
+    /**
+     * Path to XSLTHL config file on the classpath.
+     */
+    private static final String HIGHLIGHTER_CONFIG_PATH = "highlighters/xslthl-config.xml";
+
     private static final TransformerFactory TRANSFORMER_FACTORY;
     static
     {
@@ -105,6 +110,10 @@ public class DocBookPublisher
         inputSource.setSystemId(styleSheetURL.toExternalForm());
         Source styleSheetSource = new SAXSource(reader, inputSource);
         docBookTransformer = TRANSFORMER_FACTORY.newTransformer(styleSheetSource);
+
+        // Set-up source-code highlighting.
+        URL configURL = getClass().getClassLoader().getResource(HIGHLIGHTER_CONFIG_PATH);
+        System.setProperty("xslthl.config", configURL.toExternalForm());
     }
 
 
