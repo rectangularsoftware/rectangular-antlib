@@ -6,7 +6,7 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: toc.xsl 6910 2007-06-28 23:23:30Z xmldoc $
+     $Id: toc.xsl 8096 2008-08-03 13:07:57Z mzjn $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -256,12 +256,6 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
 
 <xsl:template match="*" mode="toc.for.component">
   <xsl:call-template name="component.toc"/>
-</xsl:template>
-
-<xsl:template match="*" mode="toc.for.section">
-<!--
-  <xsl:call-template name="section.toc"/>
--->
 </xsl:template>
 
 <xsl:template match="*" mode="toc.for.division">

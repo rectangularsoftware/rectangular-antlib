@@ -5,7 +5,7 @@
 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: autotoc.xsl 7084 2007-07-19 07:17:45Z xmldoc $
+     $Id: autotoc.xsl 8178 2008-12-15 22:26:38Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -464,7 +464,7 @@ version='1.0'>
 
   <xsl:call-template name="subtoc">
     <xsl:with-param name="toc-context" select="$toc-context"/>
-    <xsl:with-param name="nodes" select="d:section
+    <xsl:with-param name="nodes" select="d:section|d:refentry|d:simplesect
                                          |d:bridgehead[$bridgehead.in.toc != 0]"/>
   </xsl:call-template>
 </xsl:template>

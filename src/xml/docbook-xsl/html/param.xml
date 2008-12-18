@@ -3,7 +3,7 @@
 <info>
 <title>HTML Parameter Reference</title>
 <releaseinfo role="meta">
-$Id: param.xweb 7679 2008-02-17 13:26:47Z xmldoc $
+$Id: param.xweb 8177 2008-12-15 22:21:16Z bobstayton $
 </releaseinfo>
 <author>
   <personname>
@@ -559,7 +559,7 @@ in <tag>productionset</tag>.</para>
 <refsection><info><title>Description</title></info>
 
 <para>If true, TOCs will be annotated. At present, this just means
-that the <tag>RefPurpose</tag> of <tag>RefEntry</tag>
+that the <tag>refpurpose</tag> of <tag>refentry</tag>
 TOC entries will be displayed.
 </para>
 
@@ -2690,6 +2690,86 @@ will not suppress the anchors.</para>
 </refsection>
 </refentry>
 
+<refentry version="5.0" xml:id="writing.mode">
+<refmeta>
+<refentrytitle>writing.mode</refentrytitle>
+<refmiscinfo class="other" otherclass="datatype">string</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>writing.mode</refname>
+<refpurpose>Direction of text flow based on locale</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<programlisting xml:id="writing.mode.frag">
+&lt;xsl:param name="writing.mode"&gt;
+  &lt;xsl:call-template name="gentext"&gt;
+    &lt;xsl:with-param name="key"&gt;writing-mode&lt;/xsl:with-param&gt;
+    &lt;xsl:with-param name="lang"&gt;
+      &lt;xsl:call-template name="l10n.language"&gt;
+        &lt;xsl:with-param name="target" select="/*[1]"&gt;&lt;/xsl:with-param&gt;
+      &lt;/xsl:call-template&gt;
+    &lt;/xsl:with-param&gt;
+  &lt;/xsl:call-template&gt;
+&lt;/xsl:param&gt;
+</programlisting>
+</refsynopsisdiv>
+
+<refsection><info><title>Description</title></info>
+
+<para>Sets direction of text flow and text alignment based on locale.
+The value is normally taken from the gentext file for the 
+lang attribute of the document's root element, using the 
+key name 'writing-mode' to look it up in the gentext file.
+But the param can also be
+set on the command line to override that gentext value.
+</para>
+<para>
+Accepted values are:
+<variablelist>
+  <varlistentry>
+    <term>lr-tb</term>
+    <listitem>
+      <para>Left-to-right text flow in each line, lines stack top to bottom.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>rl-tb</term>
+    <listitem>
+      <para>Right-to-left text flow in each line, lines stack top to bottom.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>tb-rl</term>
+    <listitem>
+      <para>Top-to-bottom text flow in each vertical line, lines stack right to left.
+      Not supported in HTML output.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>lr</term>
+    <listitem>
+      <para>Shorthand for lr-tb.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>rl</term>
+    <listitem>
+      <para>Shorthand for rl-tb.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>tb</term>
+    <listitem>
+      <para>Shorthand for tb-rl.</para>
+    </listitem>
+  </varlistentry>
+</variablelist>
+</para>
+
+</refsection>
+</refentry>
+
 </reference>
 <reference xml:id="xslt"><title>XSLT Processing</title>
 <refentry version="5.0" xml:id="rootid">
@@ -3049,8 +3129,8 @@ by</emphasis> heading is displayed above editor names in output of the
   <programlisting xml:id="abstract.notitle.enabled.frag">&lt;xsl:param name="abstract.notitle.enabled" select="0"&gt;&lt;/xsl:param&gt;</programlisting>
 </refsynopsisdiv>
 <refsection><info><title>Description</title></info>
-<para>If non-zero, in output of the <tag>abstract</tag> element on
-  titlepages, display of the abstract title is suppressed.</para>
+<para>If non-zero, in output of the <tag>abstract</tag> element on titlepages,
+display of the abstract title is suppressed.</para>
 </refsection>
 </refentry>
 
@@ -3393,7 +3473,7 @@ will include generated parentheses.
 </refmeta>
 <refnamediv>
 <refname>refentry.generate.name</refname>
-<refpurpose>Output NAME header before 'RefName'(s)?</refpurpose>
+<refpurpose>Output NAME header before <tag>refname</tag>s?</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
@@ -3405,7 +3485,7 @@ will include generated parentheses.
 <refsection><info><title>Description</title></info>
 
 <para>If non-zero, a "NAME" section title is output before the list
-of 'RefName's. This parameter and
+of <tag>refname</tag>s. This parameter and
 <parameter>refentry.generate.title</parameter> are mutually
 exclusive. This means that if you change this parameter to zero, you
 should set <parameter>refentry.generate.title</parameter> to non-zero unless
@@ -3422,7 +3502,7 @@ you want get quite strange output.
 </refmeta>
 <refnamediv>
 <refname>refentry.generate.title</refname>
-<refpurpose>Output title before 'RefName'(s)?</refpurpose>
+<refpurpose>Output title before <tag>refname</tag>s?</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
@@ -3434,7 +3514,7 @@ you want get quite strange output.
 <refsection><info><title>Description</title></info>
 
 <para>If non-zero, the reference page title or first name is
-output before the list of 'RefName's. This parameter and
+output before the list of <tag>refname</tag>s. This parameter and
 <parameter>refentry.generate.name</parameter> are mutually exclusive.
 This means that if you change this parameter to non-zero, you
 should set <parameter>refentry.generate.name</parameter> to zero unless
@@ -5144,7 +5224,7 @@ tables.</para>
 <refsection><info><title>Description</title></info>
 
 <para>If non-zero, <tag>variablelist</tag>s will be formatted as
-tables. A processing instruction exists to specify a particualar width for the 
+tables. A processing instruction exists to specify a particular width for the 
 column containing the <tag>term</tag>s:   
 <tag class="xmlpi">dbhtml term-width=".25in"</tag></para>
 
@@ -5153,7 +5233,7 @@ child of <tag>variablelist</tag>: <tag class="xmlpi">dbhtml
 list-presentation="table"</tag> or <tag class="xmlpi">dbhtml
 list-presentation="list"</tag>.</para>
 
-<para>This parameter only applys to the HTML transformations. In the
+<para>This parameter only applies to the HTML transformations. In the
 FO case, proper list markup is robust enough to handle the formatting.
 But see also <parameter>variablelist.as.blocks</parameter>.</para>
 
@@ -6524,21 +6604,44 @@ syntax highlighting of the content of the <tag>programlisting</tag> element. The
 XSLTHL extension module. This is an external Java library which is not part of the DocBook XSL distribution.</para>
 
 <para>In order to use this extension, you must add
-<filename>xslthl.jar</filename> to your Java classpath. You can
+<filename>xslthl-2.0.0.jar</filename> to your Java classpath. You can
 download this software from <link xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://sourceforge.net/projects/xslthl">the XSLT syntax highlighting project</link> at SourceForge.</para>
 
 <para>The configuration of syntax highlighting is stored in 
 <filename>highlighting/xslthl-config.xml</filename>. The Java
-property <literal>xslthl.config</literal> must point to this
+property <literal>xslthl.config</literal> or parameter <parameter>highlight.xslthl.config</parameter> must point to this
 file (using URL syntax).</para>
 
-<para>This extension is known to work with Saxon 6.5.x. Here is an example of a modified Saxon command:</para>
+<para>This extension is known to work with Saxon 6.5.x, Saxon 8.5+ and Xalan-J. Here is an example of a modified Saxon command:</para>
 
-<programlisting>java -cp c:\batch\;&#8230;;c:\path\to\xslthl.jar -Dxslthl.config=file:///c:/docbook-xsl/highlighting/xslthl-config.xml &#8230; com.icl.saxon.StyleSheet &#8230;</programlisting>
+<programlisting>java -cp c:\batch\;&#8230;;c:\path\to\xslthl-2.0.0.jar -Dxslthl.config=file:///c:/docbook-xsl/highlighting/xslthl-config.xml &#8230; com.icl.saxon.StyleSheet &#8230;</programlisting>
 
 <para>You can specify the language for each programlisting by using the <tag class="attribute">language</tag> attribute. The
 <parameter>highlighting.default.language</parameter> parameter can be used for specifying the
 language to be used for programlistings without a <tag class="attribute">language</tag> attribute.</para>
+
+</refsection>
+</refentry>
+
+<refentry version="5.0" xml:id="highlight.xslthl.config">
+<refmeta>
+<refentrytitle>highlight.xslthl.config</refentrytitle>
+<refmiscinfo class="other" otherclass="datatype">uri</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>highlight.xslthl.config</refname>
+<refpurpose>Location of XSLTHL configuration file</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<programlisting xml:id="highlight.xslthl.config.frag">
+&lt;xsl:param name="highlight.xslthl.config"&gt;&lt;/xsl:param&gt;
+</programlisting>
+</refsynopsisdiv>
+
+<refsection><info><title>Description</title></info>
+
+<para>This location has precedence over the corresponding Java property.</para>
 
 </refsection>
 </refentry>
@@ -9979,7 +10082,7 @@ around all these parameters.</para>
 &lt;xsl:stylesheet exclude-result-prefixes="src" version="1.0"&gt;
 
 &lt;!-- ********************************************************************
-     $Id: param.xweb 7679 2008-02-17 13:26:47Z xmldoc $
+     $Id: param.xweb 8177 2008-12-15 22:21:16Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -10080,6 +10183,7 @@ around all these parameters.</para>
 &lt;src:fragref linkend="header.rule.frag"&gt;&lt;/src:fragref&gt;
 &lt;src:fragref linkend="highlight.default.language.frag"&gt;&lt;/src:fragref&gt;
 &lt;src:fragref linkend="highlight.source.frag"&gt;&lt;/src:fragref&gt;
+&lt;src:fragref linkend="highlight.xslthl.config.frag"&gt;&lt;/src:fragref&gt;
 &lt;src:fragref linkend="html.append.frag"&gt;&lt;/src:fragref&gt;
 &lt;src:fragref linkend="html.base.frag"&gt;&lt;/src:fragref&gt;
 &lt;src:fragref linkend="html.cellpadding.frag"&gt;&lt;/src:fragref&gt;
@@ -10283,6 +10387,7 @@ around all these parameters.</para>
 &lt;src:fragref linkend="variablelist.as.table.frag"&gt;&lt;/src:fragref&gt;
 &lt;src:fragref linkend="variablelist.term.separator.frag"&gt;&lt;/src:fragref&gt;
 &lt;src:fragref linkend="variablelist.term.break.after.frag"&gt;&lt;/src:fragref&gt;
+&lt;src:fragref linkend="writing.mode.frag"&gt;&lt;/src:fragref&gt;
 &lt;src:fragref linkend="xref.with.number.and.title.frag"&gt;&lt;/src:fragref&gt;
 &lt;src:fragref linkend="xref.label-title.separator.frag"&gt;&lt;/src:fragref&gt;
 &lt;src:fragref linkend="xref.label-page.separator.frag"&gt;&lt;/src:fragref&gt;

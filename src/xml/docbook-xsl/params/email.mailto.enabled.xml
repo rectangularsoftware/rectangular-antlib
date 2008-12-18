@@ -3,20 +3,27 @@
           xmlns:xi="http://www.w3.org/2001/XInclude"
           xmlns:src="http://nwalsh.com/xmlns/litprog/fragment"
           xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-          version="5.0" xml:id="abstract.notitle.enabled">
+          version="5.0" xml:id="email.mailto.enabled">
 <refmeta>
-<refentrytitle>abstract.notitle.enabled</refentrytitle>
+<refentrytitle>email.mailto.enabled</refentrytitle>
 <refmiscinfo class="other" otherclass="datatype">boolean</refmiscinfo>
 </refmeta>
 <refnamediv>
-<refname>abstract.notitle.enabled</refname>
-<refpurpose>Suppress display of abstract titles?</refpurpose>
+<refname>email.mailto.enabled</refname>
+<refpurpose>Generate mailto: links for email addresses?</refpurpose>
 </refnamediv>
+
 <refsynopsisdiv>
-  <src:fragment xml:id="abstract.notitle.enabled.frag"><xsl:param name="abstract.notitle.enabled" select="0"/></src:fragment>
+<src:fragment xml:id="email.mailto.enabled.frag">
+<xsl:param name="email.mailto.enabled" select="0"/>
+</src:fragment>
 </refsynopsisdiv>
+
 <refsection><info><title>Description</title></info>
-<para>If non-zero, in output of the <tag>abstract</tag> element on titlepages,
-display of the abstract title is suppressed.</para>
+
+<para>If non-zero the generated output for the <tag>email</tag> element
+will be a clickable mailto: link that brings up the default mail client
+on the system.</para>
+
 </refsection>
 </refentry>

@@ -5,7 +5,7 @@
 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: titlepage.xsl 7441 2007-09-12 20:59:57Z mzjn $
+     $Id: titlepage.xsl 8178 2008-12-15 22:26:38Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -765,7 +765,7 @@ version='1.0'>
       <xsl:apply-templates select="." mode="class.attribute"/>
       <table border="1" width="100%" summary="Revision history">
         <tr>
-          <th align="left" valign="top" colspan="{$numcols}">
+          <th align="{$direction.align.start}" valign="top" colspan="{$numcols}">
             <b>
               <xsl:call-template name="gentext">
                 <xsl:with-param name="key" select="'RevHistory'"/>
@@ -841,7 +841,7 @@ version='1.0'>
   <xsl:variable name="revauthor" select="d:authorinitials|d:author"/>
   <xsl:variable name="revremark" select="d:revremark|d:revdescription"/>
   <tr>
-    <td align="left">
+    <td align="{$direction.align.start}">
       <xsl:if test="$revnumber">
         <xsl:call-template name="gentext">
           <xsl:with-param name="key" select="'Revision'"/>
@@ -850,12 +850,12 @@ version='1.0'>
         <xsl:apply-templates select="$revnumber[1]" mode="titlepage.mode"/>
       </xsl:if>
     </td>
-    <td align="left">
+    <td align="{$direction.align.start}">
       <xsl:apply-templates select="$revdate[1]" mode="titlepage.mode"/>
     </td>
     <xsl:choose>
       <xsl:when test="$revauthor">
-        <td align="left">
+        <td align="{$direction.align.start}">
           <xsl:for-each select="$revauthor">
             <xsl:apply-templates select="." mode="titlepage.mode"/>
             <xsl:if test="position() != last()">
@@ -872,7 +872,7 @@ version='1.0'>
   </tr>
   <xsl:if test="$revremark">
     <tr>
-      <td align="left" colspan="{$numcols}">
+      <td align="{$direction.align.start}" colspan="{$numcols}">
         <xsl:apply-templates select="$revremark[1]" mode="titlepage.mode"/>
       </td>
     </tr>

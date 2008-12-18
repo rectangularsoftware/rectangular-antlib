@@ -14,7 +14,7 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
 <xsl:include href="../common/table.xsl"/>
 
 <!-- ********************************************************************
-     $Id: table.xsl 7681 2008-02-17 19:08:14Z mzjn $
+     $Id: table.xsl 8147 2008-11-06 18:41:16Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -28,7 +28,7 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
   <info>
     <title>Formatting Object Table Reference</title>
     <releaseinfo role="meta">
-      $Id: table.xsl 7681 2008-02-17 19:08:14Z mzjn $
+      $Id: table.xsl 8147 2008-11-06 18:41:16Z bobstayton $
     </releaseinfo>
   </info>
   <partintro xml:id="partintro">
@@ -544,21 +544,24 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
   <xsl:variable name="column.sum">
     <xsl:choose>
       <!-- CALS table -->
-      <xsl:when test="@cols">
-        <xsl:if test="count(d:colspec) = @cols">
-          <xsl:for-each select="d:colspec">
-            <xsl:if test="position() != 1">
-              <xsl:text> + </xsl:text>
-            </xsl:if>
-            <xsl:choose>
-              <xsl:when test="not(@colwidth)">NOWIDTH</xsl:when>
-              <xsl:when test="contains(@colwidth, '*')">NOWIDTH</xsl:when>
-              <xsl:otherwise>
-                <xsl:value-of select="@colwidth"/>
-              </xsl:otherwise>
-            </xsl:choose>
-          </xsl:for-each>
-        </xsl:if>
+      <xsl:when test="d:tgroup/@cols">
+        <!-- change context to the first tgroup -->
+        <xsl:for-each select="d:tgroup[1]">
+          <xsl:if test="count(d:colspec) = @cols">
+            <xsl:for-each select="d:colspec">
+              <xsl:if test="position() != 1">
+                <xsl:text> + </xsl:text>
+              </xsl:if>
+              <xsl:choose>
+                <xsl:when test="not(@colwidth)">NOWIDTH</xsl:when>
+                <xsl:when test="contains(@colwidth, '*')">NOWIDTH</xsl:when>
+                <xsl:otherwise>
+                  <xsl:value-of select="@colwidth"/>
+                </xsl:otherwise>
+              </xsl:choose>
+            </xsl:for-each>
+          </xsl:if>
+        </xsl:for-each>
       </xsl:when>
       <xsl:otherwise>
         <!-- HTML table -->
@@ -1181,8 +1184,8 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
     <xsl:when test="number($entry.colnum) &gt; $col">
       <xsl:text>0:</xsl:text>
       <xsl:call-template name="sentry">
-        <xsl:with-param name="col" select="$col+$entry.colspan"/>
-        <xsl:with-param name="spans" select="$following.spans"/>
+        <xsl:with-param name="col" select="$col + 1"/>
+        <xsl:with-param name="spans" select="substring-after($spans,':')"/>
       </xsl:call-template>
     </xsl:when>
 

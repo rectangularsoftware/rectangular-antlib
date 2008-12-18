@@ -78,7 +78,8 @@ d:ooclass
 d:ooexception
 d:oointerface
 d:simplemsgentry
-d:manvolnum"/>
+d:manvolnum
+"/>
 <!-- ====================================================================== -->
 
 <doc:template name="is.component" xmlns="">

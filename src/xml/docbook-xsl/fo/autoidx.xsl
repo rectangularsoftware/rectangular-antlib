@@ -14,7 +14,7 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
                 version="1.0">
 
 <!-- ********************************************************************
-     $Id: autoidx.xsl 7436 2007-09-10 17:16:55Z mzjn $
+     $Id: autoidx.xsl 8131 2008-10-01 00:11:49Z bobstayton $
      ********************************************************************
 
      This file is part of the DocBook XSL Stylesheet distribution.
@@ -754,11 +754,11 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
                                        ancestor::d:refentry|ancestor::d:reference|ancestor::d:refsect1|ancestor::d:refsect2|
                                        ancestor::d:refsect3|ancestor::d:refsection|ancestor::d:refsynopsisdiv|
                                        ancestor::d:sect1|ancestor::d:sect2|ancestor::d:sect3|ancestor::d:sect4|ancestor::d:sect5|
-                                       ancestor::d:section|ancestor::d:setindex|ancestor::d:set|ancestor::d:sidebar)[&scope;]"/>
+                                       ancestor::d:section|ancestor::d:setindex|ancestor::d:set|ancestor::d:sidebar|ancestor::d:mediaobject)[&scope;]"/>
   
   <xsl:variable name="id">
     <xsl:call-template name="object.id">
-      <xsl:with-param name="object" select="$target[1]"/>
+      <xsl:with-param name="object" select="$target[position() = last()]"/>
     </xsl:call-template>
   </xsl:variable>
   

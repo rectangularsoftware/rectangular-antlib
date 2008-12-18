@@ -6,7 +6,7 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: qandaset.xsl 6944 2007-07-04 08:41:53Z xmldoc $
+     $Id: qandaset.xsl 8178 2008-12-15 22:26:38Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -76,7 +76,7 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
 
   <xsl:if test="d:blockinfo/d:title|d:info/d:title|d:title">
     <tr class="qandadiv">
-      <td align="left" valign="top" colspan="2">
+      <td align="{$direction.align.start}" valign="top" colspan="2">
         <xsl:apply-templates select="(d:blockinfo/d:title|d:info/d:title|d:title)[1]"/>
       </td>
     </tr>
@@ -94,14 +94,14 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
 
   <xsl:if test="(contains($toc.params, 'toc') and $toc != '0') or $toc = '1'">
     <tr class="toc">
-      <td align="left" valign="top" colspan="2">
+      <td align="{$direction.align.start}" valign="top" colspan="2">
         <xsl:call-template name="process.qanda.toc"/>
       </td>
     </tr>
   </xsl:if>
   <xsl:if test="$preamble">
     <tr class="toc">
-      <td align="left" valign="top" colspan="2">
+      <td align="{$direction.align.start}" valign="top" colspan="2">
         <xsl:apply-templates select="$preamble"/>
       </td>
     </tr>
@@ -152,7 +152,7 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
 
   <tr>
     <xsl:apply-templates select="." mode="class.attribute"/>
-    <td align="left" valign="top">
+    <td align="{$direction.align.start}" valign="top">
       <xsl:call-template name="anchor">
         <xsl:with-param name="node" select=".."/>
         <xsl:with-param name="conditional" select="0"/>
@@ -174,7 +174,7 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
         </b></p>
       </xsl:if>
     </td>
-    <td align="left" valign="top">
+    <td align="{$direction.align.start}" valign="top">
       <xsl:choose>
         <xsl:when test="$deflabel = 'none' and not(d:label)">
           <b><xsl:apply-templates select="*[local-name(.) != 'label']"/></b>
@@ -201,7 +201,7 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
   </xsl:variable>
 
   <tr class="{local-name(.)}">
-    <td align="left" valign="top">
+    <td align="{$direction.align.start}" valign="top">
       <xsl:call-template name="anchor"/>
       <xsl:variable name="answer.label">
         <xsl:apply-templates select="." mode="label.markup"/>
@@ -212,7 +212,7 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
         </b></p>
       </xsl:if>
     </td>
-    <td align="left" valign="top">
+    <td align="{$direction.align.start}" valign="top">
       <xsl:apply-templates select="*[local-name(.) != 'label'
         and local-name(.) != 'qandaentry']"/>
       <!-- * handle nested answer/qandaentry instances -->
@@ -363,7 +363,7 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
       </xsl:attribute>
     </xsl:if>
 
-    <col align="left">
+    <col align="{$direction.align.start}">
       <xsl:attribute name="width">
         <xsl:choose>
           <xsl:when test="$label-width != ''">

@@ -12,7 +12,7 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
 <xsl:include href="../common/table.xsl"/>
 
 <!-- ********************************************************************
-     $Id: table.xsl 8010 2008-05-21 16:17:44Z abdelazer $
+     $Id: table.xsl 8148 2008-11-06 18:45:43Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -646,7 +646,15 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
 </xsl:template>
 
 <xsl:template match="d:entry|d:entrytbl" name="entry">
-  <xsl:param name="col" select="1"/>
+  <xsl:param name="col">
+    <xsl:choose>
+      <xsl:when test="@revisionflag">
+	<xsl:number from="d:row"/>
+      </xsl:when>
+      <xsl:otherwise>1</xsl:otherwise>
+    </xsl:choose>
+  </xsl:param>
+
   <xsl:param name="spans"/>
 
   <xsl:variable name="cellgi">
@@ -934,8 +942,8 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
     <xsl:when test="number($entry.colnum) &gt; $col">
       <xsl:text>0:</xsl:text>
       <xsl:call-template name="sentry">
-        <xsl:with-param name="col" select="$col+$entry.colspan"/>
-        <xsl:with-param name="spans" select="$following.spans"/>
+        <xsl:with-param name="col" select="$col + 1"/>
+        <xsl:with-param name="spans" select="substring-after($spans,':')"/>
       </xsl:call-template>
     </xsl:when>
 

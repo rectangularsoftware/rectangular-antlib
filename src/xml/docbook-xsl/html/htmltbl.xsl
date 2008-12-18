@@ -5,7 +5,7 @@
 version="1.0">
 
 <!-- ********************************************************************
-     $Id: htmltbl.xsl 8000 2008-04-15 01:06:41Z abdelazer $
+     $Id: htmltbl.xsl 8103 2008-08-04 11:37:01Z mzjn $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -41,7 +41,7 @@ version="1.0">
   </caption>
 </xsl:template>
 
-<xsl:template match="d:thead|d:tbody|d:tgroup|d:tr" mode="htmlTable">
+<xsl:template match="d:tbody|d:thead|d:tfoot|d:tr" mode="htmlTable">
   <xsl:element name="{name(.)}">
     <xsl:copy-of select="@*"/>
     <xsl:apply-templates mode="htmlTable"/>

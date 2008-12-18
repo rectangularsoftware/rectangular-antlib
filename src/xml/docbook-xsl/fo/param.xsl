@@ -6,7 +6,7 @@ version="1.0">
 <!-- This file is generated from param.xweb -->
 
 <!-- ********************************************************************
-     $Id: param.xweb 7583 2007-12-03 17:02:33Z mzjn $
+     $Id: param.xweb 8114 2008-09-01 09:33:17Z xmldoc $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -176,6 +176,7 @@ version="1.0">
 
 <xsl:param name="ebnf.statement.terminator"/>
 <xsl:param name="email.delimiters.enabled" select="1"/>
+<xsl:param name="email.mailto.enabled" select="0"/>
 <xsl:attribute-set name="equation.properties" use-attribute-sets="formal.object.properties"/>
 <xsl:attribute-set name="example.properties" use-attribute-sets="formal.object.properties"/>
 <xsl:attribute-set name="figure.properties" use-attribute-sets="formal.object.properties"/>
@@ -202,6 +203,7 @@ version="1.0">
 <xsl:param name="footnote.number.format">1</xsl:param>
 <xsl:param name="footnote.number.symbols"/>
 <xsl:attribute-set name="footnote.mark.properties">
+  <xsl:attribute name="font-family"><xsl:value-of select="$body.fontset"/></xsl:attribute>
   <xsl:attribute name="font-size">75%</xsl:attribute>
   <xsl:attribute name="font-weight">normal</xsl:attribute>
   <xsl:attribute name="font-style">normal</xsl:attribute>
@@ -304,6 +306,7 @@ set       toc,title
 <xsl:param name="headers.on.blank.pages" select="1"/>
 <xsl:param name="highlight.default.language"/>
 <xsl:param name="highlight.source" select="0"/>
+<xsl:param name="highlight.xslthl.config"/>
 <xsl:param name="hyphenate">true</xsl:param>
 <xsl:param name="hyphenate.verbatim" select="0"/>
 <xsl:param name="hyphenate.verbatim.characters"/>

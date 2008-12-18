@@ -12,7 +12,7 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: index.xsl 7902 2008-03-11 21:29:37Z bobstayton $
+     $Id: index.xsl 8111 2008-08-28 14:13:42Z xmldoc $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -118,7 +118,8 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
         <xsl:with-param name="master-reference" select="$master-reference"/>
       </xsl:call-template>
 
-      <fo:block id="{$id}">
+      <fo:block id="{$id}"
+                xsl:use-attribute-sets="component.titlepage.properties">
         <xsl:call-template name="index.titlepage"/>
       </fo:block>
       <xsl:apply-templates/>

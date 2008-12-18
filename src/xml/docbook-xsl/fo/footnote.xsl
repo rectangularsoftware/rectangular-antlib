@@ -8,7 +8,7 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: footnote.xsl 7435 2007-09-10 11:12:44Z xmldoc $
+     $Id: footnote.xsl 8125 2008-09-15 19:17:18Z dcramer $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -60,6 +60,16 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
 
 <xsl:template match="d:footnoteref">
   <xsl:variable name="footnote" select="key('id',@linkend)"/>
+
+  <xsl:if test="not(local-name($footnote) = 'footnote')">
+   <xsl:message terminate="yes">
+ERROR: A footnoteref element has a linkend that points to an element that is not a footnote. 
+Typically this happens when an id attribute is accidentally applied to the child of a footnote element. 
+target element: <xsl:value-of select="local-name($footnote)"/>
+linkend/id: <xsl:value-of select="@linkend"/>
+   </xsl:message>
+  </xsl:if>
+
   <xsl:call-template name="format.footnote.mark">
     <xsl:with-param name="mark">
       <xsl:apply-templates select="$footnote" mode="footnote.number"/>

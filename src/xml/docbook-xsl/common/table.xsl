@@ -6,7 +6,7 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
                 version="1.0">
 
 <!-- ********************************************************************
-     $Id: table.xsl 7056 2007-07-17 13:56:09Z xmldoc $
+     $Id: table.xsl 8167 2008-11-19 20:36:45Z mzjn $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -494,7 +494,7 @@ or 0 (the empty string)</para>
 
   <xsl:variable name="table" 
                 select="($node/ancestor-or-self::d:table | 
-                         $node/ancestor-or-self::d:informaltable)[1]"/>
+                         $node/ancestor-or-self::d:informaltable)[last()]"/>
 
   <xsl:variable name="tabstyle">
     <xsl:choose>

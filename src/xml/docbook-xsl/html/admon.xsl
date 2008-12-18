@@ -5,7 +5,7 @@
 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: admon.xsl 7072 2007-07-17 16:14:37Z xmldoc $
+     $Id: admon.xsl 8178 2008-12-15 22:26:38Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -89,7 +89,7 @@ version='1.0'>
             </xsl:attribute>
           </img>
         </td>
-        <th align="left">
+        <th align="{$direction.align.start}">
           <xsl:call-template name="anchor"/>
           <xsl:if test="$admon.textlabel != 0 or d:title or d:info/d:title">
             <xsl:apply-templates select="." mode="object.title.markup"/>
@@ -97,7 +97,7 @@ version='1.0'>
         </th>
       </tr>
       <tr>
-        <td align="left" valign="top">
+        <td align="{$direction.align.start}" valign="top">
           <xsl:apply-templates/>
         </td>
       </tr>

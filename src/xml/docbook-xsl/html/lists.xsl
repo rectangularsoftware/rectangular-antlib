@@ -5,7 +5,7 @@
 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: lists.xsl 8002 2008-04-21 16:03:57Z kosek $
+     $Id: lists.xsl 8178 2008-12-15 22:26:38Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -157,7 +157,7 @@ version='1.0'>
     <xsl:choose>
       <xsl:when test="@inheritnum='inherit' and ancestor::d:listitem[parent::d:orderedlist]">
 	<table border="0">
-	  <col align="left" valign="top"/>
+	  <col align="{$direction.align.start}" valign="top"/>
           <tbody>
 	    <xsl:apply-templates 
 		mode="orderedlist-table"
@@ -309,7 +309,7 @@ version='1.0'>
               <xsl:value-of select="$table-summary"/>
             </xsl:attribute>
           </xsl:if>
-          <col align="left" valign="top">
+          <col align="{$direction.align.start}" valign="top">
             <xsl:if test="$term-width != ''">
               <xsl:attribute name="width">
                 <xsl:value-of select="$term-width"/>
@@ -999,7 +999,7 @@ version='1.0'>
           </xsl:with-param>
         </xsl:call-template>
 
-        <td width="5%" valign="top" align="left">
+        <td width="5%" valign="top" align="{$direction.align.start}">
           <p>
             <xsl:call-template name="anchor"/>
             <xsl:call-template name="callout.arearefs">
@@ -1007,7 +1007,7 @@ version='1.0'>
             </xsl:call-template>
           </p>
         </td>
-        <td valign="top" align="left">
+        <td valign="top" align="{$direction.align.start}">
           <xsl:apply-templates/>
         </td>
       </tr>
