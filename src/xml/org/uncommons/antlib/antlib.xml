@@ -30,6 +30,7 @@
         <property name="java.dir" value="${src.dir}/java" />
         <property name="build.dir" value="build"/>
         <property name="classes.dir" value="${build.dir}/classes" />
+        <property name="generated.dir" value="${build.dir}/generated" />
         <property name="lib.dir" value="lib"/>
         <property name="docs.dir" value="docs"/>
       </current:once>
@@ -58,13 +59,16 @@
     <sequential>
       <current:defaults />
       <mkdir dir="${modules.dir}/@{module}/${classes.dir}/@{tree}" />
+      <!-- If there is no generated code to compile, we still need the directory to
+           look at. -->
+      <mkdir dir="${modules.dir}/@{module}/${generated.dir}/@{tree}" />
       <javac destdir="${modules.dir}/@{module}/${classes.dir}/@{tree}"
              debug="on"
              deprecation="on"
              optimize="on"
              source="@{source}"
              target="@{target}"
-             srcdir="${modules.dir}/@{module}/${java.dir}/@{tree}">
+             srcdir="${modules.dir}/@{module}/${java.dir}/@{tree}:${modules.dir}/@{module}/${generated.dir}/@{tree}">
         <classpath>
           <treeclasspath/>
         </classpath>
