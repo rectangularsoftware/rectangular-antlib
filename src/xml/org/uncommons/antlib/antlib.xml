@@ -194,6 +194,7 @@
         <sysproperty key="org.uncommons.reportng.coverage-report"
                      value="../../coverage/index.html" />
       </testng>
+      <delete file="velocity.log" />
 
       <!-- Generate the HTML coverage report. -->
       <mkdir dir="${coverage.dir}" />
@@ -213,6 +214,8 @@
       <cobertura-check totallinerate="@{mincoverage}"
                        totalbranchrate="@{mincoverage}"
                        datafile="${temp.dir}/cobertura.ser"/>
+
+      <delete dir="${temp.dir}" />
     </sequential>
   </macrodef>
 
