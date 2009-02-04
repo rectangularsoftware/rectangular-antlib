@@ -33,6 +33,9 @@
         <property name="generated.dir" value="${build.dir}/generated" />
         <property name="lib.dir" value="lib"/>
         <property name="docs.dir" value="docs"/>
+        <property name="coverage.dir" value="${docs.dir}/coverage" />
+        <property name="test-results.dir" value="${docs.dir}/test-results" />
+        <property name="temp.dir" value="temp" />
       </current:once>
     </sequential>
   </macrodef>
@@ -144,43 +147,73 @@
   </macrodef>
 
 
-
-  <!-- Runs TestNG against all modules (requires TestNG and ReportNG to be
-       in the project lib directory). -->
-  <macrodef name="test-all">
+  <!-- Runs TestNG unit tests for all modules, generates a report using ReportNG and
+       measures coverage with Cobertura. -->
+  <macrodef name="test">
     <attribute name="suites" />
     <attribute name="title" default="Unit Test Report" />
-    <attribute name="haltonfailure" default="false" />
+    <attribute name="headless" default="false" />
+    <attribute name="mincoverage" default="60" />
+
     <sequential>
+      <mkdir dir="${temp.dir}/originals" />
+      
       <path id="test.path">
-        <!-- Test classes. -->
-        <dirset dir="${modules.dir}">
-          <include name="**/${classes.dir}/test" />
-        </dirset>
-        <!-- Built module JAR files. -->
-        <fileset dir="${modules.dir}" includes="**/${build.dir}/*.jar" />
-        <!-- Module-specific libraries. -->
-        <fileset dir="${modules.dir}" includes="**/${lib.dir}/**/*.jar" />
-        <!-- Global project libraries. -->
-        <fileset dir="${lib.dir}" includes="**/*.jar" />
+        <dirset dir="." includes="**/${classes.dir}/test" />
+        <fileset dir="${temp.dir}" includes="*.jar"/>
+        <fileset dir="." includes="**/${lib.dir}/*.jar"/>
+        <path refid="base.path" />
       </path>
 
-      <mkdir dir="${docs.dir}/test-results" />
-
+      <taskdef resource="tasks.properties" classpathref="test.path" />
       <taskdef resource="testngtasks" classpathref="test.path"/>
+
+      <!-- Bytecode instrumentation to enable collection of test coverage data. -->
+      <copy todir="${temp.dir}/originals" flatten="true">
+        <fileset dir="." includes="**/${build.dir}/*.jar" />
+      </copy>
+      <cobertura-instrument todir="${temp.dir}"
+                            datafile="${temp.dir}/cobertura.ser">
+        <fileset dir="${temp.dir}/originals" includes="*.jar"/>
+      </cobertura-instrument>
+
+      <!-- Run the unit tests on the instrumented classes. -->
+      <mkdir dir="${test-results.dir}" />
+
       <testng classpathref="test.path"
-              outputdir="${docs.dir}/test-results"
+              outputdir="${test-results.dir}"
               haltonfailure="false"
-              useDefaultListeners="@{haltonfailure}"
+              useDefaultListeners="false"
               listeners="org.uncommons.reportng.HTMLReporter,org.uncommons.reportng.JUnitXMLReporter">
         <xmlfileset dir="." includes="@{suites}"/>
+        <sysproperty key="java.awt.headless" value="@{headless}" />
+        <sysproperty key="net.sourceforge.cobertura.datafile"
+                     file="${temp.dir}/cobertura.ser" />
         <sysproperty key="org.uncommons.reportng.title"
                      value="@{title}" />
-        <!--<sysproperty key="org.uncommons.reportng.coverage-report"
-                     value="../../coverage/index.html" />-->
+        <sysproperty key="org.uncommons.reportng.coverage-report"
+                     value="../../coverage/index.html" />
       </testng>
-      
+
+      <!-- Generate the HTML coverage report. -->
+      <mkdir dir="${coverage.dir}" />
+      <cobertura-report format="html"
+                        destdir="${coverage.dir}"
+                        datafile="${temp.dir}/cobertura.ser">
+        <dirset dir="." includes="**/${java.dir}/main" />
+      </cobertura-report>
+      <!-- Generate an XML coverage report so that Hudson can graph trends. -->
+      <cobertura-report format="xml"
+                        destdir="${coverage.dir}"
+                        datafile="${temp.dir}/cobertura.ser">
+        <dirset dir="." includes="**/${java.dir}/main" />
+      </cobertura-report>
+
+      <!-- If the coverage is poor, fail. -->
+      <cobertura-check totallinerate="@{mincoverage}"
+                       totalbranchrate="@{mincoverage}"
+                       datafile="${temp.dir}/cobertura.ser"/>
     </sequential>
   </macrodef>
-  
+
 </antlib>

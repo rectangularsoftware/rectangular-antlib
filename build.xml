@@ -55,7 +55,7 @@
 
   <target name="dist" depends="clean, jar">
     <mkdir dir="dist" />
-    <copy todir="dist">
+    <copy todir="dist" flatten="true">
       <fileset dir="build" includes="*.jar" />
       <fileset dir="lib/runtime" includes="*.jar" />
     </copy>

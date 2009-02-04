@@ -10,7 +10,7 @@
     <h1>Uncommons Antlib</h1>
     <p><b><i>Tools for building modular software with Apache Ant.</i></b></p>
     <p style="font-size: 0.9em;">
-      &copy; 2008 <a href="http://www.linkedin.com/in/dwdyer">Daniel W. Dyer</a> - Licensed under the terms
+      &copy; 2008-2009 <a href="http://www.linkedin.com/in/dwdyer">Daniel W. Dyer</a> - Licensed under the terms
       of the <a href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache Software Licence</a>.<br />
     </p>
   </div>
@@ -28,6 +28,41 @@
   </p>
   <p><em>Uncommons Antlib requires <strong>APACHE ANT VERSION 1.7.1</strong> or later.</em></p>
   <h3>
+    Conventions
+  </h3>
+  <p>
+    The Uncommons Antlib assumes that the project is divided into <em>modules</em>, each with its own directory
+    in the project tree.  A module is a self-contained piece of the project that, when built, produces an
+    <em>artifact</em> (typically a JAR file, WAR file, or similar).  Uncommons Antlib assumes that each module
+    directory is arranged according to certain conventions.  This assumption greatly simplifies build scripts as
+    it is not necessary to inform the various macros where to find the required files.
+  </p>
+  <p>The project directory layout is like this:</p>
+  <pre>
+  &lt;projectdir&gt;
+      &lt;module1&gt;
+      &lt;module2&gt;
+      &lt;module3&gt;
+      lib
+      docs
+          api
+          test-results
+          coverage
+  </pre>
+  <p>And each module directory like this:</p>
+  <pre>
+  &lt;moduledir&gt;
+      src
+          java
+              main
+              test
+          resources
+      build
+          classes
+          generated
+      lib
+  </pre>
+  <h3>
     Macros
   </h3>
   <ul>
@@ -42,8 +77,9 @@
       class.  Sets the Class-Path and Main-Class manifest properties as required.
     </li>
     <li>
-      <strong>Test All Modules</strong> - Runs <a href="http://www.testng.org">TestNG</a> unit tests and generates
-      reports using <a href="http://reportng.dev.java.net">ReportNG</a>.
+      <strong>Test All Modules</strong> - Runs <a href="http://www.testng.org">TestNG</a> unit tests, generates
+      reports using <a href="http://reportng.dev.java.net">ReportNG</a> and measures code coverage with
+      <a href="http://cobertura.sourceforge.net">Cobertura</a>.
     </li>
   </ul>
   <h3>
