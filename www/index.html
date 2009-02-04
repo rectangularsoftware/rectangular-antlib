@@ -28,49 +28,6 @@
   </p>
   <p><em>Uncommons Antlib requires <strong>APACHE ANT VERSION 1.7.1</strong> or later.</em></p>
   <h3>
-    Conventions
-  </h3>
-  <p>
-    The Uncommons Antlib assumes that the project is divided into <em>modules</em>, each with its own directory
-    in the project tree.  A module is a self-contained piece of the project that, when built, produces an
-    <em>artifact</em> (typically a JAR file, WAR file, or similar).  Uncommons Antlib assumes that each module
-    directory is arranged according to certain conventions.  This assumption greatly simplifies build scripts as
-    it is not necessary to inform the various macros where to find the required files.
-  </p>
-  <table style="width: 100%;">
-    <tr style="vertical-align: top;">
-      <td style="width: 50%;">
-        <p>The project directory layout is like this:</p>
-        <pre>
-  &lt;projectdir&gt;
-      &lt;module1&gt;
-      &lt;module2&gt;
-      &lt;module3&gt;
-      lib
-      docs
-          api
-          test-results
-          coverage
-        </pre>
-      </td>
-      <td style="width: 50%;">
-        <p>And each module directory like this:</p>
-        <pre>
-  &lt;moduledir&gt;
-      src
-          java
-              main
-              test
-          resources
-      build
-          classes
-          generated
-      lib
-        </pre>
-      </td>
-    </tr>
-  </table>
-  <h3>
     Macros
   </h3>
   <ul>
@@ -123,6 +80,49 @@
     only works with an individually identified file.  This task works with FileSets and separately
     compresses each matching file.
   </p>
+  <h3>
+    Conventions
+  </h3>
+  <p>
+    The Uncommons Antlib assumes that the project is divided into <em>modules</em>, each with its own directory
+    in the project tree.  A module is a self-contained piece of the project that, when built, produces an
+    <em>artifact</em> (typically a JAR file, WAR file, or similar).  Uncommons Antlib assumes that each module
+    directory is arranged according to certain conventions.  This assumption greatly simplifies build scripts as
+    it is not necessary to inform the various macros where to find the required files.
+  </p>
+  <table>
+    <tr style="vertical-align: top;">
+      <td style="padding-right: 4em;">
+        <p>The project directory layout is like this:</p>
+        <pre>
+  &lt;projectdir&gt;
+      &lt;module1&gt;
+      &lt;module2&gt;
+      &lt;module3&gt;
+      lib
+      docs
+          api
+          test-results
+          coverage
+        </pre>
+      </td>
+      <td>
+        <p>And each module directory like this:</p>
+        <pre>
+  &lt;moduledir&gt;
+      src
+          java
+              main
+              test
+          resources
+      build
+          classes
+          generated
+      lib
+        </pre>
+      </td>
+    </tr>
+  </table>
   <hr />
   <p>
     This project has not yet released any files.  Check back soon for the first release.  In the meantime,
