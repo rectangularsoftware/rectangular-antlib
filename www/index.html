@@ -37,8 +37,11 @@
     directory is arranged according to certain conventions.  This assumption greatly simplifies build scripts as
     it is not necessary to inform the various macros where to find the required files.
   </p>
-  <p>The project directory layout is like this:</p>
-  <pre>
+  <table>
+    <tr style="vertical-align: top;">
+      <td>
+        <p>The project directory layout is like this:</p>
+        <pre>
   &lt;projectdir&gt;
       &lt;module1&gt;
       &lt;module2&gt;
@@ -48,9 +51,11 @@
           api
           test-results
           coverage
-  </pre>
-  <p>And each module directory like this:</p>
-  <pre>
+        </pre>
+      </td>
+      <td>
+        <p>And each module directory like this:</p>
+        <pre>
   &lt;moduledir&gt;
       src
           java
@@ -61,7 +66,10 @@
           classes
           generated
       lib
-  </pre>
+        </pre>
+      </td>
+    </tr>
+  </table>
   <h3>
     Macros
   </h3>
