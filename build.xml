@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!-- =========================================================================
-  Copyright 2008 Daniel W. Dyer
+  Copyright 2008, 2009 Daniel W. Dyer
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may notP use this file except in compliance with the License.
@@ -18,8 +18,13 @@
 
   <description>Ant build file for the Uncommons Antlib project.</description>
 
+  <property name="version" value="0.1" />
+  <property name="artifact.identifier" value="${ant.project.name}-${version}" />
+
   <target name="clean">
     <delete dir="./build"/>
+    <delete dir="./dist"/>
+    <delete dir="./release"/>
   </target>
 
   
@@ -43,11 +48,11 @@
 
 
   <target name="jar" depends="compile">
-    <jar destfile="./build/uncommons-antlib.jar">
+    <jar destfile="./build/${artifact.identifier}.jar">
       <fileset dir="build/classes/main"/>
       <fileset dir="src/xml" includes="**/*" />
       <manifest>
-        <attribute name="Class-Path" value="fop.jar saxon.jar xslthl-2.0.0.jar"/>
+        <attribute name="Class-Path" value="docbook/fop.jar docbook/saxon.jar docbook/xslthl-2.0.0.jar testng/testng-5.9-jdk15.jar testng/reportng-0.9.8.jar"/>
       </manifest>
     </jar>
   </target>
@@ -55,10 +60,39 @@
 
   <target name="dist" depends="clean, jar">
     <mkdir dir="dist" />
-    <copy todir="dist" flatten="true">
+    <copy todir="dist">
       <fileset dir="build" includes="*.jar" />
-      <fileset dir="lib/runtime" includes="*.jar" />
+      <fileset dir="lib/runtime" includes="**/*.jar" />
     </copy>
+  </target>
+
+
+  <target name="release" depends="dist">
+    <mkdir dir="release" />
+    <!-- Create a GZipped TAR file containing the built binaries, the API
+         documentation, and source code for the examples. -->
+    <tar destfile="release/${artifact.identifier}.tgz"
+         compression="gzip"
+         longfile="gnu">
+      <tarfileset dir="dist"
+                  prefix="${artifact.identifier}"
+                  includes="**/*" />
+      <!-- Don't forget to include the licence and other important information. -->
+      <tarfileset dir="."
+                  prefix="${artifact.identifier}"
+                  includes="*.txt" />
+    </tar>
+    <!-- Also create a zip file release for the convenience of Windows users. -->
+    <zip destfile="release/${artifact.identifier}.zip">
+      <zipfileset dir="dist"
+                  prefix="${artifact.identifier}"
+                  includes="**/*" />
+      <!-- Don't forget to include the licence and other important information. -->
+      <zipfileset dir="."
+                  prefix="${artifact.identifier}"
+                  includes="*.txt" />
+    </zip>
+
   </target>
 
 </project>
