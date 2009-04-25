@@ -1,0 +1,5 @@
+Changes in version 0.1.1
+------------------------
+
+* Added 'source' macro for building a JAR file that contains a module's source
+  code, excluding tests.

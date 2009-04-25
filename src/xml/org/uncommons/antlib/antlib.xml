@@ -126,7 +126,7 @@
   <!-- This macro builds a JAR file for a module, containing all of
        the classes in the main source group for the module
        (i.e. unit test classes are excluded).  The JAR file name is
-       derived from the module name. -->
+       derived from the module name (unless over-ridden). -->
   <macrodef name="jar">
     <attribute name="module"/>
     <attribute name="jarfile" default="@{module}.jar" description="JAR file name"/>
@@ -142,6 +142,22 @@
           <attribute name="Main-Class" value="@{mainclass}"/>
         </manifest>
         <additionalcontents/>
+      </jar>
+    </sequential>
+  </macrodef>
+
+
+  <!-- This macro builds a JAR file containing a module's source code
+       (excluding tests).  The JAR file name is derived from the module name
+       (unless over-ridden). -->
+  <macrodef name="source">
+    <attribute name="module"/>
+    <attribute name="jarfile" default="@{module}-src.jar" description="Source JAR file name"/>
+    <sequential>
+      <current:defaults />
+      <mkdir dir="${modules.dir}/@{module}/${build.dir}" />
+      <jar destfile="${modules.dir}/@{module}/${build.dir}/@{jarfile}">
+        <fileset dir="${modules.dir}/@{module}/${java.dir}/main"/>
       </jar>
     </sequential>
   </macrodef>
@@ -170,7 +186,8 @@
 
       <!-- Bytecode instrumentation to enable collection of test coverage data. -->
       <copy todir="${temp.dir}/originals" flatten="true">
-        <fileset dir="." includes="**/${build.dir}/*.jar" />
+        <!-- Instrument binary JARs, ignore source JARs. -->
+        <fileset dir="." includes="**/${build.dir}/*.jar" excludes="**/${build.dir}/*-src.jar" />
       </copy>
       <cobertura-instrument todir="${temp.dir}"
                             datafile="${temp.dir}/cobertura.ser">
