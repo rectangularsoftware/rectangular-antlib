@@ -177,8 +177,7 @@
       <path id="test.path">
         <dirset dir="." includes="**/${classes.dir}/test" />
         <fileset dir="${temp.dir}" includes="*.jar"/>
-        <fileset dir="." includes="**/${lib.dir}/*.jar"/>
-        <path refid="base.path" />
+        <fileset dir="." includes="**/${lib.dir}/**/*.jar"/>
       </path>
 
       <taskdef resource="tasks.properties" classpathref="test.path" />

@@ -1,3 +1,10 @@
+Changes in version 0.1.2
+------------------------
+
+* Fixed 'test' macro so that module-specific libraries are included on the
+  classpath.
+
+
 Changes in version 0.1.1
 ------------------------
 
