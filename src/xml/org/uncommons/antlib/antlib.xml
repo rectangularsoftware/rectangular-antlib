@@ -137,6 +137,7 @@
       <current:defaults />
       <jar destfile="${modules.dir}/@{module}/${build.dir}/@{jarfile}">
         <fileset dir="${modules.dir}/@{module}/${classes.dir}/main"/>
+        <fileset dir="${modules.dir}/@{module}/${java.dir}/resources" erroronmissingdir="false" />
         <manifest>
           <attribute name="Class-Path" value="@{classpath}"/>
           <attribute name="Main-Class" value="@{mainclass}"/>

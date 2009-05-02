@@ -468,37 +468,6 @@
         <entry key="/Users/dan/Projects/uncommons-antlib">
           <value>
             <SvnBranchConfiguration>
-              <option name="branchMap">
-                <map>
-                  <entry key="https://uncommons-antlib.dev.java.net/svn/uncommons-antlib/branches">
-                    <value>
-                      <list>
-                        <SvnBranchItem>
-                          <option name="creationDateMillis" value="1206571990368" />
-                          <option name="revision" value="1" />
-                          <option name="url" value="https://uncommons-antlib.dev.java.net/svn/uncommons-antlib/branches/README" />
-                        </SvnBranchItem>
-                      </list>
-                    </value>
-                  </entry>
-                  <entry key="https://uncommons-antlib.dev.java.net/svn/uncommons-antlib/tags">
-                    <value>
-                      <list>
-                        <SvnBranchItem>
-                          <option name="creationDateMillis" value="1240144431389" />
-                          <option name="revision" value="42" />
-                          <option name="url" value="https://uncommons-antlib.dev.java.net/svn/uncommons-antlib/tags/Release-0.1" />
-                        </SvnBranchItem>
-                        <SvnBranchItem>
-                          <option name="creationDateMillis" value="1206571990368" />
-                          <option name="revision" value="1" />
-                          <option name="url" value="https://uncommons-antlib.dev.java.net/svn/uncommons-antlib/tags/README" />
-                        </SvnBranchItem>
-                      </list>
-                    </value>
-                  </entry>
-                </map>
-              </option>
               <option name="branchUrls">
                 <list>
                   <option value="https://uncommons-antlib.dev.java.net/svn/uncommons-antlib/branches" />
