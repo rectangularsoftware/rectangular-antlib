@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!-- =========================================================================
-  Copyright 2008 Daniel W. Dyer
+  Copyright 2008-2009 Daniel W. Dyer
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -14,7 +14,14 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 ========================================================================== -->
-<antlib xmlns:current="ant:current">
+<antlib xmlns:current="ant:current" xmlns:maven="urn:maven-artifact-ant">
+
+  <path id="lib.path">
+    <fileset dir="." includes="${lib.dir}/**/*.jar"/>
+  </path>  
+  <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
+           uri="urn:maven-artifact-ant"
+           classpathref="lib.path" />
 
   <taskdef name="once" classname="org.uncommons.antlib.tasks.Once" />
   <taskdef name="gzip" classname="org.uncommons.antlib.tasks.GZip" />
@@ -153,12 +160,13 @@
        (unless over-ridden). -->
   <macrodef name="source">
     <attribute name="module"/>
+    <attribute name="tree" default="main" description="Source tree (e.g. 'main' or 'test') to package." /> 
     <attribute name="jarfile" default="@{module}-src.jar" description="Source JAR file name"/>
     <sequential>
       <current:defaults />
       <mkdir dir="${modules.dir}/@{module}/${build.dir}" />
       <jar destfile="${modules.dir}/@{module}/${build.dir}/@{jarfile}">
-        <fileset dir="${modules.dir}/@{module}/${java.dir}/main"/>
+        <fileset dir="${modules.dir}/@{module}/${java.dir}/@{tree}"/>
       </jar>
     </sequential>
   </macrodef>
@@ -233,6 +241,64 @@
                        datafile="${temp.dir}/cobertura.ser"/>
 
       <delete dir="${temp.dir}" />
+    </sequential>
+  </macrodef>
+
+  <!-- Builds the module POM file and source JARs required by Maven. -->
+  <macrodef name="maven-package">
+    <attribute name="module"/>
+    <attribute name="version"/>
+    <attribute name="name" default="@{module}" />
+    <attribute name="namespace" />
+    <sequential>
+      <current:defaults />
+
+      <!-- Create a copy of the module POM file with the version number populated. -->
+      <copy file="${modules.dir}/@{module}/@{module}.pom"
+            tofile="${modules.dir}/@{module}/${classes.dir}/main/@{namespace}/@{name}.pom">
+        <filterset>
+          <filter token="VERSION" value="@{version}"/>
+        </filterset>
+      </copy>
+      <maven:pom id="@{name}.pom" file="${modules.dir}/@{module}/${classes.dir}/main/@{namespace}/@{name}.pom" />
+
+      <!-- Create source JARs for the main code and the tests. -->
+      <current:source module="@{module}" tree="main" jarfile="@{name}-@{version}-sources.jar"/>
+      <current:source module="@{module}" tree="test" jarfile="@{name}-@{version}-test-sources.jar"/>
+
+      <!-- Insert the POM file into the previously built module JAR file. -->
+      <jar update="true" jarfile="${build.dir}/@{name}-@{version}.jar">
+        <fileset dir="${classes.dir}/main" includes="**/*.pom" />
+      </jar>
+    </sequential>
+  </macrodef>
+
+  <!-- Deploys the module to the specified Maven repository. -->
+  <macrodef name="maven-release">
+    <attribute name="module"/>
+    <attribute name="version"/>
+    <attribute name="name" default="@{module}" />
+    <attribute name="repository" default="svn:https://maven2-repository.dev.java.net/svn/maven2-repository/trunk/repository/"/>
+    <attribute name="username" />
+    <attribute name="password" />
+    <sequential>
+      <current:defaults />
+
+      <!-- Install the SVN transfer module (this is needed for the Java.net Maven repository). -->
+      <maven:install-provider groupId="org.jvnet.wagon-svn" artifactId="wagon-svn" version="1.8">
+        <remoteRepository url="http://download.java.net/maven/2/"/>
+      </maven:install-provider>
+
+      <maven:remoteRepository id="maven.repository" url="@{repository}">
+        <authentication username="@{username}" password="@{password}"/>
+      </maven:remoteRepository>
+
+      <maven:deploy file="${build.dir}/@{name}-@{version}.jar">
+        <remoteRepository refid="maven.repository"/>
+        <pom refid="@{name}.pom"/>
+        <attach file="${build.dir}/@{name}-@{version}-sources.jar" type="jar" classifier="sources"/>
+        <attach file="${build.dir}/@{name}-@{version}-test-sources.jar" type="jar" classifier="test-sources"/>
+      </maven:deploy>
     </sequential>
   </macrodef>
 

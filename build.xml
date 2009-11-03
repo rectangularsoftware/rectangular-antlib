@@ -18,7 +18,7 @@
 
   <description>Ant build file for the Uncommons Antlib project.</description>
 
-  <property name="version" value="0.1.2pre" />
+  <property name="version" value="0.2" />
   <property name="artifact.identifier" value="${ant.project.name}-${version}" />
 
   <target name="clean">
@@ -52,7 +52,7 @@
       <fileset dir="build/classes/main"/>
       <fileset dir="src/xml" includes="**/*" />
       <manifest>
-        <attribute name="Class-Path" value="docbook/fop.jar docbook/saxon.jar docbook/xslthl-2.0.0.jar testng/testng-5.9-jdk15.jar testng/reportng-0.9.8.jar"/>
+        <attribute name="Class-Path" value="docbook/fop.jar docbook/saxon.jar docbook/xslthl-2.0.0.jar testng/testng-5.10-jdk15.jar testng/reportng-1.0.jar"/>
       </manifest>
     </jar>
   </target>

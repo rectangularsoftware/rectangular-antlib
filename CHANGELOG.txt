@@ -1,8 +1,12 @@
-Changes in version 0.1.2
+Changes in version 0.2.0
 ------------------------
 
 * Fixed 'test' macro so that module-specific libraries are included on the
   classpath.
+
+* Upgraded to ReportNG 1.0 and TestNG 5.10.
+
+* Added macros for deploying to Maven repositories.
 
 
 Changes in version 0.1.1
