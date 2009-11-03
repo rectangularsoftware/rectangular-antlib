@@ -16,13 +16,6 @@
 ========================================================================== -->
 <antlib xmlns:current="ant:current" xmlns:maven="urn:maven-artifact-ant">
 
-  <path id="lib.path">
-    <fileset dir="." includes="${lib.dir}/**/*.jar"/>
-  </path>  
-  <typedef resource="org/apache/maven/artifact/ant/antlib.xml"
-           uri="urn:maven-artifact-ant"
-           classpathref="lib.path" />
-
   <taskdef name="once" classname="org.uncommons.antlib.tasks.Once" />
   <taskdef name="gzip" classname="org.uncommons.antlib.tasks.GZip" />
   <taskdef name="docbook" classname="org.uncommons.antlib.tasks.docbook.DocBook" />
@@ -253,6 +246,12 @@
     <sequential>
       <current:defaults />
 
+      <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant">
+        <classpath>
+          <fileset dir="${lib.dir}" includes="**/*.jar"/>
+        </classpath>
+      </typedef>
+
       <!-- Create a copy of the module POM file with the version number populated. -->
       <copy file="${modules.dir}/@{module}/@{module}.pom"
             tofile="${modules.dir}/@{module}/${classes.dir}/main/@{namespace}/@{name}.pom">
@@ -267,8 +266,8 @@
       <current:source module="@{module}" tree="test" jarfile="@{name}-@{version}-test-sources.jar"/>
 
       <!-- Insert the POM file into the previously built module JAR file. -->
-      <jar update="true" jarfile="${build.dir}/@{name}-@{version}.jar">
-        <fileset dir="${classes.dir}/main" includes="**/*.pom" />
+      <jar update="true" jarfile="${modules.dir}/@{module}/${build.dir}/@{name}-@{version}.jar">
+        <fileset dir="${modules.dir}/@{module}/${classes.dir}/main" includes="**/*.pom" />
       </jar>
     </sequential>
   </macrodef>
@@ -283,6 +282,12 @@
     <attribute name="password" />
     <sequential>
       <current:defaults />
+
+      <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant">
+        <classpath>
+          <fileset dir="${lib.dir}" includes="**/*.jar"/>
+        </classpath>
+      </typedef>
 
       <!-- Install the SVN transfer module (this is needed for the Java.net Maven repository). -->
       <maven:install-provider groupId="org.jvnet.wagon-svn" artifactId="wagon-svn" version="1.8">
