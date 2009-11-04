@@ -238,11 +238,15 @@
   </macrodef>
 
   <!-- Builds the module POM file and source JARs required by Maven. -->
-  <macrodef name="maven-package">
+  <macrodef name="maven-deploy">
     <attribute name="module"/>
     <attribute name="version"/>
-    <attribute name="name" default="@{module}" />
-    <attribute name="namespace" />
+    <attribute name="name" default="@{module}" description="The artifact name (excluding the version number)."/>
+    <attribute name="package" description="Package (slash-separated) in which to place the POM."/>
+    <attribute name="repository" default="svn:https://maven2-repository.dev.java.net/svn/maven2-repository/trunk/repository/"/>
+    <attribute name="username" />
+    <attribute name="password" />
+
     <sequential>
       <current:defaults />
 
@@ -254,12 +258,12 @@
 
       <!-- Create a copy of the module POM file with the version number populated. -->
       <copy file="${modules.dir}/@{module}/@{module}.pom"
-            tofile="${modules.dir}/@{module}/${classes.dir}/main/@{namespace}/@{name}.pom">
+            tofile="${modules.dir}/@{module}/${classes.dir}/main/@{package}/@{name}.pom">
         <filterset>
           <filter token="VERSION" value="@{version}"/>
         </filterset>
       </copy>
-      <maven:pom id="@{name}.pom" file="${modules.dir}/@{module}/${classes.dir}/main/@{namespace}/@{name}.pom" />
+      <maven:pom id="@{name}.pom" file="${modules.dir}/@{module}/${classes.dir}/main/@{package}/@{name}.pom" />
 
       <!-- Create source JARs for the main code and the tests. -->
       <current:source module="@{module}" tree="main" jarfile="@{name}-@{version}-sources.jar"/>
@@ -269,25 +273,6 @@
       <jar update="true" jarfile="${modules.dir}/@{module}/${build.dir}/@{name}-@{version}.jar">
         <fileset dir="${modules.dir}/@{module}/${classes.dir}/main" includes="**/*.pom" />
       </jar>
-    </sequential>
-  </macrodef>
-
-  <!-- Deploys the module to the specified Maven repository. -->
-  <macrodef name="maven-release">
-    <attribute name="module"/>
-    <attribute name="version"/>
-    <attribute name="name" default="@{module}" />
-    <attribute name="repository" default="svn:https://maven2-repository.dev.java.net/svn/maven2-repository/trunk/repository/"/>
-    <attribute name="username" />
-    <attribute name="password" />
-    <sequential>
-      <current:defaults />
-
-      <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant">
-        <classpath>
-          <fileset dir="${lib.dir}" includes="**/*.jar"/>
-        </classpath>
-      </typedef>
 
       <!-- Install the SVN transfer module (this is needed for the Java.net Maven repository). -->
       <maven:install-provider groupId="org.jvnet.wagon-svn" artifactId="wagon-svn" version="1.8">
@@ -298,11 +283,11 @@
         <authentication username="@{username}" password="@{password}"/>
       </maven:remoteRepository>
 
-      <maven:deploy file="${build.dir}/@{name}-@{version}.jar">
+      <maven:deploy file="${modules.dir}/@{module}/${build.dir}/@{name}-@{version}.jar">
         <remoteRepository refid="maven.repository"/>
         <pom refid="@{name}.pom"/>
-        <attach file="${build.dir}/@{name}-@{version}-sources.jar" type="jar" classifier="sources"/>
-        <attach file="${build.dir}/@{name}-@{version}-test-sources.jar" type="jar" classifier="test-sources"/>
+        <attach file="${modules.dir}/@{module}/${build.dir}/@{name}-@{version}-sources.jar" type="jar" classifier="sources"/>
+        <attach file="${modules.dir}/@{module}/${build.dir}/@{name}-@{version}-test-sources.jar" type="jar" classifier="test-sources"/>
       </maven:deploy>
     </sequential>
   </macrodef>
