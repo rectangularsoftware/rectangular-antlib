@@ -18,7 +18,7 @@
 <div style="clear: both;">
   <p>
     <strong><a href="https://uncommons-antlib.dev.java.net/servlets/ProjectDocumentList?folderID=11241" style="font-size: 1.8em;">Download</a></strong><br />
-    Version 0.1.1
+    Version 0.2
   </p>
   <p>
     The Uncommons Antlib provides macro definitions, custom tasks and other tools to support the development
@@ -49,6 +49,10 @@
       <strong>Test All Modules</strong> - Runs <a href="http://www.testng.org">TestNG</a> unit tests, generates
       reports using <a href="http://reportng.dev.java.net">ReportNG</a> and measures code coverage with
       <a href="http://cobertura.sourceforge.net">Cobertura</a>.
+    </li>
+    <li>
+      <strong>Deploy Module to Maven Repository</strong> - Constructs a Maven POM and uploads the
+      module JAR file to a Maven repository with source JAR and test source JAR attached.
     </li>
   </ul>
   <h3>
@@ -128,11 +132,6 @@
     </tr>
   </table>
   <hr />
-  <p>
-    Experimental builds can be downloaded from the
-    <a href="http://hudson.uncommons.org/job/Uncommons%20Antlib/">Uncommons Hudson server</a>.  These are
-    unsupported and subject to change.
-  </p>
   <ul>
     <li><a href="http://blog.uncommons.org/?p=25">15 Tips for Better Ant Builds</a></li>
   </ul>
