@@ -174,6 +174,8 @@
     <attribute name="mincoverage" default="60" />
 
     <sequential>
+      <current:defaults />
+      
       <mkdir dir="${temp.dir}/originals" />
       
       <path id="test.path">
@@ -249,11 +251,19 @@
     <sequential>
       <current:defaults />
 
-      <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant">
-        <classpath>
-          <fileset dir="${lib.dir}" includes="**/*.jar"/>
-        </classpath>
-      </typedef>
+      <!-- Do this configuration only once, no matter who many times this macro is called
+           (which typically happens when deploying multiple modules). -->
+      <current:once property="uncommons-antlib.maven-config">
+        <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant">
+          <classpath>
+            <fileset dir="${lib.dir}" includes="**/*.jar"/>
+          </classpath>
+        </typedef>        
+        <!-- Install the SVN transfer module (this is needed for the Java.net Maven repository). -->
+        <maven:install-provider groupId="org.jvnet.wagon-svn" artifactId="wagon-svn" version="1.8">
+          <remoteRepository url="http://download.java.net/maven/2/"/>
+        </maven:install-provider>
+      </current:once>
 
       <!-- Create a copy of the module POM file with the version number populated. -->
       <copy file="${modules.dir}/@{module}/pom.xml"
@@ -281,11 +291,6 @@
       <!-- Create source JARs for the main code and the tests. -->
       <current:source module="@{module}" tree="main" jarfile="${@{module}.pom.artifactId}-@{version}-sources.jar"/>
       <current:source module="@{module}" tree="test" jarfile="${@{module}.pom.artifactId}-@{version}-test-sources.jar"/>
-
-      <!-- Install the SVN transfer module (this is needed for the Java.net Maven repository). -->
-      <maven:install-provider groupId="org.jvnet.wagon-svn" artifactId="wagon-svn" version="1.8">
-        <remoteRepository url="http://download.java.net/maven/2/"/>
-      </maven:install-provider>
 
       <maven:remoteRepository id="maven.repository" url="@{repository}">
         <authentication username="@{username}" password="@{password}"/>
