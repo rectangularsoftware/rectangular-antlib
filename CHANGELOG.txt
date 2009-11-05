@@ -1,3 +1,10 @@
+Changes in version 0.2.1
+------------------------
+
+* Refinements to Maven macro.  Now includes the POM file in correct location in
+  the JAR file and also includes pom.properties.
+
+
 Changes in version 0.2
 -----------------------
 

@@ -237,12 +237,11 @@
     </sequential>
   </macrodef>
 
-  <!-- Builds the module POM file and source JARs required by Maven. -->
+  <!-- Builds the module POM file and source JARs required by Maven and
+       then deploys the whole lot to a Maven repository. -->
   <macrodef name="maven-deploy">
     <attribute name="module"/>
     <attribute name="version"/>
-    <attribute name="name" default="@{module}" description="The artifact name (excluding the version number)."/>
-    <attribute name="package" description="Package (slash-separated) in which to place the POM."/>
     <attribute name="repository" default="svn:https://maven2-repository.dev.java.net/svn/maven2-repository/trunk/repository/"/>
     <attribute name="username" />
     <attribute name="password" />
@@ -257,22 +256,31 @@
       </typedef>
 
       <!-- Create a copy of the module POM file with the version number populated. -->
-      <copy file="${modules.dir}/@{module}/@{module}.pom"
-            tofile="${modules.dir}/@{module}/${classes.dir}/main/@{package}/@{name}.pom">
+      <copy file="${modules.dir}/@{module}/pom.xml"
+            tofile="${modules.dir}/@{module}/${build.dir}/pom.xml">
         <filterset>
           <filter token="VERSION" value="@{version}"/>
         </filterset>
       </copy>
-      <maven:pom id="@{name}.pom" file="${modules.dir}/@{module}/${classes.dir}/main/@{package}/@{name}.pom" />
+      <maven:pom id="@{module}.pom" file="${modules.dir}/@{module}/${build.dir}/pom.xml" />
+
+      <!-- Create the POM properties file. -->
+      <propertyfile file="${modules.dir}/@{module}/${build.dir}/pom.properties">
+        <entry key="version" value="@{version}"/>
+        <entry key="groupId" value="${@{module}.pom.groupId}"/>
+        <entry key="artifactId" value="${@{module}.pom.artifactId}"/>
+      </propertyfile>
+
+      <!-- Insert the POM and properties file into the previously built module JAR file. -->
+      <jar update="true" jarfile="${modules.dir}/@{module}/${build.dir}/${@{module}.pom.artifactId}-@{version}.jar">
+        <zipfileset dir="${modules.dir}/@{module}/${build.dir}"
+                    includes="pom.xml,pom.properties"
+                    prefix="META-INF/maven/${@{module}.pom.groupId}/${@{module}.pom.artifactId}" />
+      </jar>
 
       <!-- Create source JARs for the main code and the tests. -->
-      <current:source module="@{module}" tree="main" jarfile="@{name}-@{version}-sources.jar"/>
-      <current:source module="@{module}" tree="test" jarfile="@{name}-@{version}-test-sources.jar"/>
-
-      <!-- Insert the POM file into the previously built module JAR file. -->
-      <jar update="true" jarfile="${modules.dir}/@{module}/${build.dir}/@{name}-@{version}.jar">
-        <fileset dir="${modules.dir}/@{module}/${classes.dir}/main" includes="**/*.pom" />
-      </jar>
+      <current:source module="@{module}" tree="main" jarfile="${@{module}.pom.artifactId}-@{version}-sources.jar"/>
+      <current:source module="@{module}" tree="test" jarfile="${@{module}.pom.artifactId}-@{version}-test-sources.jar"/>
 
       <!-- Install the SVN transfer module (this is needed for the Java.net Maven repository). -->
       <maven:install-provider groupId="org.jvnet.wagon-svn" artifactId="wagon-svn" version="1.8">
@@ -283,11 +291,15 @@
         <authentication username="@{username}" password="@{password}"/>
       </maven:remoteRepository>
 
-      <maven:deploy file="${modules.dir}/@{module}/${build.dir}/@{name}-@{version}.jar">
+      <maven:deploy file="${modules.dir}/@{module}/${build.dir}/${@{module}.pom.artifactId}-@{version}.jar">
         <remoteRepository refid="maven.repository"/>
-        <pom refid="@{name}.pom"/>
-        <attach file="${modules.dir}/@{module}/${build.dir}/@{name}-@{version}-sources.jar" type="jar" classifier="sources"/>
-        <attach file="${modules.dir}/@{module}/${build.dir}/@{name}-@{version}-test-sources.jar" type="jar" classifier="test-sources"/>
+        <pom refid="@{module}.pom"/>
+        <attach file="${modules.dir}/@{module}/${build.dir}/${@{module}.pom.artifactId}-@{version}-sources.jar"
+                type="jar"
+                classifier="sources"/>
+        <attach file="${modules.dir}/@{module}/${build.dir}/${@{module}.pom.artifactId}-@{version}-test-sources.jar"
+                type="jar"
+                classifier="test-sources"/>
       </maven:deploy>
     </sequential>
   </macrodef>
