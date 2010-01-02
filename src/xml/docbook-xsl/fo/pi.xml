@@ -2,7 +2,7 @@
 
 <reference><info><title>FO Processing Instruction Reference</title>
     <releaseinfo role="meta">
-      $Id: pi.xsl 8116 2008-09-06 16:27:22Z mzjn $
+      $Id: pi.xsl 8487 2009-07-14 21:43:36Z bobstayton $
     </releaseinfo>
   </info>
 
@@ -963,6 +963,39 @@
   </refsect1><refsect1 role="tcg"><title>Related Information in <link xlink:href="http://www.sagehill.net/docbookxsl/">DocBook XSL: The Complete Guide</link></title>
     
 <para><link role="tcg" xlink:href="PageBreaking.html#SoftPageBreaks">Soft page breaks</link></para>
+
+  </refsect1></refentry>
+
+<refentry xmlns:xlink="http://www.w3.org/1999/xlink" xml:id="dbfo_row-height">
+<refnamediv>
+<refname>dbfo_row-height</refname>
+<refpurpose>Specifies the height for a CALS table row</refpurpose>
+</refnamediv>
+<refsynopsisdiv>
+
+    <synopsis><tag class="xmlpi">dbfo row-height="<replaceable>height</replaceable>"</tag></synopsis>
+  
+</refsynopsisdiv>
+<refsect1><title>Description</title>
+    
+<para>Use the <tag class="xmlpi">dbfo row-height</tag> PI as a child of a
+      <tag>row</tag> to specify the height of the row.</para>
+
+  </refsect1><refsect1><title>Parameters</title>
+    
+<variablelist>
+      <varlistentry><term>row-height="<replaceable>height</replaceable>"</term>
+        <listitem>
+          
+<para>Specifies the row height (including units)</para>
+
+        </listitem>
+      </varlistentry>
+    </variablelist>
+
+  </refsect1><refsect1 role="tcg"><title>Related Information in <link xlink:href="http://www.sagehill.net/docbookxsl/">DocBook XSL: The Complete Guide</link></title>
+    
+<para><link role="tcg" xlink:href="RowHeight.html">Row height</link></para>
 
   </refsect1></refentry>
 </reference>

@@ -7,7 +7,7 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: highlight.xsl 8092 2008-07-18 21:26:36Z kosek $
+     $Id: highlight.xsl 8419 2009-04-29 20:37:52Z kosek $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -15,6 +15,8 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
      and other information.
 
      ******************************************************************** -->
+
+<xsl:import href="../highlighting/common.xsl"/>
 
 <xsl:template match='xslthl:keyword' mode="xslthl">
   <fo:inline font-weight="bold"><xsl:apply-templates mode="xslthl"/></fo:inline>

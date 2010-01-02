@@ -29,6 +29,8 @@
 
 <l:gentext key="Abstract" text="Povzetek"/>
 <l:gentext key="abstract" text="Povzetek"/>
+<l:gentext key="Acknowledgements" text="Acknowledgements" lang="en"/>
+<l:gentext key="acknowledgements" text="Acknowledgements" lang="en"/>
 <l:gentext key="Answer" text="O:"/>
 <l:gentext key="answer" text="O:"/>
 <l:gentext key="Appendix" text="Dodatek"/>
@@ -217,6 +219,7 @@
 <l:context name="styles"><l:template name="person-name" text="first-last"/>
 </l:context>
 <l:context name="title"><l:template name="abstract" text="%t"/>
+<l:template name="acknowledgements" text="%t" lang="en"/>
 <l:template name="answer" text="%t"/>
 <l:template name="appendix" text="Dodatek %n. %t"/>
 <l:template name="article" text="%t"/>
@@ -322,6 +325,7 @@
 <l:template name="simplesect" text="%n. %t"/>
 </l:context>
 <l:context name="subtitle"><l:template name="appendix" text="%s"/>
+<l:template name="acknowledgements" text="%s" lang="en"/>
 <l:template name="article" text="%s"/>
 <l:template name="bibliodiv" text="%s"/>
 <l:template name="biblioentry" text="%s"/>
@@ -361,6 +365,7 @@
 <l:template name="toc" text="%s"/>
 </l:context>
 <l:context name="xref"><l:template name="abstract" text="%t"/>
+<l:template name="acknowledgements" text="%t" lang="en"/>
 <l:template name="answer" text="O: %n"/>
 <l:template name="appendix" text="%t"/>
 <l:template name="article" text="%t"/>
@@ -491,8 +496,9 @@
 <l:template name="sep2" text=" in "/>
 <l:template name="seplast" text=", in "/>
 </l:context>
-<l:context name="glossary"><l:template name="see" text="glej %t"/>
-<l:template name="seealso" text="glej tudi %t"/>
+<l:context name="glossary"><l:template name="see" text="glej %t."/>
+<l:template name="seealso" text="glej tudi %t."/>
+<l:template name="seealso-separator" text=", "/>
 </l:context>
 <l:context name="msgset"><l:template name="MsgAud" text="Občinstvo: "/>
 <l:template name="MsgLevel" text="Raven: "/>

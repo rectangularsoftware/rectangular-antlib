@@ -29,6 +29,8 @@
 
 <l:gentext key="Abstract" text="摘要"/>
 <l:gentext key="abstract" text="摘要"/>
+<l:gentext key="Acknowledgements" text="鸣谢"/>
+<l:gentext key="acknowledgements" text="鸣谢"/>
 <l:gentext key="Answer" text="答："/>
 <l:gentext key="answer" text="答："/>
 <l:gentext key="Appendix" text="附录"/>
@@ -45,8 +47,8 @@
 <l:gentext key="caution" text="小心"/>
 <l:gentext key="Chapter" text="章"/>
 <l:gentext key="chapter" text="章"/>
-<l:gentext key="Colophon" text="版本记录"/>
-<l:gentext key="colophon" text="版本记录"/>
+<l:gentext key="Colophon" text="后记"/>
+<l:gentext key="colophon" text="后记"/>
 <l:gentext key="Copyright" text="版权"/>
 <l:gentext key="copyright" text="版权"/>
 <l:gentext key="Dedication" text="题词"/>
@@ -217,6 +219,7 @@
 <l:context name="styles"><l:template name="person-name" text="first-last"/>
 </l:context>
 <l:context name="title"><l:template name="abstract" text="%t"/>
+<l:template name="acknowledgements" text="%t"/>
 <l:template name="answer" text="%t"/>
 <l:template name="appendix" text="附录 %n. %t"/>
 <l:template name="article" text="%t"/>
@@ -322,6 +325,7 @@
 <l:template name="simplesect" text="%t"/>
 </l:context>
 <l:context name="subtitle"><l:template name="appendix" text="%s"/>
+<l:template name="acknowledgements" text="%s"/>
 <l:template name="article" text="%s"/>
 <l:template name="bibliodiv" text="%s"/>
 <l:template name="biblioentry" text="%s"/>
@@ -361,6 +365,7 @@
 <l:template name="toc" text="%s"/>
 </l:context>
 <l:context name="xref"><l:template name="abstract" text="%t"/>
+<l:template name="acknowledgements" text="%t"/>
 <l:template name="answer" text="答： %n"/>
 <l:template name="appendix" text="%t"/>
 <l:template name="article" text="%t"/>
@@ -491,8 +496,9 @@
 <l:template name="sep2" text="和"/>
 <l:template name="seplast" text="和"/>
 </l:context>
-<l:context name="glossary"><l:template name="see" text="见%t"/>
-<l:template name="seealso" text="参见%t"/>
+<l:context name="glossary"><l:template name="see" text="见%t."/>
+<l:template name="seealso" text="参见%t."/>
+<l:template name="seealso-separator" text=", "/>
 </l:context>
 <l:context name="msgset"><l:template name="MsgAud" text="受众："/>
 <l:template name="MsgLevel" text="级别："/>

@@ -4,11 +4,11 @@
 xmlns:fo="http://www.w3.org/1999/XSL/Format"
                 xmlns:xlink="http://www.w3.org/1999/xlink"
                 xmlns:exsl="http://exslt.org/common"
-                exclude-result-prefixes="exsl d"
+                exclude-result-prefixes="exsl xlink d"
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: footnote.xsl 8125 2008-09-15 19:17:18Z dcramer $
+     $Id: footnote.xsl 8359 2009-03-20 18:42:06Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -197,7 +197,7 @@ linkend/id: <xsl:value-of select="@linkend"/>
       </fo:block>
     </xsl:when>
 
-    <xsl:when test="function-available('exsl:node-set')">
+    <xsl:when test="$exsl.node.set.available != 0">
       <fo:block xsl:use-attribute-sets="table.footnote.properties">
         <xsl:apply-templates select="*[1]" mode="footnote.body.number"/>
         <xsl:apply-templates select="*[position() &gt; 1]"/>

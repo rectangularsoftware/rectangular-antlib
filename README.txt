@@ -51,6 +51,7 @@ CUSTOM TASKS
             Saxon and Apache FOP.
 
             Usage looks something like this:
+
                 <taskdef uri="antlib:org.uncommons.antlib"
                          resource="org/uncommons/antlib/antlib.xml"
                          classpathref="antlib.classpath"/>
@@ -61,7 +62,6 @@ CUSTOM TASKS
                                    outputDir="book/output">
                   <parameter name="paper.type" value="A4"/>
                 </uncommons:docbook>
-
 
             The task supports PDF, RTF and HTML output.  Output can be
             customised with nested parameters that are passed to the bundled

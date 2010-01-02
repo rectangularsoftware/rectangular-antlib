@@ -57,12 +57,12 @@ public class DocBookPublisher
     /**
      * Path to DocBook FO stylesheet on the classpath.
      */
-    private static final String STYLESHEET_PATH = "docbook-xsl/";
+    private static final String STYLESHEET_PATH = "custom-xsl/";
 
     /**
      * Path to XSLTHL config file on the classpath.
      */
-    private static final String HIGHLIGHTER_CONFIG_PATH = "highlighters/xslthl-config.xml";
+    private static final String HIGHLIGHTER_CONFIG_PATH = "docbook-xsl/highlighting/xslthl-config.xml";
 
     private static final TransformerFactory TRANSFORMER_FACTORY;
     static
@@ -96,6 +96,10 @@ public class DocBookPublisher
                                                     TransformerConfigurationException,
                                                     SAXException
     {
+        // Set-up source-code highlighting.
+        URL configURL = getClass().getClassLoader().getResource(HIGHLIGHTER_CONFIG_PATH);
+        System.setProperty("xslthl.config", configURL.toExternalForm());
+
         format = OutputFormat.valueOf(outputFormat.toUpperCase());
         this.chunked = chunked;
 
@@ -110,10 +114,6 @@ public class DocBookPublisher
         inputSource.setSystemId(styleSheetURL.toExternalForm());
         Source styleSheetSource = new SAXSource(reader, inputSource);
         docBookTransformer = TRANSFORMER_FACTORY.newTransformer(styleSheetSource);
-
-        // Set-up source-code highlighting.
-        URL configURL = getClass().getClassLoader().getResource(HIGHLIGHTER_CONFIG_PATH);
-        System.setProperty("xslthl.config", configURL.toExternalForm());
     }
 
 
@@ -123,11 +123,10 @@ public class DocBookPublisher
                                                                       TransformerException,
                                                                       FOPException
     {
-        InputStream docbookInputStream = null;
         OutputStream outputStream = null;
+        InputStream docbookInputStream = new FileInputStream(docbookSourceFile);
         try
         {
-            docbookInputStream = new FileInputStream(docbookSourceFile);
             Source docbookSource = new SAXSource(new InputSource(docbookInputStream));
             docbookSource.setSystemId(docbookSourceFile.getPath());
 
@@ -170,10 +169,7 @@ public class DocBookPublisher
         }
         finally
         {
-            if (docbookInputStream != null)
-            {
-                docbookInputStream.close();
-            }
+            docbookInputStream.close();
             if (outputStream != null)
             {
                 outputStream.close();
@@ -193,7 +189,7 @@ public class DocBookPublisher
     private OutputStream getFileOutputStream(File docbookSourceFile,
                                              File outputDirectory) throws FileNotFoundException
     {
-        String root = docbookSourceFile.getName().substring(0, docbookSourceFile.getName().lastIndexOf("."));
+        String root = docbookSourceFile.getName().substring(0, docbookSourceFile.getName().lastIndexOf('.'));
         File outputFile = new File(outputDirectory, root + format.getFileExtension());
         return new BufferedOutputStream(new FileOutputStream(outputFile));
     }

@@ -2,11 +2,12 @@
 <xsl:stylesheet exclude-result-prefixes="d"
                  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:d="http://docbook.org/ns/docbook"
-xmlns:fo="http://www.w3.org/1999/XSL/Format"
+xmlns:fox="http://xmlgraphics.apache.org/fop/extensions"
+                xmlns:fo="http://www.w3.org/1999/XSL/Format"
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: fop1.xsl 8140 2008-10-23 18:53:35Z mzjn $
+     $Id: fop1.xsl 8418 2009-04-27 17:10:33Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -16,6 +17,13 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
      ******************************************************************** -->
 
 <!-- ==================================================================== -->
+
+<xsl:variable name="bookmarks.state">
+  <xsl:choose>
+    <xsl:when test="$bookmarks.collapse != 0">hide</xsl:when>
+    <xsl:otherwise>show</xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
 
 <xsl:template match="*" mode="fop1.outline">
   <xsl:apply-templates select="*" mode="fop1.outline"/>
@@ -42,6 +50,9 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
     <xsl:when test="self::d:index and $generate.index = 0"/>	
     <xsl:when test="parent::*">
       <fo:bookmark internal-destination="{$id}">
+	<xsl:attribute name="starting-state">
+	  <xsl:value-of select="$bookmarks.state"/>
+	</xsl:attribute>
         <fo:bookmark-title>
           <xsl:value-of select="normalize-space(translate($bookmark-label, $a-dia, $a-asc))"/>
         </fo:bookmark-title>
@@ -50,6 +61,9 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
     </xsl:when>
     <xsl:otherwise>
       <fo:bookmark internal-destination="{$id}">
+	<xsl:attribute name="starting-state">
+	  <xsl:value-of select="$bookmarks.state"/>
+	</xsl:attribute>
         <fo:bookmark-title>
           <xsl:value-of select="normalize-space(translate($bookmark-label, $a-dia, $a-asc))"/>
         </fo:bookmark-title>

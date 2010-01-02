@@ -14,7 +14,7 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
                 version="1.0">
 
 <!-- ********************************************************************
-     $Id: autoidx.xsl 8131 2008-10-01 00:11:49Z bobstayton $
+     $Id: autoidx.xsl 8399 2009-04-08 07:37:42Z bobstayton $
      ********************************************************************
 
      This file is part of the DocBook XSL Stylesheet distribution.
@@ -170,8 +170,7 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
   </xsl:if>
 
 
-  <xsl:if test="not(function-available('exslt:node-set') or
-                    function-available('exslt:nodeSet'))">
+  <xsl:if test="$exsl.node.set.available = 0">
     <xsl:message terminate="yes">
       <xsl:text>ERROR: the 'kosek' index method requires the </xsl:text>
       <xsl:text>exslt:node-set() function. Use a processor that </xsl:text>
@@ -295,6 +294,13 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
     <xsl:if test="$axf.extensions != 0">
       <xsl:attribute name="axf:suppress-duplicate-page-number">true</xsl:attribute>
     </xsl:if>
+
+    <xsl:for-each select="$refs/d:primary">
+      <xsl:if test="@id or @xml:id">
+        <fo:inline id="{(@id|@xml:id)[1]}"/>
+      </xsl:if>
+    </xsl:for-each>
+
     <xsl:value-of select="d:primary"/>
 
     <xsl:choose>
@@ -404,6 +410,13 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
     <xsl:if test="$axf.extensions != 0">
       <xsl:attribute name="axf:suppress-duplicate-page-number">true</xsl:attribute>
     </xsl:if>
+
+    <xsl:for-each select="$refs/d:secondary">
+      <xsl:if test="@id or @xml:id">
+        <fo:inline id="{(@id|@xml:id)[1]}"/>
+      </xsl:if>
+    </xsl:for-each>
+
     <xsl:value-of select="d:secondary"/>
 
     <xsl:choose>
@@ -523,6 +536,13 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
     <xsl:if test="$axf.extensions != 0">
       <xsl:attribute name="axf:suppress-duplicate-page-number">true</xsl:attribute>
     </xsl:if>
+
+    <xsl:for-each select="$refs/d:tertiary">
+      <xsl:if test="@id or @xml:id">
+        <fo:inline id="{(@id|@xml:id)[1]}"/>
+      </xsl:if>
+    </xsl:for-each>
+
     <xsl:value-of select="d:tertiary"/>
 
     <xsl:choose>

@@ -5,11 +5,11 @@
 xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
   xmlns:fo="http://www.w3.org/1999/XSL/Format"
   xmlns:xlink="http://www.w3.org/1999/xlink"
-  exclude-result-prefixes="doc d"
+  exclude-result-prefixes="doc xlink d"
   version='1.0'>
 
 <!-- ********************************************************************
-     $Id: pi.xsl 8116 2008-09-06 16:27:22Z mzjn $
+     $Id: pi.xsl 8487 2009-07-14 21:43:36Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -20,7 +20,7 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
 
 <doc:reference xmlns=""><info><title>FO Processing Instruction Reference</title>
     <releaseinfo role="meta">
-      $Id: pi.xsl 8116 2008-09-06 16:27:22Z mzjn $
+      $Id: pi.xsl 8487 2009-07-14 21:43:36Z bobstayton $
     </releaseinfo>
   </info>
 
@@ -900,6 +900,40 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
         >Soft page breaks</link></para>
   </refsee>
 </doc:pi>
+
+<doc:pi name="dbfo_row-height" xmlns="">
+  <refpurpose>Specifies the height for a CALS table row</refpurpose>
+  <refdescription>
+    <para>Use the <tag class="xmlpi">dbfo row-height</tag> PI as a child of a
+      <tag>row</tag> to specify the height of the row.</para>
+  </refdescription>
+  <refsynopsisdiv>
+    <synopsis><tag class="xmlpi">dbfo row-height="<replaceable>height</replaceable>"</tag></synopsis>
+  </refsynopsisdiv>
+  <refparameter>
+    <variablelist>
+      <varlistentry><term>row-height="<replaceable>height</replaceable>"</term>
+        <listitem>
+          <para>Specifies the row height (including units)</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </refparameter>
+  <refsee role="tcg">
+    <para><link role="tcg"
+        xlink:href="RowHeight.html"
+        >Row height</link></para>
+  </refsee>
+</doc:pi>
+<xsl:template name="pi.dbfo_row-height">
+  <xsl:param name="node" select="."/>
+  <xsl:call-template name="dbfo-attribute">
+    <xsl:with-param name="pis" select="$node/processing-instruction('dbfo')"/>
+    <xsl:with-param name="attribute" select="'row-height'"/>
+  </xsl:call-template>
+</xsl:template> 
+
+
 <xsl:template name="pi.dbfo-need">
   <xsl:variable name="pi-height">
     <xsl:call-template name="dbfo-attribute">
@@ -931,6 +965,9 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
   </xsl:variable>
 
   <xsl:choose>
+    <xsl:when test="$fop1.extensions != 0">
+      <!-- Doesn't work in fop -->
+    </xsl:when>
     <xsl:when test="$fop.extensions != 0">
       <!-- Doesn't work in fop -->
     </xsl:when>
@@ -1003,6 +1040,9 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
   </xsl:choose>
 
   <xsl:choose>
+    <xsl:when test="$fop1.extensions != 0">
+      <!-- Doesn't work in fop -->
+    </xsl:when>
     <xsl:when test="$fop.extensions != 0">
       <!-- Doesn't work in fop -->
     </xsl:when>

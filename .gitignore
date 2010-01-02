@@ -1,1 +1,4 @@
 *.iws
+build
+dist
+.DS_Store

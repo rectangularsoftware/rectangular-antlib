@@ -23,9 +23,9 @@ import org.apache.fop.apps.MimeConstants;
  */
 enum OutputFormat
 {
-    PDF("fo/docbook.xsl", null, MimeConstants.MIME_PDF, ".pdf"),
-    RTF("fo/docbook.xsl", null, MimeConstants.MIME_RTF, ".rtf"),
-    HTML("html/docbook.xsl", "html/chunk.xsl", null, ".html");
+    PDF("fo.xsl", null, MimeConstants.MIME_PDF, ".pdf"),
+    RTF("fo.xsl", null, MimeConstants.MIME_RTF, ".rtf"),
+    HTML("html.xsl", "html-chunked.xsl", null, ".html");
 
     private final String stylesheet;
     private final String chunkedStylesheet;

@@ -10,7 +10,7 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: synop.xsl 8116 2008-09-06 16:27:22Z mzjn $
+     $Id: synop.xsl 8334 2009-03-15 14:26:23Z mzjn $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -974,6 +974,11 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
     <xsl:text> { ... };</xsl:text>
     <xsl:call-template name="synop-break"/>
   </fo:block>
+</xsl:template>
+
+<!-- Used when not occurring as a child of classsynopsis -->
+<xsl:template match="d:ooclass|d:oointerface|d:ooexception">
+  <xsl:apply-templates/>
 </xsl:template>
 
 <!-- ==================================================================== -->
