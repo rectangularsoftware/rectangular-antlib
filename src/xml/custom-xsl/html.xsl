@@ -3,4 +3,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
   <xsl:import href="../docbook-xsl/xhtml-1_1/docbook.xsl"/>
   <xsl:import href="../docbook-xsl/xhtml-1_1/highlight.xsl"/>
+
+  <xsl:param name="generate.id.attributes" select="1" />
+  
 </xsl:stylesheet>
