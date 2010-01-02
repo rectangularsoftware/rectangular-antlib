@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!-- =========================================================================
-  Copyright 2008-2009 Daniel W. Dyer
+  Copyright 2008-2010 Daniel W. Dyer
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@
   <macrodef name="defaults">
     <sequential>
       <current:once property="uncommons-antlib.defaults">
-        <!-- The directory under which each of the modules directories are found. -->
+        <!-- The directory under which each of the modules directories is found. -->
         <property name="modules.dir" location="." />
         <!-- Per-module locations. -->
         <property name="src.dir" value="src" />
@@ -251,7 +251,7 @@
     <sequential>
       <current:defaults />
 
-      <!-- Do this configuration only once, no matter who many times this macro is called
+      <!-- Do this configuration only once, no matter how many times this macro is called
            (which typically happens when deploying multiple modules). -->
       <current:once property="uncommons-antlib.maven-config">
         <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant">
