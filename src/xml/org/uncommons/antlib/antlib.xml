@@ -32,10 +32,14 @@
         <property name="classes.dir" value="${build.dir}/classes" />
         <property name="generated.dir" value="${build.dir}/generated" />
         <property name="lib.dir" value="lib"/>
+        <property name="lib.compiletime" value="${lib.dir}/compiletime" />
+        <property name="lib.runtime" value="${lib.dir}/runtime" />
         <property name="docs.dir" value="docs"/>
+        <property name="api.dir" value="${docs.dir}/api"/>
         <property name="coverage.dir" value="${docs.dir}/coverage" />
         <property name="test-results.dir" value="${docs.dir}/test-results" />
         <property name="temp.dir" value="temp" />
+        <property name="release.dir" value="release" />
       </current:once>
     </sequential>
   </macrodef>
@@ -239,6 +243,94 @@
     </sequential>
   </macrodef>
 
+
+  <!-- Generates API documentation for all modules. -->
+  <macrodef name="javadoc">
+    <attribute name="dir" default="${api.dir}"/>
+    <attribute name="title"/>
+    <attribute name="version"/>
+    <attribute name="excludes" default=""/>
+    <element name="additionalconfig" optional="true"/>
+    <sequential>
+      <mkdir dir="@{dir}"/>
+      <javadoc destdir="@{dir}"
+               doctitle="@{title} @{version}"
+               windowtitle="@{title}">
+        <classpath>
+          <fileset dir="." includes="**/${lib.runtime}/*.jar" />
+        </classpath>
+        <fileset dir="." defaultexcludes="yes" includes="**/${java.dir}/main/**/*.java" excludes="@{excludes}" />
+        <header><![CDATA[@{title}<br><small>(Version @{version})</small>]]></header>
+        <link href="http://java.sun.com/javase/6/docs/api/"/>
+        <additionalconfig />
+      </javadoc>
+    </sequential>
+  </macrodef>
+
+
+  <!-- Copy all module JARs and runtime libs to the dist directory.  Excludes source JARS
+       (those that end with "-src.jar"). -->
+  <macrodef name="dist">
+    <sequential>
+      <current:defaults />
+      <mkdir dir="${dist.dir}" />
+      <copy todir="${dist.dir}" flatten="true">
+        <fileset dir="." includes="**/${build.dir}/*.jar" excludes="**/${build.dir}/*-src.jar"/>
+      </copy>
+      <mkdir dir="${dist.dir}/lib" />
+      <copy todir="${dist.dir}/lib" flatten="true">
+        <fileset dir="." includes="**/${lib.runtime}/*"/>
+      </copy>
+    </sequential>
+  </macrodef>
+
+
+  <!-- Builds release archives (both zip and tgz) for the project.  By default, these
+       archives include the full contents of the dist directory, the API docs, and any
+       .txt files from the root of the project (e.g. README.txt, LICENCE.txt, CHANGELOG.txt).
+       Additional contents can be specified with nested zipfileset or tarfileset tags. -->       
+  <macrodef name="release">
+    <attribute name="name"/>
+    <element name="additionalcontents" optional="true"/>
+    <sequential>
+      <current:defaults />
+
+      <mkdir dir="${release.dir}" />
+      <!-- Create a GZipped TAR file containing the built binaries, the API
+           documentation, and source code for the examples. -->
+      <tar destfile="${release.dir}/@{name}.tgz"
+           compression="gzip"
+           longfile="gnu">
+        <tarfileset dir="${dist.dir}"
+                    prefix="@{name}"
+                    includes="**/*" />
+        <tarfileset dir="${api.dir}"
+                    prefix="@{name}/docs/api"
+                    includes="**/*" />
+        <!-- Don't forget to include the licence and other important information. -->
+        <tarfileset dir="."
+                    prefix="@{name}"
+                    includes="*.txt" />
+        <additionalcontents/>
+      </tar>
+      <!-- Also create a zip file release for the convenience of Windows users. -->
+      <zip destfile="${release.dir}/@{name}.zip">
+        <zipfileset dir="${dist.dir}"
+                    prefix="@{name}"
+                    includes="**/*" />
+        <zipfileset dir="${api.dir}"
+                    prefix="@{name}/docs/api"
+                    includes="**/*" />
+        <!-- Don't forget to include the licence and other important information. -->
+        <zipfileset dir="."
+                    prefix="@{name}"
+                    includes="*.txt" />
+        <additionalcontents/>
+      </zip>
+    </sequential>
+  </macrodef>
+
+  
   <!-- Builds the module POM file and source JARs required by Maven and
        then deploys the whole lot to a Maven repository. -->
   <macrodef name="maven-deploy">
