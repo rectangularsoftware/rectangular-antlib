@@ -1,15 +1,11 @@
-Changes in version 0.2.4
-------------------------
-
-* Fixed broken dependencies for DocBook XSL:FO stylesheets.
-
-
 Changes in version 0.2.3
 ------------------------
 
 * Added macros for dist, release and Javadoc.
 
 * Upgraded to latest version (2.0.1) of XSLTHL.
+
+* Fixed broken dependencies for DocBook XSL:FO stylesheets.
 
 
 Changes in version 0.2.2
