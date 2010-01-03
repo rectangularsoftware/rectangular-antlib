@@ -1,3 +1,9 @@
+Changes in version 0.2.4
+------------------------
+
+* Fixed broken dependencies for DocBook XSL:FO stylesheets.
+
+
 Changes in version 0.2.3
 ------------------------
 
