@@ -27,22 +27,32 @@ DEPENDENCIES
 
 MACROS
 
-  Clean Module        - Deletes all build artifacts for a specified module.
+  Clean Module         - Deletes all build artifacts for a specified module.
 
-  Compile Module      - Compiles the main source tree and test source tree for
-                        a specified module (dealing with all necessary
-                        classpath configuration).
+  Compile Module       - Compiles the main source tree and test source tree for
+                         a specified module (dealing with all necessary
+                         classpath configuration).
 
-  JAR Module          - Builds a JAR file for a specified module.  Includes
-                        main classes and omits test class. Sets the Class-Path
-                        and Main-Class manifest properties as required.
+  JAR Module           - Builds a JAR file for a specified module.  Includes
+                         main classes and omits test class. Sets the Class-Path
+                         and Main-Class manifest properties as required.
 
-  Test All Modules    - Runs TestNG unit tests, generates reports using
-                        ReportNG and measures code coverage with Cobertura.
+  Test All Modules     - Runs TestNG unit tests, generates reports using
+                         ReportNG and measures code coverage with Cobertura.
 
-  Deploy Maven Module - Constructs a Maven POM and uploads the module JAR file
-                        to a Maven repository with source JAR and test source
-                        JAR attached.
+  Javadoc              - Generates API documentation for all modules.
+
+  Collate Distribution - Copies all build artifacts and dependencies into a
+                         single directory to form a self-contained distribution
+                         of the project.
+
+  Release              - Builds release archives (ZIP and TGZ) containing
+                         distribution, API docs and info files (README.txt,
+                         LICENCE.txt, etc.)
+
+  Deploy Maven Module  - Constructs a Maven POM and uploads the module JAR file
+                         to a Maven repository with source JAR and test source
+                         JAR attached.
 
 
 CUSTOM TASKS
