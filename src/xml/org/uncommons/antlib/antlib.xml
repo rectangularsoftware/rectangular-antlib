@@ -252,6 +252,7 @@
     <attribute name="excludes" default=""/>
     <element name="additionalconfig" optional="true"/>
     <sequential>
+      <current:defaults />
       <mkdir dir="@{dir}"/>
       <javadoc destdir="@{dir}"
                doctitle="@{title} @{version}"

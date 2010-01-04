@@ -1,3 +1,9 @@
+Changes in version 0.2.4
+------------------------
+
+* Fixed broken Javadoc macro (wasn't setting default properties).
+
+
 Changes in version 0.2.3
 ------------------------
 
