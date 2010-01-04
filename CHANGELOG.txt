@@ -1,3 +1,9 @@
+Changes in version 0.2.5
+------------------------
+
+* The release target no longer fails if the API dir is missing.
+
+
 Changes in version 0.2.4
 ------------------------
 

@@ -307,7 +307,8 @@
                     includes="**/*" />
         <tarfileset dir="${api.dir}"
                     prefix="@{name}/docs/api"
-                    includes="**/*" />
+                    includes="**/*"
+                    erroronmissingdir="false" />
         <!-- Don't forget to include the licence and other important information. -->
         <tarfileset dir="."
                     prefix="@{name}"
@@ -321,7 +322,8 @@
                     includes="**/*" />
         <zipfileset dir="${api.dir}"
                     prefix="@{name}/docs/api"
-                    includes="**/*" />
+                    includes="**/*"
+                    erroronmissingdir="false" />
         <!-- Don't forget to include the licence and other important information. -->
         <zipfileset dir="."
                     prefix="@{name}"

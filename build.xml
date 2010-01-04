@@ -18,7 +18,7 @@
 
   <description>Ant build file for the Uncommons Antlib project.</description>
 
-  <property name="version" value="0.2.4" />
+  <property name="version" value="0.2.5" />
   <property name="artifact.identifier" value="${ant.project.name}-${version}" />
 
   <target name="clean">
