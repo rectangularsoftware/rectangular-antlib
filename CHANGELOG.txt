@@ -3,6 +3,8 @@ Changes in version 0.2.5
 
 * The release target no longer fails if the API dir is missing.
 
+* Compile and Javadoc tasks now specify the file encoding (default is UTF-8).
+
 
 Changes in version 0.2.4
 ------------------------

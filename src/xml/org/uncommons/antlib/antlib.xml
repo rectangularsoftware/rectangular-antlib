@@ -40,6 +40,7 @@
         <property name="test-results.dir" value="${docs.dir}/test-results" />
         <property name="temp.dir" value="temp" />
         <property name="release.dir" value="release" />
+        <property name="encoding" value="utf-8" />
       </current:once>
     </sequential>
   </macrodef>
@@ -75,7 +76,8 @@
              optimize="on"
              source="@{source}"
              target="@{target}"
-             srcdir="${modules.dir}/@{module}/${java.dir}/@{tree}:${modules.dir}/@{module}/${generated.dir}/@{tree}">
+             srcdir="${modules.dir}/@{module}/${java.dir}/@{tree}:${modules.dir}/@{module}/${generated.dir}/@{tree}"
+             encoding="${encoding}">
         <classpath>
           <treeclasspath/>
         </classpath>
@@ -256,7 +258,8 @@
       <mkdir dir="@{dir}"/>
       <javadoc destdir="@{dir}"
                doctitle="@{title} @{version}"
-               windowtitle="@{title}">
+               windowtitle="@{title}"
+               encoding="${encoding}">
         <classpath>
           <fileset dir="." includes="**/${lib.runtime}/*.jar" />
         </classpath>
