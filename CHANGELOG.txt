@@ -1,3 +1,12 @@
+Changes in version 0.2.6
+------------------------
+
+* Provide a default value for the dist directory.
+
+* When running tests, place the java/test-resources directory on the classpath.
+  This is useful for loading test data from files.
+
+
 Changes in version 0.2.5
 ------------------------
 

@@ -110,8 +110,10 @@ CONVENTIONS
         src
             java
                 main
+                resources
                 test
-            resources
+                test-resources
+
         build
             classes
             generated

@@ -187,6 +187,7 @@
       
       <path id="test.path">
         <dirset dir="." includes="**/${classes.dir}/test" />
+        <dirset dir="." includes="**/${java.dir}/test-resources" />
         <fileset dir="${temp.dir}" includes="*.jar"/>
         <fileset dir="." includes="**/${lib.dir}/**/*.jar"/>
       </path>
