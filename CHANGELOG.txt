@@ -1,3 +1,13 @@
+Changes in version 0.2.7
+------------------------
+
+* Allow dist/lib directory to be over-ridden.
+
+* Allow ReportNG XML dialect to be specified (defaults to 'testng').
+
+* Allow test report directory to be over-ridden.
+
+
 Changes in version 0.2.6
 ------------------------
 

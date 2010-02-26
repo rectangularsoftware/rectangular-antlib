@@ -177,6 +177,8 @@
   <macrodef name="test">
     <attribute name="suites" />
     <attribute name="title" default="Unit Test Report" />
+    <attribute name="reportdir" default="${test-results.dir}" />
+    <attribute name="dialect" default="testng" description="Set to 'junit' to generate XML for junitreport." />
     <attribute name="headless" default="false" />
     <attribute name="mincoverage" default="60" />
 
@@ -209,7 +211,7 @@
       <mkdir dir="${test-results.dir}" />
 
       <testng classpathref="test.path"
-              outputdir="${test-results.dir}"
+              outputdir="@{reportdir}"
               haltonfailure="false"
               useDefaultListeners="false"
               listeners="org.uncommons.reportng.HTMLReporter,org.uncommons.reportng.JUnitXMLReporter">
@@ -221,6 +223,8 @@
                      value="@{title}" />
         <sysproperty key="org.uncommons.reportng.coverage-report"
                      value="../../coverage/index.html" />
+        <sysproperty key="org.uncommons.reportng.xml-dialect"
+                     value="@{dialect}"/>
       </testng>
       <delete file="velocity.log" />
 
@@ -277,6 +281,7 @@
   <!-- Copy all module JARs and runtime libs to the dist directory.  Excludes source JARS
        (those that end with "-src.jar"). -->
   <macrodef name="dist">
+    <attribute name="libdir" default="lib" description="Sub-directory for libs, leave blank to place libs directly in the dist dir."/>
     <sequential>
       <current:defaults />
       <mkdir dir="${dist.dir}" />
