@@ -158,7 +158,7 @@ public class DocBookPublisher
                 docBookTransformer.setParameter("fop1.extensions", 1);
                 
                 FopFactory fopFactory = FopFactory.newInstance();
-                fopFactory.setBaseURL(docbookSourceFile.getParentFile().toURL().toString());
+                fopFactory.setBaseURL(docbookSourceFile.getParentFile().toURI().toString());
                 fopFactory.setURIResolver(new ImageURIResolver());
 
                 outputStream = getFileOutputStream(docbookSourceFile, outputDirectory);
