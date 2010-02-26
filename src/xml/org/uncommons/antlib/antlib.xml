@@ -288,8 +288,8 @@
       <copy todir="${dist.dir}" flatten="true">
         <fileset dir="." includes="**/${build.dir}/*.jar" excludes="**/${build.dir}/*-src.jar"/>
       </copy>
-      <mkdir dir="${dist.dir}/lib" />
-      <copy todir="${dist.dir}/lib" flatten="true">
+      <mkdir dir="${dist.dir}/@{libdir}" />
+      <copy todir="${dist.dir}/@{libdir}" flatten="true">
         <fileset dir="." includes="**/${lib.runtime}/*"/>
       </copy>
     </sequential>
