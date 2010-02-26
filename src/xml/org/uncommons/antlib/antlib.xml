@@ -208,7 +208,7 @@
       </cobertura-instrument>
 
       <!-- Run the unit tests on the instrumented classes. -->
-      <mkdir dir="${test-results.dir}" />
+      <mkdir dir="@{reportdir}" />
 
       <testng classpathref="test.path"
               outputdir="@{reportdir}"
