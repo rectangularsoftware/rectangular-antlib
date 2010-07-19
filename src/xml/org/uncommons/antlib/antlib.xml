@@ -439,7 +439,6 @@
           <pathelement path="${sdk.dir}/tools/lib/apkbuilder.jar" />
         </path>
 
-        <taskdef name="aaptexec" classname="com.android.ant.AaptExecLoopTask" classpathref="android.antlibs" />
         <taskdef name="apkbuilder" classname="com.android.ant.ApkBuilderTask" classpathref="android.antlibs" />
       </current:once>
     </sequential>
@@ -472,6 +471,8 @@
   <macrodef name="android-package">
     <attribute name="signed" />
     <attribute name="manifest" />
+    <attribute name="name"/>
+    <attribute name="package" />
     <sequential>
       <current:android-defaults />
 
@@ -481,17 +482,23 @@
         <arg path="${classes.dir}/main" />
       </exec>
 
-      <aaptexec executable="${platform.tools.dir}/aapt"
-                command="package"
-                manifest="@{manifest}"
-                resources="${resource.dir}"
-                assets="${asset.dir}"
-                androidjar="${target.dir}/android.jar"
-                outfolder="${build.dir}"
-                basename="${ant.project.name}" />
+      <exec executable="${platform.tools.dir}/aapt" failonerror="true">
+        <arg value="package" />
+        <arg value="-M" />
+        <arg path="@{manifest}" />
+        <arg value="-S" />
+        <arg path="${resource.dir}" />
+        <arg value="-A" />
+        <arg path="${asset.dir}" />
+        <arg value="-I" />
+        <arg path="${target.dir}/android.jar" />
+        <arg value="-F" />
+        <arg path="${build.dir}/@{name}.ap_" />
+        <arg line="--rename-manifest-package @{package}"/>
+      </exec>
 
       <apkbuilder outfolder="${build.dir}"
-                  basename="${ant.project.name}"
+                  basename="@{name}"
                   signed="@{signed}">
         <file path="${build.dir}/classes.dex" />
         <sourcefolder path="${java.dir}/main" />
@@ -503,18 +510,20 @@
 
   <macrodef name="android-package-debug">
     <attribute name="manifest" default="AndroidManifest.xml" />
+    <attribute name="name" default="${ant.project.name}"/>
+    <attribute name="package" />
     <sequential>
       <current:android-defaults />
 
       <!-- This property has to be set for 1.5 projects because apkbuilder is expecting it. -->
-      <property name="out.debug.unaligned.package" value="${build.dir}/${ant.project.name}-debug-unaligned.apk" />
-      <current:android-package signed="true" manifest="@{manifest}" />
+      <property name="out.debug.unaligned.package" value="${build.dir}/@{name}-debug-unaligned.apk" />
+      <current:android-package signed="true" manifest="@{manifest}" name="@{name}" package="@{package}"/>
 
       <exec executable="${tools.dir}/zipalign" failonerror="true">
         <arg value="-f" />
         <arg value="4" />
         <arg path="${out.debug.unaligned.package}" />
-        <arg path="${build.dir}/${ant.project.name}-debug.apk" />
+        <arg path="${build.dir}/@{name}-debug.apk" />
       </exec>
     </sequential>
   </macrodef>
@@ -522,19 +531,21 @@
 
   <macrodef name="android-package-release">
     <attribute name="manifest" default="AndroidManifest.xml" />
+    <attribute name="name" default="${ant.project.name}"/>
+    <attribute name="package" />
     <sequential>
       <current:android-defaults />
 
       <!-- This property has to be set for 1.5 projects because apkbuilder is expecting it. -->
       <property name="out.release.unaligned.package" value="${build.dir}/${ant.project.name}-release-unaligned.apk" />
-      <current:android-package signed="false" manifest="@{manifest}" />
+      <current:android-package signed="false" manifest="@{manifest}" name="@{name}" package="@{package}"/>
 
       <!-- Gets passwords -->
       <input message="Please enter keystore password (store:${key.store}):" addproperty="key.password" />
 
       <!-- Signs the APK -->
-      <signjar jar="${build.dir}/${ant.project.name}-unsigned.apk"
-               signedjar="${build.dir}/${ant.project.name}-unaligned.apk"
+      <signjar jar="${build.dir}/@{name}-unsigned.apk"
+               signedjar="${build.dir}/@{name}-unaligned.apk"
                keystore="${key.store}"
                storepass="${key.password}"
                alias="${key.alias}"
@@ -544,8 +555,8 @@
       <exec executable="${tools.dir}/zipalign" failonerror="true">
         <arg value="-f"/>
         <arg value="4"/>
-        <arg path="${build.dir}/${ant.project.name}-unaligned.apk"/>
-        <arg path="${build.dir}/${ant.project.name}.apk"/>
+        <arg path="${build.dir}/@{name}-unaligned.apk"/>
+        <arg path="${build.dir}/@{name}.apk"/>
       </exec>
     </sequential>
   </macrodef>
