@@ -46,7 +46,6 @@
     </sequential>
   </macrodef>
 
-  
   <!-- This macro deletes all build artifacts from a module. -->
   <macrodef name="clean">
     <attribute name="module"/>
@@ -64,6 +63,7 @@
     <attribute name="tree"/>
     <attribute name="source"/>
     <attribute name="target"/>
+    <attribute name="bootclasspath"/>
     <element name="treeclasspath" optional="true"/>
     <sequential>
       <current:defaults />
@@ -77,6 +77,7 @@
              optimize="on"
              source="@{source}"
              target="@{target}"
+             bootclasspath="@{bootclasspath}"
              srcdir="${modules.dir}/@{module}/${java.dir}/@{tree}:${modules.dir}/@{module}/${generated.dir}/@{tree}"
              encoding="${encoding}">
         <classpath>
@@ -94,6 +95,7 @@
     <attribute name="module"/>
     <attribute name="source" default="1.5"/>
     <attribute name="target" default="1.5"/>
+    <attribute name="bootclasspath" default=""/>
     <sequential>
       <current:defaults />
 
@@ -111,7 +113,8 @@
       <current:compile.tree module="@{module}"
                             tree="main"
                             source="@{source}"
-                            target="@{target}">
+                            target="@{target}"
+                            bootclasspath="@{bootclasspath}">
         <treeclasspath>
           <path refid="moduleclasspath" />
         </treeclasspath>
@@ -119,7 +122,8 @@
       <current:compile.tree module="@{module}"
                             tree="test"
                             source="@{source}"
-                            target="@{target}">
+                            target="@{target}"
+                            bootclasspath="@{bootclasspath}">
         <treeclasspath>
           <!-- Add the main classes to the classpath for unit test compilation. -->
           <path location="${modules.dir}/@{module}/${classes.dir}/main" />
@@ -411,6 +415,138 @@
                 type="jar"
                 classifier="test-sources"/>
       </maven:deploy>
+    </sequential>
+  </macrodef>
+
+
+  <!-- Set default properties for Android projects.  Requires sdk.dir and target to have already been set. -->
+  <macrodef name="android-defaults">
+    <sequential>
+      <current:defaults />
+      <current:once property="uncommons-antlib.android">
+        <property name="resource.dir" value="res" />
+        <property name="asset.dir" value="assets" />
+
+        <property name="target.dir" value="${sdk.dir}/platforms/${target}" />
+        <property name="tools.dir" value="${sdk.dir}/tools" />
+        <property name="platform.tools.dir" value="${target.dir}/tools" />
+
+        <path id="android.antlibs">
+          <pathelement path="${sdk.dir}/tools/lib/anttasks.jar" />
+          <pathelement path="${sdk.dir}/tools/lib/sdklib.jar" />
+          <pathelement path="${sdk.dir}/tools/lib/androidprefs.jar" />
+          <pathelement path="${sdk.dir}/tools/lib/jarutils.jar" />
+          <pathelement path="${sdk.dir}/tools/lib/apkbuilder.jar" />
+        </path>
+
+        <taskdef name="aaptexec" classname="com.android.ant.AaptExecLoopTask" classpathref="android.antlibs" />
+        <taskdef name="apkbuilder" classname="com.android.ant.ApkBuilderTask" classpathref="android.antlibs" />
+      </current:once>
+    </sequential>
+  </macrodef>
+
+
+  <!-- Generate the Android R.java source file from the resources directory. -->
+  <macrodef name="android-resources">
+    <attribute name="manifest" default="AndroidManifest.xml" />
+    <sequential>
+      <current:android-defaults />
+      <mkdir dir="${generated.dir}/main" />
+      <exec executable="${platform.tools.dir}/aapt" failonerror="true">
+        <arg value="package" />
+        <arg value="-M" />
+        <arg path="@{manifest}" />
+        <arg value="-S" />
+        <arg path="${resource.dir}" />
+        <arg value="-A" />
+        <arg path="${asset.dir}" />
+        <arg value="-J" />
+        <arg path="${generated.dir}/main" />
+        <arg value="-I" />
+        <arg path="${target.dir}/android.jar" />
+      </exec>
+    </sequential>
+  </macrodef>
+
+
+  <macrodef name="android-package">
+    <attribute name="signed" />
+    <attribute name="manifest" />
+    <sequential>
+      <current:android-defaults />
+
+      <exec executable="${platform.tools.dir}/dx" failonerror="true">
+        <arg value="--dex" />
+        <arg value="--output=${build.dir}/classes.dex" />
+        <arg path="${classes.dir}/main" />
+      </exec>
+
+      <aaptexec executable="${platform.tools.dir}/aapt"
+                command="package"
+                manifest="@{manifest}"
+                resources="${resource.dir}"
+                assets="${asset.dir}"
+                androidjar="${target.dir}/android.jar"
+                outfolder="${build.dir}"
+                basename="${ant.project.name}" />
+
+      <apkbuilder outfolder="${build.dir}"
+                  basename="${ant.project.name}"
+                  signed="@{signed}">
+        <file path="${build.dir}/classes.dex" />
+        <sourcefolder path="${java.dir}/main" />
+      </apkbuilder>
+
+    </sequential>
+  </macrodef>
+
+
+  <macrodef name="android-package-debug">
+    <attribute name="manifest" default="AndroidManifest.xml" />
+    <sequential>
+      <current:android-defaults />
+
+      <!-- This property has to be set for 1.5 projects because apkbuilder is expecting it. -->
+      <property name="out.debug.unaligned.package" value="${build.dir}/${ant.project.name}-debug-unaligned.apk" />
+      <current:android-package signed="true" manifest="@{manifest}" />
+
+      <exec executable="${tools.dir}/zipalign" failonerror="true">
+        <arg value="-f" />
+        <arg value="4" />
+        <arg path="${out.debug.unaligned.package}" />
+        <arg path="${build.dir}/${ant.project.name}-debug.apk" />
+      </exec>
+    </sequential>
+  </macrodef>
+
+
+  <macrodef name="android-package-release">
+    <attribute name="manifest" default="AndroidManifest.xml" />
+    <sequential>
+      <current:android-defaults />
+
+      <!-- This property has to be set for 1.5 projects because apkbuilder is expecting it. -->
+      <property name="out.release.unaligned.package" value="${build.dir}/${ant.project.name}-release-unaligned.apk" />
+      <current:android-package signed="false" manifest="@{manifest}" />
+
+      <!-- Gets passwords -->
+      <input message="Please enter keystore password (store:${key.store}):" addproperty="key.password" />
+
+      <!-- Signs the APK -->
+      <signjar jar="${build.dir}/${ant.project.name}-unsigned.apk"
+               signedjar="${build.dir}/${ant.project.name}-unaligned.apk"
+               keystore="${key.store}"
+               storepass="${key.password}"
+               alias="${key.alias}"
+               keypass="${key.password}"
+               verbose="${verbose}" />
+
+      <exec executable="${tools.dir}/zipalign" failonerror="true">
+        <arg value="-f"/>
+        <arg value="4"/>
+        <arg path="${build.dir}/${ant.project.name}-unaligned.apk"/>
+        <arg path="${build.dir}/${ant.project.name}.apk"/>
+      </exec>
     </sequential>
   </macrodef>
 

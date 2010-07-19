@@ -1,3 +1,11 @@
+Changes in version 0.3.0
+------------------------
+
+* Experimental macros for building Android projects.
+
+* Added bootclasspath option to compile macro.
+
+
 Changes in version 0.2.7
 ------------------------
 
