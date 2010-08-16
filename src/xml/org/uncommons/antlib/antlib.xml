@@ -453,6 +453,7 @@
       <mkdir dir="${generated.dir}/main" />
       <exec executable="${platform.tools.dir}/aapt" failonerror="true">
         <arg value="package" />
+        <arg value="-m" />
         <arg value="-M" />
         <arg path="@{manifest}" />
         <arg value="-S" />
@@ -476,11 +477,12 @@
     <sequential>
       <current:android-defaults />
 
-      <exec executable="${platform.tools.dir}/dx" failonerror="true">
+      <apply executable="${platform.tools.dir}/dx" parallel="true" failonerror="true">
         <arg value="--dex" />
         <arg value="--output=${build.dir}/classes.dex" />
         <arg path="${classes.dir}/main" />
-      </exec>
+        <fileset dir="${lib.runtime}" includes="*.jar" />
+      </apply>
 
       <exec executable="${platform.tools.dir}/aapt" failonerror="true">
         <arg value="package" />
