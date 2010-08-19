@@ -5,6 +5,8 @@ Changes in version 0.3.0
 
 * Added bootclasspath option to compile macro.
 
+* Upgraded to latest TestNG (5.13.1) and ReportNG (1.1.2).
+
 
 Changes in version 0.2.7
 ------------------------

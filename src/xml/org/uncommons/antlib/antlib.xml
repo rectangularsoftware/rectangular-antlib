@@ -481,7 +481,7 @@
         <arg value="--dex" />
         <arg value="--output=${build.dir}/classes.dex" />
         <arg path="${classes.dir}/main" />
-        <fileset dir="${lib.runtime}" includes="*.jar" />
+        <fileset dir="${lib.runtime}" includes="*.jar" erroronmissingdir="false" />
       </apply>
 
       <exec executable="${platform.tools.dir}/aapt" failonerror="true">
