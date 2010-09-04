@@ -133,6 +133,33 @@
     </sequential>
   </macrodef>
 
+
+  <!-- Shrink and obfuscate a module's class files. -->
+  <macrodef name="obfuscate">
+    <attribute name="module"/>
+    <attribute name="bootclasspathjar"/>
+    <sequential>
+      <taskdef resource="proguard/ant/task.properties" classpath="${lib.compiletime}/proguard/proguard.jar" />
+      <move file="${modules.dir}/@{module}/${classes.dir}/main" todir="${modules.dir}/@{module}/${build.dir}/unobfuscated" />
+      <proguard shrink="true"
+                obfuscate="true"
+                optimize="true"
+                usemixedcaseclassnames="true"
+                allowaccessmodification="true"
+                overloadaggressively="true"
+                defaultpackage=""
+                printseeds="true">
+        <libraryjar path="@{bootclasspathjar}" />
+        <injar location="${modules.dir}/@{module}/${build.dir}/unobfuscated/main" />
+        <outjar location="${modules.dir}/@{module}/${classes.dir}/main" />
+        <keep extends="android.app.Activity" />
+        <keep extends="java.lang.Enum">
+          <method name="values" />
+        </keep>
+      </proguard>
+    </sequential>
+  </macrodef>
+
   
   <!-- This macro builds a JAR file for a module, containing all of
        the classes in the main source group for the module

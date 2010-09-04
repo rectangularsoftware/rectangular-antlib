@@ -1,3 +1,9 @@
+Changes in version 0.3.1
+------------------------
+
+* Added obfuscate macro using Proguard.
+
+
 Changes in version 0.3.0
 ------------------------
 
@@ -56,7 +62,7 @@ Changes in version 0.2.2
 
 * Upgraded DocBook XSL stylesheets to version 1.75.2.
 
-* Added DocBook customisation layers (required for synax highlighting with
+* Added DocBook customisation layers (required for syntax highlighting with
   latest XSL stylesheets).
 
 * Fixed error caused by multiple invocations of the Maven macro.
