@@ -138,6 +138,7 @@
   <macrodef name="obfuscate">
     <attribute name="module"/>
     <attribute name="bootclasspathjar"/>
+    <attribute name="overloadaggressively" default="true"/>
     <sequential>
       <taskdef resource="proguard/ant/task.properties" classpath="${lib.compiletime}/proguard/proguard.jar" />
       <move file="${modules.dir}/@{module}/${classes.dir}/main" todir="${modules.dir}/@{module}/${build.dir}/unobfuscated" />
@@ -146,7 +147,7 @@
                 optimize="true"
                 usemixedcaseclassnames="true"
                 allowaccessmodification="true"
-                overloadaggressively="true"
+                overloadaggressively="{@overloadaggressively}"
                 defaultpackage=""
                 printseeds="true">
         <libraryjar path="@{bootclasspathjar}" />
