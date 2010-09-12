@@ -570,14 +570,14 @@
 
       <!-- This property has to be set for 1.5 projects because apkbuilder is expecting it. -->
       <property name="out.release.unaligned.package" value="${build.dir}/@{name}-unaligned.apk" />
-      <current:android-package signed="false" manifest="@{manifest}" name="@{name}-unaligned" package="@{package}"/>
+      <current:android-package signed="false" manifest="@{manifest}" name="@{name}-unsigned" package="@{package}"/>
 
       <!-- Gets passwords -->
       <input message="Please enter keystore password (store:${key.store}):" addproperty="key.password" />
 
       <!-- Signs the APK -->
       <signjar jar="${build.dir}/@{name}-unsigned.apk"
-               signedjar="${build.dir}/@{name}-unaligned.apk"
+               signedjar="${out.release.unaligned.package}"
                keystore="${key.store}"
                storepass="${key.password}"
                alias="${key.alias}"
