@@ -528,10 +528,12 @@
       </exec>
 
       <apkbuilder outfolder="${build.dir}"
-                  basename="@{name}"
+                  apkfilepath="${build.dir}/@{name}.apk"
+                  resourcefile="@{name}.ap_"
                   signed="@{signed}">
-        <file path="${build.dir}/classes.dex" />
+        <dex path="${build.dir}/classes.dex" />
         <sourcefolder path="${java.dir}/main" />
+        <jarfolder path="${lib.runtime}" />
       </apkbuilder>
 
     </sequential>
@@ -540,20 +542,20 @@
 
   <macrodef name="android-package-debug">
     <attribute name="manifest" default="AndroidManifest.xml" />
-    <attribute name="name" default="${ant.project.name}"/>
+    <attribute name="name" default="${ant.project.name}-debug"/>
     <attribute name="package" />
     <sequential>
       <current:android-defaults />
 
       <!-- This property has to be set for 1.5 projects because apkbuilder is expecting it. -->
-      <property name="out.debug.unaligned.package" value="${build.dir}/@{name}-debug-unaligned.apk" />
-      <current:android-package signed="true" manifest="@{manifest}" name="@{name}" package="@{package}"/>
+      <property name="out.debug.unaligned.package" value="${build.dir}/@{name}-unaligned.apk" />
+      <current:android-package signed="true" manifest="@{manifest}" name="@{name}-unaligned" package="@{package}"/>
 
       <exec executable="${tools.dir}/zipalign" failonerror="true">
         <arg value="-f" />
         <arg value="4" />
         <arg path="${out.debug.unaligned.package}" />
-        <arg path="${build.dir}/@{name}-debug.apk" />
+        <arg path="${build.dir}/@{name}.apk" />
       </exec>
     </sequential>
   </macrodef>
@@ -567,8 +569,8 @@
       <current:android-defaults />
 
       <!-- This property has to be set for 1.5 projects because apkbuilder is expecting it. -->
-      <property name="out.release.unaligned.package" value="${build.dir}/${ant.project.name}-release-unaligned.apk" />
-      <current:android-package signed="false" manifest="@{manifest}" name="@{name}" package="@{package}"/>
+      <property name="out.release.unaligned.package" value="${build.dir}/@{name}-unaligned.apk" />
+      <current:android-package signed="false" manifest="@{manifest}" name="@{name}-unaligned" package="@{package}"/>
 
       <!-- Gets passwords -->
       <input message="Please enter keystore password (store:${key.store}):" addproperty="key.password" />
@@ -585,7 +587,7 @@
       <exec executable="${tools.dir}/zipalign" failonerror="true">
         <arg value="-f"/>
         <arg value="4"/>
-        <arg path="${build.dir}/@{name}-unaligned.apk"/>
+        <arg path="${out.release.unaligned.package}"/>
         <arg path="${build.dir}/@{name}.apk"/>
       </exec>
     </sequential>
