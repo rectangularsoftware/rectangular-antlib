@@ -139,6 +139,7 @@
     <attribute name="module"/>
     <attribute name="bootclasspathjar"/>
     <attribute name="overloadaggressively" default="true"/>
+    <element name="additionaloptions" optional="true"/>
     <sequential>
       <taskdef resource="proguard/ant/task.properties" classpath="${lib.compiletime}/proguard/proguard.jar" />
       <move file="${modules.dir}/@{module}/${classes.dir}/main" todir="${modules.dir}/@{module}/${build.dir}/unobfuscated" />
@@ -151,12 +152,15 @@
                 defaultpackage=""
                 printseeds="true">
         <libraryjar path="@{bootclasspathjar}" />
+        <libraryjar>
+          <fileset dir="${lib.runtime}" includes="**/*.jar"/>
+        </libraryjar>
         <injar location="${modules.dir}/@{module}/${build.dir}/unobfuscated/main" />
-        <outjar location="${modules.dir}/@{module}/${classes.dir}/main" />
-        <keep extends="android.app.Activity" />
+        <outjar location="${modules.dir}/@{module}/${classes.dir}/main" />        
         <keep extends="java.lang.Enum">
           <method name="values" />
         </keep>
+        <additionaloptions/>
       </proguard>
     </sequential>
   </macrodef>
@@ -493,6 +497,24 @@
         <arg value="-I" />
         <arg path="${target.dir}/android.jar" />
       </exec>
+    </sequential>
+  </macrodef>
+
+
+  <!-- Specialised obfuscation macro, pre-configured for obfuscating android applications. -->
+  <macrodef name="android-obfuscate">
+    <attribute name="module"/>
+    <sequential>
+      <current:obfuscate module="@{module}" bootclasspathjar="${target.dir}/android.jar" overloadaggressively="false">
+        <additionaloptions>
+          <!-- Don't rename activities or the Android manifest will be wrong. -->
+          <keep extends="android.app.Activity" />
+          <!-- Preserve names and constructors needs to instantiate views from XML. -->
+          <keepclasseswithmembers extends="android.view.View">
+            <constructor access="public" parameters="android.content.Context,android.util.AttributeSet"/>
+          </keepclasseswithmembers>
+        </additionaloptions>
+      </current:obfuscate>
     </sequential>
   </macrodef>
 

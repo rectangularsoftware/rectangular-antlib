@@ -1,7 +1,7 @@
 Changes in version 0.3.1
 ------------------------
 
-* Added obfuscate macro using Proguard.
+* Added obfuscate macros using Proguard.
 
 
 Changes in version 0.3.0
