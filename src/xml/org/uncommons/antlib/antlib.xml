@@ -509,6 +509,8 @@
         <additionaloptions>
           <!-- Don't rename activities or the Android manifest will be wrong. -->
           <keep extends="android.app.Activity" />
+          <keep extends="android.app.Service" />
+          <keep extends="android.content.BroadcastReceiver" />
           <!-- Preserve names and constructors needs to instantiate views from XML. -->
           <keepclasseswithmembers extends="android.view.View">
             <constructor access="public" parameters="android.content.Context,android.util.AttributeSet"/>
