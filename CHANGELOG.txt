@@ -3,6 +3,8 @@ Changes in version 0.3.1
 
 * Added obfuscate macros using Proguard.
 
+* Added bootclasspath option to test macro. 
+
 
 Changes in version 0.3.0
 ------------------------

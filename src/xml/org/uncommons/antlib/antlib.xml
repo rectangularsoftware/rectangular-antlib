@@ -217,6 +217,7 @@
     <attribute name="dialect" default="testng" description="Set to 'junit' to generate XML for junitreport." />
     <attribute name="headless" default="false" />
     <attribute name="mincoverage" default="60" />
+    <attribute name="classpath" default=""/>
 
     <sequential>
       <current:defaults />
@@ -251,6 +252,7 @@
               haltonfailure="false"
               useDefaultListeners="false"
               listeners="org.uncommons.reportng.HTMLReporter,org.uncommons.reportng.JUnitXMLReporter">
+        <classpath path="@{classpath}" />
         <xmlfileset dir="." includes="@{suites}"/>
         <sysproperty key="java.awt.headless" value="@{headless}" />
         <sysproperty key="net.sourceforge.cobertura.datafile"
