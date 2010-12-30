@@ -79,7 +79,8 @@
              target="@{target}"
              bootclasspath="@{bootclasspath}"
              srcdir="${modules.dir}/@{module}/${java.dir}/@{tree}:${modules.dir}/@{module}/${generated.dir}/@{tree}"
-             encoding="${encoding}">
+             encoding="${encoding}"
+             includeantruntime="false">
         <classpath>
           <treeclasspath/>
         </classpath>
@@ -153,7 +154,7 @@
                 printseeds="true">
         <libraryjar path="@{bootclasspathjar}" />
         <libraryjar>
-          <fileset dir="${lib.runtime}" includes="**/*.jar"/>
+          <fileset dir="${lib.runtime}" includes="**/*.jar" erroronmissingdir="false"/>
         </libraryjar>
         <injar location="${modules.dir}/@{module}/${build.dir}/unobfuscated/main" />
         <outjar location="${modules.dir}/@{module}/${classes.dir}/main" />        
@@ -484,6 +485,8 @@
     <attribute name="manifest" default="AndroidManifest.xml" />
     <sequential>
       <current:android-defaults />
+      <!-- Git does not store empty directories, so we have to make sure the asset directory exists. -->
+      <mkdir dir="${asset.dir}" />
       <mkdir dir="${generated.dir}/main" />
       <exec executable="${platform.tools.dir}/aapt" failonerror="true">
         <arg value="package" />
@@ -526,7 +529,7 @@
 
 
   <macrodef name="android-package">
-    <attribute name="signed" />
+    <attribute name="debug" />
     <attribute name="manifest" />
     <attribute name="name"/>
     <attribute name="package" />
@@ -558,7 +561,8 @@
       <apkbuilder outfolder="${build.dir}"
                   apkfilepath="${build.dir}/@{name}.apk"
                   resourcefile="@{name}.ap_"
-                  signed="@{signed}">
+                  debugpackaging="@{debug}"
+                  debugsigning="@{debug}">
         <dex path="${build.dir}/classes.dex" />
         <sourcefolder path="${java.dir}/main" />
         <jarfolder path="${lib.runtime}" />
@@ -577,7 +581,7 @@
 
       <!-- This property has to be set for 1.5 projects because apkbuilder is expecting it. -->
       <property name="out.debug.unaligned.package" value="${build.dir}/@{name}-unaligned.apk" />
-      <current:android-package signed="true" manifest="@{manifest}" name="@{name}-unaligned" package="@{package}"/>
+      <current:android-package debug="true" manifest="@{manifest}" name="@{name}-unaligned" package="@{package}"/>
 
       <exec executable="${tools.dir}/zipalign" failonerror="true">
         <arg value="-f" />
@@ -598,10 +602,12 @@
 
       <!-- This property has to be set for 1.5 projects because apkbuilder is expecting it. -->
       <property name="out.release.unaligned.package" value="${build.dir}/@{name}-unaligned.apk" />
-      <current:android-package signed="false" manifest="@{manifest}" name="@{name}-unsigned" package="@{package}"/>
+      <current:android-package debug="false" manifest="@{manifest}" name="@{name}-unsigned" package="@{package}"/>
 
       <!-- Gets passwords -->
-      <input message="Please enter keystore password (store:${key.store}):" addproperty="key.password" />
+      <input message="Please enter keystore password (store:${key.store}):" addproperty="key.password">
+        <handler type="secure" />
+      </input>
 
       <!-- Signs the APK -->
       <signjar jar="${build.dir}/@{name}-unsigned.apk"
