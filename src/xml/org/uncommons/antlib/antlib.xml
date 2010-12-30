@@ -150,8 +150,7 @@
                 usemixedcaseclassnames="true"
                 allowaccessmodification="true"
                 overloadaggressively="{@overloadaggressively}"
-                defaultpackage=""
-                printseeds="true">
+                defaultpackage="">
         <libraryjar path="@{bootclasspathjar}" />
         <libraryjar>
           <fileset dir="${lib.runtime}" includes="**/*.jar" erroronmissingdir="false"/>

@@ -3,7 +3,9 @@ Changes in version 0.3.1
 
 * Added obfuscate macros using Proguard.
 
-* Added bootclasspath option to test macro. 
+* Added bootclasspath option to test macro.
+
+* Android macro improvements.
 
 
 Changes in version 0.3.0
