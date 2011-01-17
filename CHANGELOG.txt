@@ -1,3 +1,9 @@
+Changes in version 0.3.2
+------------------------
+
+* Upgraded to Cobertura 1.9.4.1.
+
+
 Changes in version 0.3.1
 ------------------------
 
