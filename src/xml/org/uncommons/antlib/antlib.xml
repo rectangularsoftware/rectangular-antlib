@@ -140,6 +140,7 @@
     <attribute name="module"/>
     <attribute name="bootclasspathjar"/>
     <attribute name="overloadaggressively" default="true"/>
+    <attribute name="printmapping" default="false"/>
     <element name="additionaloptions" optional="true"/>
     <sequential>
       <taskdef resource="proguard/ant/task.properties" classpath="${lib.compiletime}/proguard/proguard.jar" />
@@ -149,7 +150,8 @@
                 optimize="true"
                 usemixedcaseclassnames="true"
                 allowaccessmodification="true"
-                overloadaggressively="{@overloadaggressively}"
+                overloadaggressively="@{overloadaggressively}"
+                printmapping="@{printmapping}"
                 defaultpackage="">
         <libraryjar path="@{bootclasspathjar}" />
         <libraryjar>
@@ -387,7 +389,7 @@
   <macrodef name="maven-deploy">
     <attribute name="module"/>
     <attribute name="version"/>
-    <attribute name="repository" default="svn:https://maven2-repository.dev.java.net/svn/maven2-repository/trunk/repository/"/>
+    <attribute name="repository" default="svn:https://svn.java.net/svn/maven2-repository~svn/trunk/repository/"/>
     <attribute name="username" />
     <attribute name="password" />
 
@@ -508,8 +510,9 @@
   <!-- Specialised obfuscation macro, pre-configured for obfuscating android applications. -->
   <macrodef name="android-obfuscate">
     <attribute name="module"/>
+    <attribute name="printmapping" default="false"/>
     <sequential>
-      <current:obfuscate module="@{module}" bootclasspathjar="${target.dir}/android.jar" overloadaggressively="false">
+      <current:obfuscate module="@{module}" bootclasspathjar="${target.dir}/android.jar" overloadaggressively="false" printmapping="@{printmapping}">
         <additionaloptions>
           <!-- Don't rename activities or other components otherwise the Android manifest will be wrong. -->
           <keep extends="android.app.Activity" />
