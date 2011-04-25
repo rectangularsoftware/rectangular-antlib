@@ -140,6 +140,7 @@
     <attribute name="module"/>
     <attribute name="bootclasspathjar"/>
     <attribute name="overloadaggressively" default="true"/>
+    <attribute name="defaultpackage" default=""/>
     <attribute name="printmapping" default="false"/>
     <element name="additionaloptions" optional="true"/>
     <sequential>
@@ -150,9 +151,10 @@
                 optimize="true"
                 usemixedcaseclassnames="true"
                 allowaccessmodification="true"
+                skipnonpubliclibraryclassmembers="false"
                 overloadaggressively="@{overloadaggressively}"
                 printmapping="@{printmapping}"
-                defaultpackage="">
+                defaultpackage="@{defaultpackage}">
         <libraryjar path="@{bootclasspathjar}" />
         <libraryjar>
           <fileset dir="${lib.runtime}" includes="**/*.jar" erroronmissingdir="false"/>
@@ -510,9 +512,14 @@
   <!-- Specialised obfuscation macro, pre-configured for obfuscating android applications. -->
   <macrodef name="android-obfuscate">
     <attribute name="module"/>
+    <attribute name="defaultpackage" default=""/>
     <attribute name="printmapping" default="false"/>
     <sequential>
-      <current:obfuscate module="@{module}" bootclasspathjar="${target.dir}/android.jar" overloadaggressively="false" printmapping="@{printmapping}">
+      <current:obfuscate module="@{module}"
+                         bootclasspathjar="${target.dir}/android.jar"
+                         overloadaggressively="false"
+                         defaultpackage="@{defaultpackage}"
+                         printmapping="@{printmapping}">
         <additionaloptions>
           <!-- Don't rename activities or other components otherwise the Android manifest will be wrong. -->
           <keep extends="android.app.Activity" />

@@ -3,7 +3,11 @@ Changes in version 0.3.2
 
 * Upgraded to Cobertura 1.9.4.1.
 
-* Print mappings option for obfuscate macros.
+* Print mappings option for obfuscate macros
+
+* Option to specify a default package for obfuscation.
+
+* Upgraded to Proguard 4.6.
 
 
 Changes in version 0.3.1
