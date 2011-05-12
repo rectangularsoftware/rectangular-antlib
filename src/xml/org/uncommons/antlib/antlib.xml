@@ -97,10 +97,12 @@
     <attribute name="source" default="1.5"/>
     <attribute name="target" default="1.5"/>
     <attribute name="bootclasspath" default=""/>
+    <element name="additionalclasspath" optional="true"/>
     <sequential>
       <current:defaults />
 
       <path id="moduleclasspath">
+        <additionalclasspath/>
         <!-- Module-specific libraries (if any). -->
         <fileset dir="${modules.dir}/@{module}/${lib.dir}"
                  includes="**/*.jar"

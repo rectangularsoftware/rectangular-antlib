@@ -9,6 +9,8 @@ Changes in version 0.3.2
 
 * Upgraded to Proguard 4.6.
 
+* Added option to specify extra classpath entries for compile macro.
+
 
 Changes in version 0.3.1
 ------------------------
