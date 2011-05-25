@@ -11,6 +11,8 @@ Changes in version 0.3.2
 
 * Added option to specify extra classpath entries for compile macro.
 
+* Updated Android macros to use tools in platform-tools SDK directory.
+
 
 Changes in version 0.3.1
 ------------------------

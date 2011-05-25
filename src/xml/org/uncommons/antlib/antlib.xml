@@ -469,7 +469,7 @@
 
         <property name="target.dir" value="${sdk.dir}/platforms/${target}" />
         <property name="tools.dir" value="${sdk.dir}/tools" />
-        <property name="platform.tools.dir" value="${target.dir}/tools" />
+        <property name="platform.tools.dir" value="${sdk.dir}/platform-tools" />
 
         <path id="android.antlibs">
           <pathelement path="${sdk.dir}/tools/lib/anttasks.jar" />
