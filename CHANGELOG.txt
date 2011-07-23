@@ -7,6 +7,8 @@ Changes in version 0.3.2
 
 * Option to specify a default package for obfuscation.
 
+* Configured Proguard to preserve Parcelable.Creator fields in Android apps.
+
 * Upgraded to Proguard 4.6.
 
 * Added option to specify extra classpath entries for compile macro.

@@ -529,6 +529,9 @@
           <keep extends="android.app.Service" />
           <keep extends="android.content.BroadcastReceiver" />
           <keep extends="android.content.ContentProvider" />
+          <keepclassmembers>
+            <field type="android.os.Parcelable$Creator" name="CREATOR" />
+          </keepclassmembers>
           <!-- Preserve names and constructors needed to instantiate views from XML. -->
           <keepclasseswithmembers extends="android.view.View">
             <constructor access="public" parameters="android.content.Context,android.util.AttributeSet"/>
