@@ -536,6 +536,10 @@
           <keepclasseswithmembers extends="android.view.View">
             <constructor access="public" parameters="android.content.Context,android.util.AttributeSet"/>
           </keepclasseswithmembers>
+          <!-- Preserve names and constructors needed to instantiate preferences from XML. -->
+          <keepclasseswithmembers extends="android.preference.Preference">
+            <constructor access="public" parameters="android.content.Context,android.util.AttributeSet"/>
+          </keepclasseswithmembers>
         </additionaloptions>
       </current:obfuscate>
     </sequential>
