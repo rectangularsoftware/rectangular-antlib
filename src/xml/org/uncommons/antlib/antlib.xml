@@ -516,6 +516,7 @@
     <attribute name="module"/>
     <attribute name="defaultpackage" default=""/>
     <attribute name="printmapping" default="false"/>
+    <element name="additionalclasspath" optional="true"/>
     <sequential>
       <current:obfuscate module="@{module}"
                          bootclasspathjar="${target.dir}/android.jar"
@@ -540,6 +541,9 @@
           <keepclasseswithmembers extends="android.preference.Preference">
             <constructor access="public" parameters="android.content.Context,android.util.AttributeSet"/>
           </keepclasseswithmembers>
+          <libraryjar>
+            <additionalclasspath />
+          </libraryjar>
         </additionaloptions>
       </current:obfuscate>
     </sequential>
