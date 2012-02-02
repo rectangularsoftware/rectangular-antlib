@@ -17,6 +17,8 @@ Changes in version 0.3.2
 
 * Updated Android macros to use tools in platform-tools SDK directory.
 
+* Added option to omit certain classes from coverage measurements when testing.
+
 
 Changes in version 0.3.1
 ------------------------

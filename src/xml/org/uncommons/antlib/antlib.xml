@@ -224,6 +224,7 @@
     <attribute name="headless" default="false" />
     <attribute name="mincoverage" default="60" />
     <attribute name="classpath" default=""/>
+    <attribute name="coverageExcludeRegex" default="" />
 
     <sequential>
       <current:defaults />
@@ -247,6 +248,8 @@
       </copy>
       <cobertura-instrument todir="${temp.dir}"
                             datafile="${temp.dir}/cobertura.ser">
+        <includeClasses regex=".*" />
+        <excludeClasses regex="@{coverageExcludeRegex}" />
         <fileset dir="${temp.dir}/originals" includes="*.jar"/>
       </cobertura-instrument>
 
