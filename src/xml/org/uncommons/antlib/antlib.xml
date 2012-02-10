@@ -478,9 +478,11 @@
           <pathelement path="${sdk.dir}/tools/lib/anttasks.jar" />
           <pathelement path="${sdk.dir}/tools/lib/sdklib.jar" />
           <pathelement path="${sdk.dir}/tools/lib/androidprefs.jar" />
-          <pathelement path="${sdk.dir}/tools/lib/jarutils.jar" />
-          <pathelement path="${sdk.dir}/tools/lib/apkbuilder.jar" />
         </path>
+
+        <condition property="dx.executable" value="dx.bat" else="dx">
+          <os family="windows" />
+        </condition>
 
         <taskdef name="apkbuilder" classname="com.android.ant.ApkBuilderTask" classpathref="android.antlibs" />
       </current:once>
@@ -561,9 +563,9 @@
     <sequential>
       <current:android-defaults />
 
-      <apply executable="${platform.tools.dir}/dx" parallel="true" failonerror="true">
+      <apply executable="${platform.tools.dir}/${dx.executable}" parallel="true" failonerror="true">
         <arg value="--dex" />
-        <arg value="--output=${build.dir}/classes.dex" />
+        <arg value="--output=${basedir}/${build.dir}/classes.dex" />
         <arg path="${classes.dir}/main" />
         <fileset dir="${lib.runtime}" includes="*.jar" erroronmissingdir="false" />
       </apply>

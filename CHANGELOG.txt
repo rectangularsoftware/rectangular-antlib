@@ -19,6 +19,8 @@ Changes in version 0.3.2
 
 * Added option to omit certain classes from coverage measurements when testing.
 
+* Fixed dx execution on Windows.
+
 
 Changes in version 0.3.1
 ------------------------
