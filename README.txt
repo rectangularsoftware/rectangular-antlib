@@ -1,5 +1,5 @@
 Uncommons Antlib - Tools for building modular software with Apache Ant
-(C) Copyright 2008-2010 Daniel W. Dyer
+(C) Copyright 2008-2012 Daniel W. Dyer
 
 SYNOPSIS
 
@@ -25,7 +25,7 @@ DEPENDENCIES
   Uncommons Antlib requires APACHE ANT VERSION 1.7.1 or later.
 
 
-MACROS
+CORE MACROS
 
   Clean Module         - Deletes all build artifacts for a specified module.
 
@@ -50,9 +50,25 @@ MACROS
                          distribution, API docs and info files (README.txt,
                          LICENCE.txt, etc.)
 
+
+MAVEN MACROS
+
   Deploy Maven Module  - Constructs a Maven POM and uploads the module JAR file
                          to a Maven repository with source JAR and test source
                          JAR attached.
+
+
+ANDROID MACROS
+
+  Android Resources    - Generates the R.java file for an Android project.
+
+  Android Obfuscate    - Specialised version of the core obfuscate macro that
+                         preserves Android components that shouldn't be
+                         renamed.
+
+  Debug Package        - Create an APK signed with the debug key for testing.
+
+  Release Package      - Create an APK signed with a specified release key.
 
 
 CUSTOM TASKS
