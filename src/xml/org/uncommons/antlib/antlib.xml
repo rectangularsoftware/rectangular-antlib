@@ -535,6 +535,8 @@
           <keep extends="android.app.Service" />
           <keep extends="android.content.BroadcastReceiver" />
           <keep extends="android.content.ContentProvider" />
+          <keep extends="android.app.Fragment" />
+          <keep extends="android.support.v4.app.Fragment" />
           <keepclassmembers>
             <field type="android.os.Parcelable$Creator" name="CREATOR" />
           </keepclassmembers>
@@ -650,6 +652,39 @@
         <arg value="4"/>
         <arg path="${out.release.unaligned.package}"/>
         <arg path="${build.dir}/@{name}.apk"/>
+      </exec>
+    </sequential>
+  </macrodef>
+
+  <!-- Repackage an Android APK for deployment on a BlackBerry device. -->
+  <macrodef name="android-bar">
+    <attribute name="package" />
+    <attribute name="token" />
+    <attribute name="author" />
+    <sequential>
+      <current:android-defaults />
+      <exec executable="apk2bar" failonerror="true">
+        <arg value="@{package}" />
+        <arg value="${sdk.dir}" />
+        <!--<arg value="-d" />-->
+        <!--<arg value="@{token}" />-->
+        <arg value="-a" />
+        <arg value="@{author}" />
+        <arg value="-w2" />
+      </exec>
+    </sequential>
+  </macrodef>
+
+  <macrodef name="android-bar-sign">
+    <attribute name="bar" />
+    <attribute name="certificate" />
+    <attribute name="password" />
+    <sequential>
+      <current:android-defaults />
+      <exec executable="batchbar-signer" failonerror="true">
+        <arg value="@{bar}" />
+        <arg value="@{certificate}" />
+        <arg value="@{password}" />
       </exec>
     </sequential>
   </macrodef>

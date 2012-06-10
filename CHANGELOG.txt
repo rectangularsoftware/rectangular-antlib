@@ -11,6 +11,8 @@ Changes in version 0.3.2
 
 * Configured Proguard to preserve custom Preference classes.
 
+* Configured Proguard to preserve Fragment classes.
+
 * Upgraded to Proguard 4.6.
 
 * Added option to specify extra classpath entries for compile macro.
@@ -20,6 +22,8 @@ Changes in version 0.3.2
 * Added option to omit certain classes from coverage measurements when testing.
 
 * Fixed dx execution on Windows.
+
+* Macros for repackaging Android apps for the BlackBerry PlayBook.
 
 
 Changes in version 0.3.1
