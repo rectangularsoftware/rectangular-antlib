@@ -141,9 +141,11 @@
   <macrodef name="obfuscate">
     <attribute name="module"/>
     <attribute name="bootclasspathjar"/>
+    <attribute name="usemixedcaseclassnames" default="true"/>
     <attribute name="overloadaggressively" default="true"/>
     <attribute name="defaultpackage" default=""/>
     <attribute name="printmapping" default="false"/>
+    <attribute name="configuration" default="" />
     <element name="additionaloptions" optional="true"/>
     <sequential>
       <taskdef resource="proguard/ant/task.properties" classpath="${lib.compiletime}/proguard/proguard.jar" />
@@ -151,12 +153,13 @@
       <proguard shrink="true"
                 obfuscate="true"
                 optimize="true"
-                usemixedcaseclassnames="true"
+                usemixedcaseclassnames="@{usemixedcaseclassnames}"
                 allowaccessmodification="true"
                 skipnonpubliclibraryclassmembers="false"
                 overloadaggressively="@{overloadaggressively}"
                 printmapping="@{printmapping}"
-                defaultpackage="@{defaultpackage}">
+                defaultpackage="@{defaultpackage}"
+                configuration="@{configuration}">
         <libraryjar path="@{bootclasspathjar}" />
         <libraryjar>
           <fileset dir="${lib.runtime}" includes="**/*.jar" erroronmissingdir="false"/>
@@ -520,14 +523,18 @@
   <macrodef name="android-obfuscate">
     <attribute name="module"/>
     <attribute name="defaultpackage" default=""/>
+    <attribute name="usemixedcaseclassnames" default="true"/>
     <attribute name="printmapping" default="false"/>
+    <attribute name="configuration" default="" />
     <element name="additionalclasspath" optional="true"/>
     <sequential>
       <current:obfuscate module="@{module}"
                          bootclasspathjar="${target.dir}/android.jar"
+                         usemixedcaseclassnames="@{usemixedcaseclassnames}"
                          overloadaggressively="false"
                          defaultpackage="@{defaultpackage}"
-                         printmapping="@{printmapping}">
+                         printmapping="@{printmapping}"
+                         configuration="@{configuration}">
         <additionaloptions>
           <!-- Don't rename activities or other components otherwise the Android manifest will be wrong. -->
           <keep extends="android.app.Activity" />
@@ -537,6 +544,7 @@
           <keep extends="android.content.ContentProvider" />
           <keep extends="android.app.Fragment" />
           <keep extends="android.support.v4.app.Fragment" />
+          <dontnote filter="android.support.v4.app.Fragment" /> <!-- Support library might not be present. -->
           <keepclassmembers>
             <field type="android.os.Parcelable$Creator" name="CREATOR" />
           </keepclassmembers>
