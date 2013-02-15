@@ -6,7 +6,7 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: labels.xsl 8350 2009-03-17 07:24:29Z bobstayton $
+     $Id: labels.xsl 9664 2012-11-07 20:02:17Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -383,6 +383,7 @@ element label.</para>
   <xsl:variable name="contsec"
                 select="(ancestor::d:section
                          |ancestor::d:simplesect
+                         |ancestor::d:topic
                          |ancestor::d:sect1
                          |ancestor::d:sect2
                          |ancestor::d:sect3
@@ -501,6 +502,10 @@ element label.</para>
       <xsl:number format="{$format}" count="d:simplesect"/>
     </xsl:when>
   </xsl:choose>
+</xsl:template>
+
+<xsl:template match="d:topic" mode="label.markup">
+  <!-- topics are not numbered by default -->
 </xsl:template>
 
 <xsl:template match="d:qandadiv" mode="label.markup">
@@ -743,11 +748,11 @@ element label.</para>
             <xsl:apply-templates select="$pchap" mode="label.markup"/>
             <xsl:apply-templates select="$pchap" mode="intralabel.punctuation"/>
           </xsl:if>
-          <xsl:number format="1" count="d:equation[d:title or d:info/d:title]" 
+          <xsl:number format="1" count="d:equation" 
                       from="d:chapter|d:appendix" level="any"/>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:number format="1" count="d:equation[d:title or d:info/d:title]" 
+          <xsl:number format="1" count="d:equation" 
                       from="d:book|d:article" level="any"/>
         </xsl:otherwise>
       </xsl:choose>
@@ -787,11 +792,23 @@ element label.</para>
   <xsl:number value="$item-number" format="{$type}"/>
 </xsl:template>
 
+<xsl:template match="d:production" mode="label.markup">
+  <xsl:number count="d:production" level="any"/>
+</xsl:template>
+
 <xsl:template match="d:abstract" mode="label.markup">
   <!-- nop -->
 </xsl:template>
 
 <xsl:template match="d:sidebar" mode="label.markup">
+  <!-- nop -->
+</xsl:template>
+
+<xsl:template match="d:glossdiv|d:glosslist" mode="label.markup">
+  <!-- nop -->
+</xsl:template>
+
+<xsl:template match="d:glossentry" mode="label.markup">
   <!-- nop -->
 </xsl:template>
 

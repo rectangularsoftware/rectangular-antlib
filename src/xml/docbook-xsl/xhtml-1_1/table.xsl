@@ -7,7 +7,7 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0" xmlns:stbl="http://nwalsh.co
 <xsl:include href="../common/table.xsl"/>
 
 <!-- ********************************************************************
-     $Id: table.xsl 8421 2009-05-04 07:49:49Z bobstayton $
+     $Id: table.xsl 9297 2012-04-22 03:56:16Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -451,13 +451,29 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0" xmlns:stbl="http://nwalsh.co
       </xsl:attribute>
     </xsl:if>
 
-    <xsl:apply-templates select="d:row[1]">
-      <xsl:with-param name="spans">
-        <xsl:call-template name="blank.spans">
-          <xsl:with-param name="cols" select="../@cols"/>
-        </xsl:call-template>
-      </xsl:with-param>
-    </xsl:apply-templates>
+    <xsl:choose>
+      <!-- recurse on rows only if @morerows is present -->
+      <xsl:when test="d:row/d:entry/@morerows|d:row/d:entrytbl/@morerows">
+        <xsl:apply-templates select="d:row[1]">
+          <xsl:with-param name="spans">
+            <xsl:call-template name="blank.spans">
+              <xsl:with-param name="cols" select="../@cols"/>
+            </xsl:call-template>
+          </xsl:with-param>
+          <xsl:with-param name="browserows" select="'recurse'"/>
+        </xsl:apply-templates>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:apply-templates select="d:row">
+          <xsl:with-param name="spans">
+            <xsl:call-template name="blank.spans">
+              <xsl:with-param name="cols" select="../@cols"/>
+            </xsl:call-template>
+          </xsl:with-param>
+          <xsl:with-param name="browserows" select="'loop'"/>
+        </xsl:apply-templates>
+      </xsl:otherwise>
+    </xsl:choose>
 
   </xsl:element>
 </xsl:template>
@@ -485,24 +501,41 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0" xmlns:stbl="http://nwalsh.co
       </xsl:attribute>
     </xsl:if>
 
-    <xsl:apply-templates select="d:row[1]">
-      <xsl:with-param name="spans">
-        <xsl:call-template name="blank.spans">
-          <xsl:with-param name="cols" select="../@cols"/>
-        </xsl:call-template>
-      </xsl:with-param>
-    </xsl:apply-templates>
+    <xsl:choose>
+      <xsl:when test="d:row/d:entry/@morerows|d:row/d:entrytbl/@morerows">
+        <xsl:apply-templates select="d:row[1]">
+          <xsl:with-param name="spans">
+            <xsl:call-template name="blank.spans">
+              <xsl:with-param name="cols" select="../@cols"/>
+            </xsl:call-template>
+          </xsl:with-param>
+          <xsl:with-param name="browserows" select="'recurse'"/>
+        </xsl:apply-templates>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:apply-templates select="d:row">
+          <xsl:with-param name="spans">
+            <xsl:call-template name="blank.spans">
+              <xsl:with-param name="cols" select="../@cols"/>
+            </xsl:call-template>
+          </xsl:with-param>
+          <xsl:with-param name="browserows" select="'loop'"/>
+        </xsl:apply-templates>
+      </xsl:otherwise>
+    </xsl:choose>
 
   </tbody>
 </xsl:template>
 
 <xsl:template match="d:row">
   <xsl:param name="spans"/>
+  <xsl:param name="browserows"/>
 
   <xsl:choose>
     <xsl:when test="contains($spans, '0')">
       <xsl:call-template name="normal-row">
         <xsl:with-param name="spans" select="$spans"/>
+        <xsl:with-param name="browserows" select="$browserows"/>
       </xsl:call-template>
     </xsl:when>
     <xsl:otherwise>
@@ -523,19 +556,23 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0" xmlns:stbl="http://nwalsh.co
 
       <tr><xsl:comment> This row intentionally left blank </xsl:comment></tr>
 
-      <xsl:apply-templates select="following-sibling::d:row[1]">
-        <xsl:with-param name="spans">
-          <xsl:call-template name="consume-row">
-            <xsl:with-param name="spans" select="$spans"/>
-          </xsl:call-template>
-        </xsl:with-param>
-      </xsl:apply-templates>
+      <xsl:if test="$browserows = 'recurse'">
+        <xsl:apply-templates select="following-sibling::d:row[1]">
+          <xsl:with-param name="spans">
+            <xsl:call-template name="consume-row">
+              <xsl:with-param name="spans" select="$spans"/>
+            </xsl:call-template>
+          </xsl:with-param>
+          <xsl:with-param name="browserows" select="$browserows"/>
+        </xsl:apply-templates>
+      </xsl:if>
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
 
 <xsl:template name="normal-row">
   <xsl:param name="spans"/>
+  <xsl:param name="browserows"/>
 
   <xsl:variable name="row-height">
     <xsl:if test="processing-instruction('dbhtml')">
@@ -556,6 +593,7 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0" xmlns:stbl="http://nwalsh.co
   </xsl:variable>
 
   <tr>
+    <xsl:call-template name="id.attribute"/>
     <xsl:call-template name="tr.attributes">
       <xsl:with-param name="rownum">
         <xsl:number from="d:tgroup" count="d:row"/>
@@ -616,16 +654,19 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0" xmlns:stbl="http://nwalsh.co
     </xsl:apply-templates>
   </tr>
 
-  <xsl:if test="following-sibling::d:row">
-    <xsl:variable name="nextspans">
-      <xsl:apply-templates select="(d:entry|d:entrytbl)[1]" mode="span">
-        <xsl:with-param name="spans" select="$spans"/>
+  <xsl:if test="$browserows = 'recurse'">
+    <xsl:if test="following-sibling::d:row">
+      <xsl:variable name="nextspans">
+        <xsl:apply-templates select="(d:entry|d:entrytbl)[1]" mode="span">
+          <xsl:with-param name="spans" select="$spans"/>
+        </xsl:apply-templates>
+      </xsl:variable>
+  
+      <xsl:apply-templates select="following-sibling::d:row[1]">
+        <xsl:with-param name="spans" select="$nextspans"/>
+        <xsl:with-param name="browserows" select="$browserows"/>
       </xsl:apply-templates>
-    </xsl:variable>
-
-    <xsl:apply-templates select="following-sibling::d:row[1]">
-      <xsl:with-param name="spans" select="$nextspans"/>
-    </xsl:apply-templates>
+    </xsl:if>
   </xsl:if>
 </xsl:template>
 
@@ -645,6 +686,9 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0" xmlns:stbl="http://nwalsh.co
     <xsl:choose>
       <xsl:when test="ancestor::d:thead">th</xsl:when>
       <xsl:when test="ancestor::d:tfoot">th</xsl:when>
+      <xsl:when test="ancestor::d:tbody and                        (ancestor::d:table[@rowheader = 'firstcol'] or                       ancestor::d:informaltable[@rowheader = 'firstcol']) and                       ancestor-or-self::d:entry[1][count(preceding-sibling::d:entry) = 0]">
+        <xsl:text>th</xsl:text>
+      </xsl:when>
       <xsl:otherwise>td</xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
@@ -774,6 +818,7 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0" xmlns:stbl="http://nwalsh.co
       </xsl:variable>
 
       <xsl:element name="{$cellgi}" namespace="http://www.w3.org/1999/xhtml">
+        <xsl:call-template name="id.attribute"/>
         <xsl:if test="$bgcolor != ''">
           <xsl:attribute name="style"><xsl:text>background-color: </xsl:text>
             <xsl:value-of select="$bgcolor"/>
@@ -781,11 +826,18 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0" xmlns:stbl="http://nwalsh.co
         </xsl:if>
 
         <xsl:call-template name="locale.html.attributes"/>
-        <xsl:if test="$entry.propagates.style != 0 and @role">
-          <xsl:apply-templates select="." mode="class.attribute">
-            <xsl:with-param name="class" select="@role"/>
-          </xsl:apply-templates>
-        </xsl:if>
+        <xsl:choose>
+          <xsl:when test="$entry.propagates.style != 0 and @role">
+            <xsl:apply-templates select="." mode="class.attribute">
+              <xsl:with-param name="class" select="@role"/>
+            </xsl:apply-templates>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:apply-templates select="." mode="class.attribute">
+              <xsl:with-param name="class" select="''"/>
+            </xsl:apply-templates>
+          </xsl:otherwise>
+        </xsl:choose>
 
         <xsl:if test="$show.revisionflag and @revisionflag">
           <xsl:attribute name="class">
@@ -1046,9 +1098,16 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0" xmlns:stbl="http://nwalsh.co
                 <xsl:value-of select="$colspec/@char"/>
               </xsl:attribute>
             </xsl:if>
+            
             <xsl:if test="$colspec/@charoff">
               <xsl:attribute name="charoff">
                 <xsl:value-of select="$colspec/@charoff"/>
+              </xsl:attribute>
+            </xsl:if>
+
+            <xsl:if test="$colspec/@colname">
+              <xsl:attribute name="class">
+                <xsl:value-of select="$colspec/@colname"/>
               </xsl:attribute>
             </xsl:if>
           </col>

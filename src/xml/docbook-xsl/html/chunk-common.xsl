@@ -8,7 +8,7 @@ xmlns:exsl="http://exslt.org/common"
                 exclude-result-prefixes="exsl cf ng db d">
 
 <!-- ********************************************************************
-     $Id: chunk-common.xsl 8420 2009-05-04 02:17:33Z bobstayton $
+     $Id: chunk-common.xsl 9665 2012-11-08 14:26:20Z kosek $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -30,15 +30,37 @@ xmlns:exsl="http://exslt.org/common"
 <xsl:variable name="chunk.hierarchy">
   <xsl:if test="$chunk.fast != 0">
     <xsl:choose>
+      <!-- Are we handling a docbook5 document? -->
+      <xsl:when test="namespace-uri(*[1]) != 'http://docbook.org/ns/docbook'">
+ <xsl:call-template name="log.message">
+ <xsl:with-param name="level">Note</xsl:with-param>
+ <xsl:with-param name="source"><xsl:call-template name="get.doc.title"/></xsl:with-param>
+ <xsl:with-param name="context-desc">
+ <xsl:text>namesp. add</xsl:text>
+ </xsl:with-param>
+ <xsl:with-param name="message">
+ <xsl:text>added namespace before processing</xsl:text>
+ </xsl:with-param>
+ </xsl:call-template>
+ <xsl:variable name="addns">
+    <xsl:apply-templates mode="addNS"/>
+  </xsl:variable>
+  <xsl:apply-templates select="exsl:node-set($addns)"/>
+</xsl:when>
       <xsl:when test="$exsl.node.set.available != 0">
-        <xsl:message>Computing chunks...</xsl:message>
+        <xsl:if test="$chunk.quietly = 0">
+          <xsl:message>Computing chunks...</xsl:message>
+        </xsl:if>
+
         <xsl:apply-templates select="/*" mode="find.chunks"/>
       </xsl:when>
       <xsl:otherwise>
-        <xsl:message>
-          <xsl:text>Fast chunking requires exsl:node-set(). </xsl:text>
-          <xsl:text>Using "slow" chunking.</xsl:text>
-        </xsl:message>
+        <xsl:if test="$chunk.quietly = 0">
+          <xsl:message>
+            <xsl:text>Fast chunking requires exsl:node-set(). </xsl:text>
+            <xsl:text>Using "slow" chunking.</xsl:text>
+          </xsl:message>
+        </xsl:if>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:if>
@@ -131,7 +153,7 @@ xmlns:exsl="http://exslt.org/common"
 
   <xsl:variable name="filename">
     <xsl:call-template name="make-relative-filename">
-      <xsl:with-param name="base.dir" select="$base.dir"/>
+      <xsl:with-param name="base.dir" select="$chunk.base.dir"/>
       <xsl:with-param name="base.name" select="$chunkfn"/>
     </xsl:call-template>
   </xsl:variable>
@@ -241,6 +263,7 @@ xmlns:exsl="http://exslt.org/common"
              |preceding::d:refentry[1]
              |preceding::d:colophon[1]
              |preceding::d:article[1]
+             |preceding::d:topic[1]
              |preceding::d:bibliography[parent::d:article or parent::d:book or parent::d:part][1]
              |preceding::d:glossary[parent::d:article or parent::d:book or parent::d:part][1]
              |preceding::d:index[$generate.index != 0]
@@ -254,6 +277,7 @@ xmlns:exsl="http://exslt.org/common"
              |ancestor::d:part[1]
              |ancestor::d:reference[1]
              |ancestor::d:article[1]
+             |ancestor::d:topic[1]
              |$prev-v1
              |$prev-v2)[last()]"/>
 
@@ -343,12 +367,14 @@ xmlns:exsl="http://exslt.org/common"
              |following::d:index[$generate.index != 0]
                                [parent::d:article or parent::d:book or parent::d:part][1]
              |following::d:article[1]
+             |following::d:topic[1]
              |following::d:setindex[$generate.index != 0][1]
              |descendant::d:book[1]
              |descendant::d:preface[1]
              |descendant::d:chapter[1]
              |descendant::d:appendix[1]
              |descendant::d:article[1]
+             |descendant::d:topic[1]
              |descendant::d:bibliography[parent::d:article or parent::d:book or parent::d:part][1]
              |descendant::d:glossary[parent::d:article or parent::d:book or parent::d:part][1]
              |descendant::d:index[$generate.index != 0]
@@ -399,6 +425,7 @@ xmlns:exsl="http://exslt.org/common"
              |preceding::d:refentry[1]
              |preceding::d:colophon[1]
              |preceding::d:article[1]
+             |preceding::d:topic[1]
              |preceding::d:bibliography[parent::d:article or parent::d:book or parent::d:part][1]
              |preceding::d:glossary[parent::d:article or parent::d:book or parent::d:part][1]
              |preceding::d:index[$generate.index != 0]
@@ -412,6 +439,7 @@ xmlns:exsl="http://exslt.org/common"
              |ancestor::d:part[1]
              |ancestor::d:reference[1]
              |ancestor::d:article[1]
+             |ancestor::d:topic[1]
              |$prev-v1
              |$prev-v2)[last()]"/>
 
@@ -446,12 +474,14 @@ xmlns:exsl="http://exslt.org/common"
              |following::d:index[$generate.index != 0]
                                [parent::d:article or parent::d:book][1]
              |following::d:article[1]
+             |following::d:topic[1]
              |following::d:setindex[$generate.index != 0][1]
              |descendant::d:book[1]
              |descendant::d:preface[1]
              |descendant::d:chapter[1]
              |descendant::d:appendix[1]
              |descendant::d:article[1]
+             |descendant::d:topic[1]
              |descendant::d:bibliography[parent::d:article or parent::d:book][1]
              |descendant::d:glossary[parent::d:article or parent::d:book or parent::d:part][1]
              |descendant::d:index[$generate.index != 0]
@@ -514,7 +544,7 @@ xmlns:exsl="http://exslt.org/common"
             <xsl:with-param name="lot">
               <xsl:call-template name="list.of.titles">
                 <xsl:with-param name="titles" select="'table'"/>
-                <xsl:with-param name="nodes" select=".//d:table"/>
+                <xsl:with-param name="nodes" select=".//d:table[not(@tocentry = 0)]"/>
               </xsl:call-template>
             </xsl:with-param>
           </xsl:call-template>
@@ -522,7 +552,7 @@ xmlns:exsl="http://exslt.org/common"
         <xsl:otherwise>
           <xsl:call-template name="list.of.titles">
             <xsl:with-param name="titles" select="'table'"/>
-            <xsl:with-param name="nodes" select=".//d:table"/>
+            <xsl:with-param name="nodes" select=".//d:table[not(@tocentry = 0)]"/>
           </xsl:call-template>
         </xsl:otherwise>
       </xsl:choose>
@@ -558,7 +588,7 @@ xmlns:exsl="http://exslt.org/common"
             <xsl:with-param name="lot">
               <xsl:call-template name="list.of.titles">
                 <xsl:with-param name="titles" select="'equation'"/>
-                <xsl:with-param name="nodes" select=".//d:equation"/>
+                <xsl:with-param name="nodes" select=".//d:equation[d:title or d:info/d:title]"/>
               </xsl:call-template>
             </xsl:with-param>
           </xsl:call-template>
@@ -566,7 +596,7 @@ xmlns:exsl="http://exslt.org/common"
         <xsl:otherwise>
           <xsl:call-template name="list.of.titles">
             <xsl:with-param name="titles" select="'equation'"/>
-            <xsl:with-param name="nodes" select=".//d:equation"/>
+            <xsl:with-param name="nodes" select=".//d:equation[d:title or d:info/d:title]"/>
           </xsl:call-template>
         </xsl:otherwise>
       </xsl:choose>
@@ -601,9 +631,10 @@ xmlns:exsl="http://exslt.org/common"
         <xsl:call-template name="write.chunk">
           <xsl:with-param name="filename">
             <xsl:call-template name="make-relative-filename">
-              <xsl:with-param name="base.dir" select="$base.dir"/>
+              <xsl:with-param name="base.dir" select="$chunk.base.dir"/>
               <xsl:with-param name="base.name">
                 <xsl:call-template name="dbhtml-dir"/>
+                <xsl:value-of select="$chunked.filename.prefix"/>
                 <xsl:apply-templates select="." mode="recursive-chunk-filename">
                   <xsl:with-param name="recursive" select="true()"/>
                 </xsl:apply-templates>
@@ -644,7 +675,7 @@ xmlns:exsl="http://exslt.org/common"
   <xsl:if test="string($lot) != ''">
     <xsl:variable name="filename">
       <xsl:call-template name="make-relative-filename">
-        <xsl:with-param name="base.dir" select="$base.dir"/>
+        <xsl:with-param name="base.dir" select="$chunk.base.dir"/>
         <xsl:with-param name="base.name">
           <xsl:call-template name="dbhtml-dir"/>
           <xsl:value-of select="$type"/>
@@ -656,6 +687,7 @@ xmlns:exsl="http://exslt.org/common"
 
     <xsl:variable name="href">
       <xsl:call-template name="make-relative-filename">
+        <xsl:with-param name="base.dir" select="''"/>
         <xsl:with-param name="base.name">
           <xsl:call-template name="dbhtml-dir"/>
           <xsl:value-of select="$type"/>
@@ -865,8 +897,28 @@ xmlns:exsl="http://exslt.org/common"
   <!-- Only bother to do this if there's at least one non-table footnote -->
   <xsl:if test="$fcount &gt; 0">
     <div class="footnotes">
+      <xsl:call-template name="footnotes.attributes"/>
       <br/>
-      <hr width="100" align="{$direction.align.start}"/>
+      <hr>
+        <xsl:choose>
+          <xsl:when test="$make.clean.html != 0">
+            <xsl:attribute name="class">footnote-hr</xsl:attribute>
+          </xsl:when>
+          <xsl:when test="$css.decoration != 0">
+            <xsl:attribute name="style">
+              <xsl:value-of select="concat('width:100; text-align:',
+                                            $direction.align.start,
+                                            ';',
+					    'margin-', $direction.align.start, ': 0')"/>
+            </xsl:attribute>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:attribute name="width">100</xsl:attribute>
+            <xsl:attribute name="align"><xsl:value-of 
+                      select="$direction.align.start"/></xsl:attribute>
+          </xsl:otherwise>
+        </xsl:choose>
+      </hr>
       <xsl:call-template name="process.footnotes.in.this.chunk">
         <xsl:with-param name="node" select="."/>
         <xsl:with-param name="footnotes" select="$footnotes"/>
@@ -927,6 +979,7 @@ xmlns:exsl="http://exslt.org/common"
        section          if position()>1 && depth < chunk.section.depth
        set
        setindex
+       topic
                                                                             -->
   <!-- ==================================================================== -->
 
@@ -1003,6 +1056,7 @@ xmlns:exsl="http://exslt.org/common"
     <xsl:when test="local-name($node)='chapter'">1</xsl:when>
     <xsl:when test="local-name($node)='appendix'">1</xsl:when>
     <xsl:when test="local-name($node)='article'">1</xsl:when>
+    <xsl:when test="local-name($node)='topic'">1</xsl:when>
     <xsl:when test="local-name($node)='part'">1</xsl:when>
     <xsl:when test="local-name($node)='reference'">1</xsl:when>
     <xsl:when test="local-name($node)='refentry'">1</xsl:when>
@@ -1356,7 +1410,8 @@ xmlns:exsl="http://exslt.org/common"
     <xsl:call-template name="system.head.content"/>
     <xsl:call-template name="head.content"/>
 
-    <xsl:if test="$home">
+    <!-- home link not valid in HTML5 -->
+    <xsl:if test="$home and $div.element != 'section'">
       <link rel="home">
         <xsl:attribute name="href">
           <xsl:call-template name="href.target">
@@ -1370,7 +1425,8 @@ xmlns:exsl="http://exslt.org/common"
       </link>
     </xsl:if>
 
-    <xsl:if test="$up">
+    <!-- up link not valid in HTML5 -->
+    <xsl:if test="$up and $div.element != 'section'">
       <link rel="up">
         <xsl:attribute name="href">
           <xsl:call-template name="href.target">
@@ -1681,6 +1737,7 @@ xmlns:exsl="http://exslt.org/common"
                 <xsl:if test="$chunk.tocs.and.lots != 0 and $nav.context != 'toc'">
                   <a accesskey="t">
                     <xsl:attribute name="href">
+                      <xsl:value-of select="$chunked.filename.prefix"/>
                       <xsl:apply-templates select="/*[1]"
                                            mode="recursive-chunk-filename">
                         <xsl:with-param name="recursive" select="true()"/>
@@ -1831,6 +1888,7 @@ xmlns:exsl="http://exslt.org/common"
   <xsl:call-template name="user.preroot"/>
 
   <html>
+    <xsl:call-template name="root.attributes"/>
     <xsl:call-template name="html.head">
       <xsl:with-param name="prev" select="$prev"/>
       <xsl:with-param name="next" select="$next"/>
@@ -1838,7 +1896,12 @@ xmlns:exsl="http://exslt.org/common"
 
     <body>
       <xsl:call-template name="body.attributes"/>
-      <xsl:call-template name="user.header.navigation"/>
+
+      <xsl:call-template name="user.header.navigation">
+        <xsl:with-param name="prev" select="$prev"/>
+        <xsl:with-param name="next" select="$next"/>
+        <xsl:with-param name="nav.context" select="$nav.context"/>
+      </xsl:call-template>
 
       <xsl:call-template name="header.navigation">
         <xsl:with-param name="prev" select="$prev"/>
@@ -1858,7 +1921,11 @@ xmlns:exsl="http://exslt.org/common"
         <xsl:with-param name="nav.context" select="$nav.context"/>
       </xsl:call-template>
 
-      <xsl:call-template name="user.footer.navigation"/>
+      <xsl:call-template name="user.footer.navigation">
+        <xsl:with-param name="prev" select="$prev"/>
+        <xsl:with-param name="next" select="$next"/>
+        <xsl:with-param name="nav.context" select="$nav.context"/>
+      </xsl:call-template>
     </body>
   </html>
   <xsl:value-of select="$chunk.append"/>
@@ -1870,7 +1937,7 @@ xmlns:exsl="http://exslt.org/common"
   <xsl:call-template name="write.text.chunk">
     <xsl:with-param name="filename">
       <xsl:if test="$manifest.in.base.dir != 0">
-        <xsl:value-of select="$base.dir"/>
+        <xsl:value-of select="$chunk.base.dir"/>
       </xsl:if>
       <xsl:value-of select="$manifest"/>
     </xsl:with-param>

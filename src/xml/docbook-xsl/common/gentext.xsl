@@ -6,7 +6,7 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: gentext.xsl 8396 2009-04-07 07:41:35Z bobstayton $
+     $Id: gentext.xsl 9286 2012-04-19 10:10:58Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -91,7 +91,7 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
 </xsl:template>
 
 <xsl:template match="d:section|d:sect1|d:sect2|d:sect3|d:sect4|d:sect5|d:simplesect
-                     |d:bridgehead"
+                     |d:bridgehead|d:topic"
               mode="object.title.template">
   <xsl:variable name="is.numbered">
     <xsl:call-template name="label.this.section"/>
@@ -235,6 +235,9 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
 
   <xsl:variable name="context">
     <xsl:choose>
+      <xsl:when test="self::d:equation and not(d:title) and not(d:info/d:title)">
+         <xsl:value-of select="'xref-number'"/>
+      </xsl:when>
       <xsl:when test="string($autonumber) != 0 
                       and $number-and-title-template != 0
                       and $xref.with.number.and.title != 0">
@@ -398,7 +401,7 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0"
       <xsl:message>
         <xsl:text>Xref is only supported to listitems in an</xsl:text>
         <xsl:text> orderedlist: </xsl:text>
-        <xsl:value-of select="@id|@xml:id"/>
+        <xsl:value-of select=".//@id|.//@xml:id"/>
       </xsl:message>
       <xsl:text>???</xsl:text>
     </xsl:when>

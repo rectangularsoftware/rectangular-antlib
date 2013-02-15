@@ -8,7 +8,7 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: xref.xsl 8398 2009-04-07 14:40:25Z dcramer $
+     $Id: xref.xsl 9650 2012-10-26 18:24:02Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -27,7 +27,16 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
   <xsl:variable name="id">
     <xsl:call-template name="object.id"/>
   </xsl:variable>
-  <fo:inline id="{$id}"/>
+
+  <xsl:variable name="wrapper.name">
+    <xsl:call-template name="inline.or.block"/>
+  </xsl:variable>
+
+  <xsl:element name="{$wrapper.name}">
+    <xsl:attribute name="id">
+      <xsl:value-of select="$id"/>
+    </xsl:attribute>
+  </xsl:element>
 </xsl:template>
 
 <!-- ==================================================================== -->
@@ -310,7 +319,7 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
                      |d:constraintdef|d:formalpara|d:glossdiv|d:important|d:indexdiv
                      |d:itemizedlist|d:legalnotice|d:lot|d:msg|d:msgexplan|d:msgmain
                      |d:msgrel|d:msgset|d:msgsub|d:note|d:orderedlist|d:partintro
-                     |d:productionset|d:qandadiv|d:refsynopsisdiv|d:segmentedlist
+                     |d:productionset|d:qandadiv|d:refsynopsisdiv|d:screenshot|d:segmentedlist
                      |d:set|d:setindex|d:sidebar|d:tip|d:toc|d:variablelist|d:warning"
               mode="xref-to">
   <xsl:param name="referrer"/>
@@ -563,6 +572,19 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
   <!-- What about "in Chapter X"? -->
 </xsl:template>
 
+<xsl:template match="d:topic" mode="xref-to">
+  <xsl:param name="referrer"/>
+  <xsl:param name="xrefstyle"/>
+  <xsl:param name="verbose" select="1"/>
+
+  <xsl:apply-templates select="." mode="object.xref.markup">
+    <xsl:with-param name="purpose" select="'xref'"/>
+    <xsl:with-param name="xrefstyle" select="$xrefstyle"/>
+    <xsl:with-param name="referrer" select="$referrer"/>
+    <xsl:with-param name="verbose" select="$verbose"/>
+  </xsl:apply-templates>
+</xsl:template>
+
 <xsl:template match="d:bridgehead" mode="xref-to">
   <xsl:param name="referrer"/>
   <xsl:param name="xrefstyle"/>
@@ -765,6 +787,7 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
                                        |ancestor::d:sect3
                                        |ancestor::d:sect4
                                        |ancestor::d:sect5
+                                       |ancestor::d:topic
                                        |ancestor::d:refsection
                                        |ancestor::d:refsect1
                                        |ancestor::d:refsect2
@@ -792,6 +815,15 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
       </xsl:apply-templates>
     </xsl:when>
     <xsl:otherwise>
+      <xsl:if test="$verbose != 0">
+        <xsl:message>
+          <xsl:text>WARNING: xref to &lt;</xsl:text>
+          <xsl:value-of select="local-name()"/>
+          <xsl:text> id="</xsl:text>
+          <xsl:value-of select="@id|@xml:id"/>
+          <xsl:text>"&gt; has no generated text. Trying its ancestor elements.</xsl:text>
+        </xsl:message>
+      </xsl:if>
       <xsl:apply-templates select="$context" mode="xref-to">
         <xsl:with-param name="xrefstyle" select="$xrefstyle"/>
         <xsl:with-param name="referrer" select="$referrer"/>
@@ -855,9 +887,11 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
         </xsl:when>
         <!-- Use the xlink:href if no other text -->
         <xsl:when test="@xlink:href">
-	  <xsl:call-template name="hyphenate-url">
-	    <xsl:with-param name="url" select="@xlink:href"/>
-	  </xsl:call-template>
+	  <fo:inline hyphenate="false">
+	    <xsl:call-template name="hyphenate-url">
+	      <xsl:with-param name="url" select="@xlink:href"/>
+	    </xsl:call-template>
+	  </fo:inline>
         </xsl:when>
         <xsl:otherwise>
           <xsl:message>
@@ -913,10 +947,12 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
   <fo:basic-link xsl:use-attribute-sets="xref.properties"
                  external-destination="{$ulink.url}">
     <xsl:choose>
-      <xsl:when test="count(child::node())=0">
-        <xsl:call-template name="hyphenate-url">
-          <xsl:with-param name="url" select="$url"/>
-        </xsl:call-template>
+      <xsl:when test="count(child::node())=0 or (string(.) = $url)">
+	<fo:inline hyphenate="false">
+	  <xsl:call-template name="hyphenate-url">
+	    <xsl:with-param name="url" select="$url"/>
+	  </xsl:call-template>
+	</fo:inline>
       </xsl:when>
       <xsl:otherwise>
         <xsl:apply-templates/>
@@ -1063,10 +1099,6 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
   <!-- olink content may be passed in from xlink olink -->
   <xsl:param name="content" select="NOTANELEMENT"/>
 
-  <xsl:call-template name="anchor"/>
-
-  <xsl:variable name="localinfo" select="@localinfo"/>
-
   <xsl:choose>
     <!-- olinks resolved by stylesheet and target database -->
     <xsl:when test="@targetdoc or @targetptr or
@@ -1194,15 +1226,27 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
         <xsl:when test="$linkend != ''">
           <fo:basic-link internal-destination="{$linkend}"
                        xsl:use-attribute-sets="xref.properties">
+            <xsl:call-template name="anchor"/>
             <xsl:copy-of select="$hottext"/>
             <xsl:copy-of select="$olink.page.citation"/>
           </fo:basic-link>
         </xsl:when>
         <xsl:when test="$href != ''">
           <xsl:choose>
+            <xsl:when test="$fop1.extensions != 0">
+              <xsl:variable name="mybeg" select="substring-before($href,'#')"/>
+              <xsl:variable name="myend" select="substring-after($href,'#')"/>
+              <fo:basic-link external-destination="url({concat($mybeg,'#dest=',$myend)})"
+                             xsl:use-attribute-sets="olink.properties">
+                <xsl:copy-of select="$hottext"/>
+              </fo:basic-link>
+              <xsl:copy-of select="$olink.page.citation"/>
+              <xsl:copy-of select="$olink.docname.citation"/>
+            </xsl:when>
             <xsl:when test="$xep.extensions != 0">
               <fo:basic-link external-destination="url({$href})"
                              xsl:use-attribute-sets="olink.properties">
+                <xsl:call-template name="anchor"/>
                 <xsl:copy-of select="$hottext"/>
               </fo:basic-link>
               <xsl:copy-of select="$olink.page.citation"/>
@@ -1296,14 +1340,6 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
 
 </xsl:template>
 
-
-<xsl:template name="olink.outline">
-  <xsl:param name="outline.base.uri"/>
-  <xsl:param name="localinfo"/>
-  <xsl:param name="return" select="d:href"/>
-
-  <xsl:message terminate="yes">Fatal error: olink.outline template: what is this supposed to do?</xsl:message>
-</xsl:template>
 
 <!-- ==================================================================== -->
 

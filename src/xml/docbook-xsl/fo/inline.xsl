@@ -11,7 +11,7 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: inline.xsl 8363 2009-03-21 07:46:57Z bobstayton $
+     $Id: inline.xsl 9674 2012-12-02 20:21:34Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -19,6 +19,9 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
      copyright and other information.
 
      ******************************************************************** -->
+
+<xsl:key name="glossentries" match="d:glossentry" use="normalize-space(d:glossterm)"/>
+<xsl:key name="glossentries" match="d:glossentry" use="normalize-space(d:glossterm/@baseform)"/>
 
 <xsl:template name="simple.xlink">
   <xsl:param name="node" select="."/>
@@ -90,6 +93,7 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
 
             <xsl:otherwise>
               <fo:basic-link internal-destination="{$idref}">
+                <xsl:apply-templates select="." mode="simple.xlink.properties"/>
                 <xsl:copy-of select="$content"/>
               </fo:basic-link>
             </xsl:otherwise>
@@ -99,6 +103,7 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
         <!-- otherwise it's a URI -->
         <xsl:otherwise>
           <fo:basic-link external-destination="url({$xhref})">
+            <xsl:apply-templates select="." mode="simple.xlink.properties"/>
             <xsl:copy-of select="$content"/>
           </fo:basic-link>
           <!-- * Call the template for determining whether the URL for this -->
@@ -130,6 +135,7 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
 
         <xsl:otherwise>
           <fo:basic-link internal-destination="{$linkend}">
+            <xsl:apply-templates select="." mode="simple.xlink.properties"/>
             <xsl:copy-of select="$content"/>
           </fo:basic-link>
         </xsl:otherwise>
@@ -140,7 +146,35 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
       <xsl:copy-of select="$content"/>
     </xsl:otherwise>
   </xsl:choose>
+</xsl:template>
 
+<xsl:template name="inline.sansseq">
+  <xsl:param name="content">
+    <xsl:call-template name="simple.xlink">
+        <xsl:with-param name="content">
+          <xsl:apply-templates/>
+        </xsl:with-param>
+    </xsl:call-template>
+  </xsl:param>
+
+  <fo:inline font-family="{$sans.font.family}">
+    <xsl:choose>
+      <xsl:when test="@dir">
+        <fo:inline>
+          <xsl:attribute name="direction">
+            <xsl:choose>
+              <xsl:when test="@dir = 'ltr' or @dir = 'lro'">ltr</xsl:when>
+              <xsl:otherwise>rtl</xsl:otherwise>
+            </xsl:choose>
+          </xsl:attribute>
+          <xsl:copy-of select="$content"/>
+        </fo:inline>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:copy-of select="$content"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </fo:inline>
 </xsl:template>
 
 <xsl:template name="inline.charseq">
@@ -180,6 +214,7 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
   </xsl:param>
 
   <fo:inline xsl:use-attribute-sets="monospace.properties">
+    <xsl:call-template name="anchor"/>
     <xsl:if test="@dir">
       <xsl:attribute name="direction">
         <xsl:choose>
@@ -477,14 +512,14 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
 
 <xsl:template match="d:function/d:parameter" priority="2">
   <xsl:call-template name="inline.italicmonoseq"/>
-  <xsl:if test="following-sibling::*">
+  <xsl:if test="$function.parens != 0 and following-sibling::*">
     <xsl:text>, </xsl:text>
   </xsl:if>
 </xsl:template>
 
 <xsl:template match="d:function/d:replaceable" priority="2">
   <xsl:call-template name="inline.italicmonoseq"/>
-  <xsl:if test="following-sibling::*">
+  <xsl:if test="$function.parens != 0 and following-sibling::*">
     <xsl:text>, </xsl:text>
   </xsl:if>
 </xsl:template>
@@ -526,7 +561,21 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
 </xsl:template>
 
 <xsl:template match="d:keycap">
-  <xsl:call-template name="inline.boldseq"/>
+  <xsl:choose>
+    <xsl:when test="@function and normalize-space(.) = ''">
+      <xsl:call-template name="inline.boldseq">
+        <xsl:with-param name="content">
+          <xsl:call-template name="gentext.template">
+            <xsl:with-param name="context" select="'keycap'"/>
+            <xsl:with-param name="name" select="@function"/>
+          </xsl:call-template>
+        </xsl:with-param>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:call-template name="inline.boldseq"/>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 <xsl:template match="d:keycode">
@@ -842,9 +891,7 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
       </xsl:variable>
 
       <xsl:variable name="targets"
-                    select="//d:glossentry[normalize-space(d:glossterm)=$term
-                            or normalize-space(d:glossterm/@baseform)=$term]"/>
-
+                    select="key('glossentries', $term)"/>
       <xsl:variable name="target" select="$targets[1]"/>
 
       <xsl:choose>
@@ -1281,6 +1328,19 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
 
 <xsl:template match="d:beginpage">
   <!-- does nothing; this *is not* markup to force a page break. -->
+</xsl:template>
+
+<xsl:template match="*" mode="simple.xlink.properties">
+  <!-- Placeholder template to apply properties to links made from
+       elements other than xref, link, and olink.
+       This template should generate attributes only, as it is
+       applied right after the opening <fo:basic-link> tag.
+       -->
+  <!-- for example
+  <xsl:attribute name="color">blue</xsl:attribute>
+  -->
+  <!-- Since this is a mode, you can create different
+       templates with different properties for different linking elements -->
 </xsl:template>
 
 </xsl:stylesheet>

@@ -7,7 +7,7 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: division.xsl 8320 2009-03-12 17:43:44Z mzjn $
+     $Id: division.xsl 9647 2012-10-26 17:42:03Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -26,16 +26,10 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
     </xsl:call-template>
   </xsl:variable>
   <xsl:variable name="title">
-    <xsl:apply-templates select="$node" mode="object.title.markup"/>
+    <xsl:apply-templates select="$node" mode="object.title.markup">
+      <xsl:with-param name="allow-anchors" select="1"/>
+    </xsl:apply-templates>
   </xsl:variable>
-
-  <xsl:if test="$passivetex.extensions != 0">
-    <fotex:bookmark xmlns:fotex="http://www.tug.org/fotex"
-                    fotex-bookmark-level="1"
-                    fotex-bookmark-label="{$id}">
-      <xsl:value-of select="$title"/>
-    </fotex:bookmark>
-  </xsl:if>
 
   <fo:block keep-with-next.within-column="always"
             hyphenate="false">
@@ -333,7 +327,7 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
       <xsl:with-param name="content">
         <xsl:call-template name="list.of.titles">
           <xsl:with-param name="titles" select="'table'"/>
-          <xsl:with-param name="nodes" select=".//d:table"/>
+          <xsl:with-param name="nodes" select=".//d:table[not(@tocentry = 0)]"/>
         </xsl:call-template>
       </xsl:with-param>
     </xsl:call-template>

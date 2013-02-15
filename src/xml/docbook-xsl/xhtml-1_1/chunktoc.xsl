@@ -5,7 +5,7 @@
 xmlns:doc="http://nwalsh.com/xsl/documentation/1.0" xmlns="http://www.w3.org/1999/xhtml" version="1.0" exclude-result-prefixes="doc d">
 
 <!-- ********************************************************************
-     $Id: chunktoc.xsl 8399 2009-04-08 07:37:42Z bobstayton $
+     $Id: chunktoc.xsl 9286 2012-04-19 10:10:58Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -93,7 +93,7 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0" xmlns="http://www.w3.org/199
 
   <xsl:variable name="filename">
     <xsl:call-template name="make-relative-filename">
-      <xsl:with-param name="base.dir" select="$base.dir"/>
+      <xsl:with-param name="base.dir" select="$chunk.base.dir"/>
       <xsl:with-param name="base.name" select="$chunkfn"/>
     </xsl:call-template>
   </xsl:variable>
@@ -164,6 +164,10 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0" xmlns="http://www.w3.org/199
   <xsl:call-template name="process-chunk"/>
 </xsl:template>
 
+<xsl:template match="d:topic">
+  <xsl:call-template name="process-chunk"/>
+</xsl:template>
+
 <xsl:template match="d:article/d:appendix">
   <xsl:call-template name="process-chunk"/>
 </xsl:template>
@@ -219,7 +223,7 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0" xmlns="http://www.w3.org/199
     <xsl:when test="namespace-uri(*[1]) != 'http://docbook.org/ns/docbook'">
  <xsl:call-template name="log.message">
  <xsl:with-param name="level">Note</xsl:with-param>
- <xsl:with-param name="source" select="$doc.title"/>
+ <xsl:with-param name="source"><xsl:call-template name="get.doc.title"/></xsl:with-param>
  <xsl:with-param name="context-desc">
  <xsl:text>namesp. add</xsl:text>
  </xsl:with-param>
@@ -236,7 +240,7 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0" xmlns="http://www.w3.org/199
     <xsl:when test="namespace-uri(*[1]) != 'http://docbook.org/ns/docbook'">
  <xsl:call-template name="log.message">
  <xsl:with-param name="level">Note</xsl:with-param>
- <xsl:with-param name="source" select="$doc.title"/>
+ <xsl:with-param name="source"><xsl:call-template name="get.doc.title"/></xsl:with-param>
  <xsl:with-param name="context-desc">
  <xsl:text>namesp. add</xsl:text>
  </xsl:with-param>
@@ -301,6 +305,7 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0" xmlns="http://www.w3.org/199
 
 <xsl:template match="*" mode="process.root">
   <xsl:apply-templates select="."/>
+  <xsl:call-template name="generate.css"/>
 </xsl:template>
 
 <xsl:template name="make.lots">
@@ -429,7 +434,7 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0" xmlns="http://www.w3.org/199
         <xsl:call-template name="write.chunk">
           <xsl:with-param name="filename">
             <xsl:call-template name="make-relative-filename">
-              <xsl:with-param name="base.dir" select="$base.dir"/>
+              <xsl:with-param name="base.dir" select="$chunk.base.dir"/>
               <xsl:with-param name="base.name">
                 <xsl:call-template name="dbhtml-dir"/>
                 <xsl:apply-templates select="." mode="recursive-chunk-filename">
@@ -470,7 +475,7 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0" xmlns="http://www.w3.org/199
   <xsl:if test="string($lot) != ''">
     <xsl:variable name="filename">
       <xsl:call-template name="make-relative-filename">
-        <xsl:with-param name="base.dir" select="$base.dir"/>
+        <xsl:with-param name="base.dir" select="$chunk.base.dir"/>
         <xsl:with-param name="base.name">
           <xsl:call-template name="dbhtml-dir"/>
           <xsl:value-of select="$type"/>
@@ -482,6 +487,7 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0" xmlns="http://www.w3.org/199
 
     <xsl:variable name="href">
       <xsl:call-template name="make-relative-filename">
+        <xsl:with-param name="base.dir" select="''"/>
         <xsl:with-param name="base.name">
           <xsl:call-template name="dbhtml-dir"/>
           <xsl:value-of select="$type"/>

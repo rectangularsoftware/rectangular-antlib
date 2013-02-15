@@ -53,7 +53,7 @@
       <fileset dir="build/classes/main"/>
       <fileset dir="src/xml" includes="**/*" />
       <manifest>
-        <attribute name="Class-Path" value="docbook/fop.jar docbook/saxon.jar docbook/xslthl-2.0.1.jar testng/testng-5.10-jdk15.jar testng/reportng-1.0.jar"/>
+        <attribute name="Class-Path" value="docbook/xercesImpl-2.7.1.jar docbook/fop.jar docbook/saxon.jar docbook/xslthl-2.0.1.jar testng/testng-5.10-jdk15.jar testng/reportng-1.0.jar"/>
       </manifest>
     </jar>
   </target>

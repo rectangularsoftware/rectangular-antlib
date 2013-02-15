@@ -5,7 +5,7 @@
 xmlns:doc="http://nwalsh.com/xsl/documentation/1.0" xmlns="http://www.w3.org/1999/xhtml" exclude-result-prefixes="doc d" version="1.0">
 
 <!-- ********************************************************************
-     $Id: ebnf.xsl 8178 2008-12-15 22:26:38Z bobstayton $
+     $Id: ebnf.xsl 9358 2012-05-12 23:37:10Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -17,7 +17,7 @@ xmlns:doc="http://nwalsh.com/xsl/documentation/1.0" xmlns="http://www.w3.org/199
 <doc:reference xmlns="">
 <referenceinfo xmlns="http://www.w3.org/1999/xhtml">
 <releaseinfo role="meta">
-$Id: ebnf.xsl 8178 2008-12-15 22:26:38Z bobstayton $
+$Id: ebnf.xsl 9358 2012-05-12 23:37:10Z bobstayton $
 </releaseinfo>
 <author><surname>Walsh</surname>
 <firstname>Norman</firstname></author>
@@ -65,17 +65,17 @@ to be incomplete. Don't forget to read the source, too :-)</para>
     </xsl:attribute>
     <xsl:attribute name="summary">
       <xsl:text>EBNF</xsl:text>
-      <xsl:if test="d:title">
+      <xsl:if test="d:title|d:info/d:title">
         <xsl:text> for </xsl:text>
-        <xsl:value-of select="d:title"/>
+        <xsl:value-of select="d:title|d:info/d:title[1]"/>
       </xsl:if>
     </xsl:attribute>
 
-    <xsl:if test="d:title">
+    <xsl:if test="d:title|d:info/d:title">
       <tr>
         <th align="{$direction.align.start}" valign="top">
           <xsl:apply-templates select="." mode="class.attribute"/>
-          <xsl:apply-templates select="d:title"/>
+          <xsl:apply-templates select="d:title|d:info/d:title[1]"/>
         </th>
       </tr>
     </xsl:if>
@@ -123,6 +123,7 @@ to be incomplete. Don't forget to read the source, too :-)</para>
           </a>
         </xsl:when>
         <xsl:otherwise>
+          <xsl:call-template name="id.attribute"/>
           <xsl:call-template name="anchor"/>
           <xsl:apply-templates select="d:lhs"/>
         </xsl:otherwise>
@@ -315,13 +316,14 @@ to be incomplete. Don't forget to read the source, too :-)</para>
 <xsl:template match="d:constraintdef">
   <div>
     <xsl:apply-templates select="." mode="class.attribute"/>
+    <xsl:call-template name="id.attribute"/>
     <xsl:call-template name="anchor"/>
     <xsl:apply-templates/>
   </div>
 </xsl:template>
 
 <xsl:template match="d:constraintdef/d:title">
-  <p><b><xsl:apply-templates/></b></p>
+  <p><strong xmlns:xslo="http://www.w3.org/1999/XSL/Transform"><xsl:apply-templates/></strong></p>
 </xsl:template>
 
 <!-- ==================================================================== -->

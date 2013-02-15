@@ -25,6 +25,10 @@ Changes in version 0.3.2
 
 * Macros for repackaging Android apps for the BlackBerry PlayBook.
 
+* Upgraded to FOP 1.1.
+
+* Upraded to Docbook stylesheets 1.78.
+
 
 Changes in version 0.3.1
 ------------------------

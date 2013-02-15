@@ -23,9 +23,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Map;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -67,6 +67,8 @@ public class DocBookPublisher
     private static final TransformerFactory TRANSFORMER_FACTORY;
     static
     {
+        System.setProperty("javax.xml.parsers.SAXParserFactory",
+                           "org.apache.xerces.jaxp.SAXParserFactoryImpl");
         // Process XInclude tags.
         System.setProperty("org.apache.xerces.xni.parser.XMLParserConfiguration",
                            "org.apache.xerces.parsers.XIncludeParserConfiguration");
@@ -81,7 +83,7 @@ public class DocBookPublisher
 
     /**
      * Create a DocBookPublisher that generates output in the specified format.
-     * @param outputFormat A String contant representing one of the values of
+     * @param outputFormat A String constant representing one of the values of
      * {@link OutputFormat}.
      * @param chunked Whether the output should be divided into multiple files
      * (specifically for HTML output).

@@ -10,7 +10,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: titlepage.xsl 6558 2007-01-25 20:30:53Z bobstayton $
+     $Id: titlepage.xsl 9599 2012-09-11 12:11:26Z kosek $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -21,6 +21,15 @@
 
 <!-- ==================================================================== -->
 
+<!-- Namespace for wrapper elements. Please set it for XHTML. -->
+<xsl:param name="ns">
+  <!-- Guess correct setting for cases where parameter is not supplied -->
+  <xsl:choose>
+    <xsl:when test="//*[namespace-uri() = 'http://www.w3.org/1999/XSL/Format']">http://www.w3.org/1999/XSL/Format</xsl:when>
+    <xsl:when test="//*[namespace-uri() = 'http://www.w3.org/1999/xhtml']">http://www.w3.org/1999/xhtml</xsl:when>
+  </xsl:choose>
+</xsl:param>
+
 <xsl:template match="/">
   <xsl:text>&#x0a;</xsl:text>
   <xsl:apply-templates/>
@@ -30,7 +39,7 @@
 <doc:reference xmlns="">
 <referenceinfo>
 <releaseinfo role="meta">
-$Id: titlepage.xsl 6558 2007-01-25 20:30:53Z bobstayton $
+$Id: titlepage.xsl 9599 2012-09-11 12:11:26Z kosek $
 </releaseinfo>
 <author><surname>Walsh</surname>
 <firstname>Norman</firstname></author>
@@ -91,7 +100,7 @@ set of templates. This template creates an appropriate
     </xsl:for-each>
 
     <xsl:attribute name="version">1.0</xsl:attribute>
-    <xsl:attribute name="exclude-result-prefixes">exsl</xsl:attribute>
+    <xsl:attribute name="exclude-result-prefixes">exsl d</xsl:attribute>
 
     <xsl:text>&#xA;&#xA;</xsl:text>
     <xsl:comment>
@@ -196,7 +205,7 @@ and <quote>verso</quote> sides of the title page.</para>
       <xsl:text>.titlepage</xsl:text>
     </xsl:attribute>
     <xsl:text>&#xA;  </xsl:text>
-    <xsl:element name="{@t:wrapper}">
+    <xsl:element name="{@t:wrapper}" namespace="{$ns}">
       <xsl:apply-templates select="@*" mode="copy.literal.atts"/>
       <xsl:text>&#xA;    </xsl:text>
       <xsl:element name="xsl:variable">
@@ -250,7 +259,7 @@ and <quote>verso</quote> sides of the title page.</para>
       <xsl:element name="xsl:if">
         <xsl:attribute name="test">(normalize-space($recto.content) != '') or ($recto.elements.count > 0)</xsl:attribute>
         <xsl:text>&#xA;      </xsl:text>
-        <xsl:element name="{@t:wrapper}">
+        <xsl:element name="{@t:wrapper}" namespace="{$ns}">
           <xsl:apply-templates select="t:titlepage-content[@t:side='recto']/@*"
                                mode="copy.literal.atts"/>
           <xsl:element name="xsl:copy-of">
@@ -311,7 +320,7 @@ and <quote>verso</quote> sides of the title page.</para>
       <xsl:element name="xsl:if">
         <xsl:attribute name="test">(normalize-space($verso.content) != '') or ($verso.elements.count > 0)</xsl:attribute>
         <xsl:text>&#xA;      </xsl:text>
-        <xsl:element name="{@t:wrapper}">
+        <xsl:element name="{@t:wrapper}" namespace="{$ns}">
           <xsl:apply-templates select="t:titlepage-content[@t:side='verso']/@*"
                                mode="copy.literal.atts"/>
           <xsl:element name="xsl:copy-of">
@@ -400,7 +409,7 @@ and <quote>verso</quote> sides of the title page.</para>
           <xsl:text>.auto.mode</xsl:text>
         </xsl:attribute>
         <xsl:text>&#xA;</xsl:text>
-        <xsl:element name="{../../@t:wrapper}">
+        <xsl:element name="{../../@t:wrapper}" namespace="{$ns}">
           <xsl:attribute name="xsl:use-attribute-sets">
             <xsl:value-of select="../../@t:element"/>
             <xsl:text>.titlepage.</xsl:text>
@@ -912,7 +921,7 @@ names.</para>
     <xsl:when test="@t:force and @t:force != '0'">
       <xsl:choose>
         <xsl:when test="@t:named-template">
-          <xsl:element name="{../../@t:wrapper}">
+          <xsl:element name="{../../@t:wrapper}" namespace="{$ns}">
             <xsl:attribute name="xsl:use-attribute-sets">
               <xsl:value-of select="../../@t:element"/>
               <xsl:text>.titlepage.</xsl:text>
@@ -1309,7 +1318,7 @@ text of the select attribute.</para>
         <xsl:with-param name="orlist">
           <xsl:value-of select="$orlist"/>
           <xsl:if test="not($orlist='')">|</xsl:if>
-          <xsl:value-of select="name($elements[position()=$count])"/>
+          <xsl:value-of select="concat('d:', name($elements[position()=$count]))"/>
         </xsl:with-param>
       </xsl:call-template>
     </xsl:otherwise>

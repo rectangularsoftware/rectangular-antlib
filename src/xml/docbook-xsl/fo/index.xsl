@@ -1,8 +1,7 @@
 <?xml version='1.0'?>
 <!DOCTYPE xsl:stylesheet [
-<!ENTITY primary   'normalize-space(concat(d:primary/@sortas, d:primary[not(@sortas)]))'>
-<!ENTITY secondary 'normalize-space(concat(d:secondary/@sortas, d:secondary[not(@sortas)]))'>
-<!ENTITY tertiary  'normalize-space(concat(d:tertiary/@sortas, d:tertiary[not(@sortas)]))'>
+<!ENTITY % common.entities SYSTEM "../common/entities.ent">
+%common.entities;
 ]>
 <xsl:stylesheet exclude-result-prefixes="d"
                  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -12,7 +11,7 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: index.xsl 8317 2009-03-12 06:14:02Z bobstayton $
+     $Id: index.xsl 9286 2012-04-19 10:10:58Z bobstayton $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -475,7 +474,7 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format"
 
   <xsl:variable name="parent" select="concat('|', local-name($parentnode), '|')"/>
 
-  <xsl:variable name="block.parents" select="'|answer|appendix|appendixinfo|article|articleinfo|bibliodiv|bibliography|bibliographyinfo|blockinfo|blockquote|bookinfo|callout|caution|chapter|chapterinfo|dedication|example|figure|formalpara|funcsynopsisinfo|glossary|glossaryinfo|glossdef|glossdiv|glossentry|highlights|important|index|indexinfo|info|informalexample|informalfigure|informaltable|itemizedlist|legalnotice|listitem|msgexplan|msgtext|note|objectinfo|orderedlist|partinfo|partintro|preface|prefaceinfo|procedure|qandadiv|qandaset|question|refentry|refentryinfo|referenceinfo|refmeta|refmiscinfo|refsect1|refsect1info|refsect2|refsect2info|refsect3|refsect3info|refsection|refsectioninfo|refsynopsisdiv|refsynopsisdivinfo|revdescription|screeninfo|sect1|sect1info|sect2|sect2info|sect3|sect3info|sect4|sect4info|sect5|sect5info|section|sectioninfo|setindex|setindexinfo|setinfo|sidebar|sidebarinfo|simplesect|step|table|task|taskprerequisites|taskrelated|tasksummary|tip|variablelist|warning|'"/>
+  <xsl:variable name="block.parents" select="'|answer|appendix|appendixinfo|article|articleinfo|bibliodiv|bibliography|bibliographyinfo|blockinfo|blockquote|bookinfo|callout|caution|chapter|chapterinfo|dedication|example|figure|formalpara|funcsynopsisinfo|glossary|glossaryinfo|glossdef|glossdiv|glossentry|highlights|important|index|indexinfo|info|informalexample|informalfigure|informaltable|itemizedlist|legalnotice|listitem|msgexplan|msgtext|note|objectinfo|orderedlist|partinfo|partintro|preface|prefaceinfo|procedure|qandadiv|qandaset|question|refentry|refentryinfo|referenceinfo|refmeta|refmiscinfo|refsect1|refsect1info|refsect2|refsect2info|refsect3|refsect3info|refsection|refsectioninfo|refsynopsisdiv|refsynopsisdivinfo|revdescription|screeninfo|sect1|sect1info|sect2|sect2info|sect3|sect3info|sect4|sect4info|sect5|sect5info|section|sectioninfo|setindex|setindexinfo|setinfo|sidebar|sidebarinfo|simplesect|step|table|task|taskprerequisites|taskrelated|tasksummary|tip|topic|variablelist|warning|'"/>
 
   <xsl:choose>
     <xsl:when test="contains($block.parents, $parent)">fo:block</xsl:when>
