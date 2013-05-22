@@ -1,5 +1,5 @@
 Uncommons Antlib - Tools for building modular software with Apache Ant
-(C) Copyright 2008-2012 Daniel W. Dyer
+(C) Copyright 2008-2013 Daniel W. Dyer
 
 SYNOPSIS
 

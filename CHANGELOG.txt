@@ -1,3 +1,9 @@
+Changes in version 0.3.3
+------------------------
+
+* Updated Maven macro to default to Sonatype OSS repository.
+
+
 Changes in version 0.3.2
 ------------------------
 

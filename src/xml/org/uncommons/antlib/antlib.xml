@@ -399,7 +399,7 @@
   <macrodef name="maven-deploy">
     <attribute name="module"/>
     <attribute name="version"/>
-    <attribute name="repository" default="svn:https://svn.java.net/svn/maven2-repository~svn/trunk/repository/"/>
+    <attribute name="repository" default="https://oss.sonatype.org/service/local/staging/deploy/maven2/"/>
     <attribute name="username" />
     <attribute name="password" />
 
@@ -413,11 +413,9 @@
           <classpath>
             <fileset dir="${lib.dir}" includes="**/*.jar"/>
           </classpath>
-        </typedef>        
-        <!-- Install the SVN transfer module (this is needed for the Java.net Maven repository). -->
-        <maven:install-provider groupId="org.jvnet.wagon-svn" artifactId="wagon-svn" version="1.8">
-          <remoteRepository url="http://download.java.net/maven/2/"/>
-        </maven:install-provider>
+        </typedef>
+        <!-- Install the HTTP transfer module (this is needed for the Sonatype Maven repository). -->
+        <maven:install-provider artifactId="wagon-http-lightweight" version="2.4" />
       </current:once>
 
       <!-- Create a copy of the module POM file with the version number populated. -->
