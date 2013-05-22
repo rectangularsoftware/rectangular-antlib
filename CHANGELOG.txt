@@ -3,6 +3,12 @@ Changes in version 0.3.3
 
 * Updated Maven macro to default to Sonatype OSS repository.
 
+* Added bootclasspath option to Javadoc macro.
+
+* Made Javdoc version attribute optional.
+
+* Include generated source directories for Javadoc.
+
 
 Changes in version 0.3.2
 ------------------------

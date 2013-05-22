@@ -306,20 +306,22 @@
   <macrodef name="javadoc">
     <attribute name="dir" default="${api.dir}"/>
     <attribute name="title"/>
-    <attribute name="version"/>
+    <attribute name="version" default=""/>
+    <attribute name="bootclasspath"/>
     <attribute name="excludes" default=""/>
     <element name="additionalconfig" optional="true"/>
     <sequential>
       <current:defaults />
       <mkdir dir="@{dir}"/>
       <javadoc destdir="@{dir}"
+               bootclasspath="@{bootclasspath}"
                doctitle="@{title} @{version}"
                windowtitle="@{title}"
                encoding="${encoding}">
         <classpath>
           <fileset dir="." includes="**/${lib.runtime}/*.jar" />
         </classpath>
-        <fileset dir="." defaultexcludes="yes" includes="**/${java.dir}/main/**/*.java" excludes="@{excludes}" />
+        <fileset dir="." defaultexcludes="yes" includes="**/${java.dir}/main/**/*.java,**/${generated.dir}/main/**/*.java" excludes="@{excludes}" />
         <header><![CDATA[@{title}<br><small>(Version @{version})</small>]]></header>
         <link href="http://java.sun.com/javase/6/docs/api/"/>
         <additionalconfig />
