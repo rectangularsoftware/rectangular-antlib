@@ -94,8 +94,8 @@
        single module.  -->
   <macrodef name="compile">
     <attribute name="module"/>
-    <attribute name="source" default="1.5"/>
-    <attribute name="target" default="1.5"/>
+    <attribute name="source" default="1.6"/>
+    <attribute name="target" default="1.6"/>
     <attribute name="bootclasspath" default=""/>
     <element name="additionalclasspath" optional="true"/>
     <sequential>
@@ -478,7 +478,7 @@
         <property name="platform.tools.dir" value="${sdk.dir}/platform-tools" />
 
         <path id="android.antlibs">
-          <pathelement path="${sdk.dir}/tools/lib/anttasks.jar" />
+          <pathelement path="${sdk.dir}/tools/lib/ant-tasks.jar" />
           <pathelement path="${sdk.dir}/tools/lib/sdklib.jar" />
           <pathelement path="${sdk.dir}/tools/lib/androidprefs.jar" />
         </path>

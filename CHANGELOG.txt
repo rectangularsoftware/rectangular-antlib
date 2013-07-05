@@ -9,6 +9,8 @@ Changes in version 0.3.3
 
 * Include generated source directories for Javadoc.
 
+* Updated Android Ant tasks path to match latest Android SDK.
+
 
 Changes in version 0.3.2
 ------------------------
