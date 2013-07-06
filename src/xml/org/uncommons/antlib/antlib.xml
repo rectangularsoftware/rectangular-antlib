@@ -145,7 +145,6 @@
     <attribute name="overloadaggressively" default="true"/>
     <attribute name="defaultpackage" default=""/>
     <attribute name="printmapping" default="false"/>
-    <attribute name="configuration" default="" />
     <element name="additionaloptions" optional="true"/>
     <sequential>
       <taskdef resource="proguard/ant/task.properties" classpath="${lib.compiletime}/proguard/proguard.jar" />
@@ -158,8 +157,7 @@
                 skipnonpubliclibraryclassmembers="false"
                 overloadaggressively="@{overloadaggressively}"
                 printmapping="@{printmapping}"
-                defaultpackage="@{defaultpackage}"
-                configuration="@{configuration}">
+                defaultpackage="@{defaultpackage}">
         <libraryjar path="@{bootclasspathjar}" />
         <libraryjar>
           <fileset dir="${lib.runtime}" includes="**/*.jar" erroronmissingdir="false"/>
@@ -525,7 +523,7 @@
     <attribute name="defaultpackage" default=""/>
     <attribute name="usemixedcaseclassnames" default="true"/>
     <attribute name="printmapping" default="false"/>
-    <attribute name="configuration" default="" />
+    <element name="configuration" optional="true"/>
     <element name="additionalclasspath" optional="true"/>
     <sequential>
       <current:obfuscate module="@{module}"
@@ -533,9 +531,9 @@
                          usemixedcaseclassnames="@{usemixedcaseclassnames}"
                          overloadaggressively="false"
                          defaultpackage="@{defaultpackage}"
-                         printmapping="@{printmapping}"
-                         configuration="@{configuration}">
+                         printmapping="@{printmapping}">
         <additionaloptions>
+          <configuration />
           <!-- Don't rename activities or other components otherwise the Android manifest will be wrong. -->
           <keep extends="android.app.Activity" />
           <keep extends="android.app.Application" />
