@@ -463,7 +463,8 @@
   </macrodef>
 
 
-  <!-- Set default properties for Android projects.  Requires sdk.dir and target to have already been set. -->
+  <!-- Set default properties for Android projects.  Requires sdk.dir, tools.version and target to have
+      already been set. -->
   <macrodef name="android-defaults">
     <sequential>
       <current:defaults />
@@ -473,7 +474,7 @@
 
         <property name="target.dir" value="${sdk.dir}/platforms/${target}" />
         <property name="tools.dir" value="${sdk.dir}/tools" />
-        <property name="platform.tools.dir" value="${sdk.dir}/platform-tools" />
+        <property name="build.tools.dir" value="${sdk.dir}/build-tools/${tools.version}" />
 
         <path id="android.antlibs">
           <pathelement path="${sdk.dir}/tools/lib/ant-tasks.jar" />
@@ -499,7 +500,7 @@
       <!-- Git does not store empty directories, so we have to make sure the asset directory exists. -->
       <mkdir dir="${asset.dir}" />
       <mkdir dir="${generated.dir}/main" />
-      <exec executable="${platform.tools.dir}/aapt" failonerror="true">
+      <exec executable="${build.tools.dir}/aapt" failonerror="true">
         <arg value="package" />
         <arg value="-m" />
         <arg value="-M" />
@@ -571,14 +572,14 @@
     <sequential>
       <current:android-defaults />
 
-      <apply executable="${platform.tools.dir}/${dx.executable}" parallel="true" failonerror="true">
+      <apply executable="${build.tools.dir}/${dx.executable}" parallel="true" failonerror="true">
         <arg value="--dex" />
         <arg value="--output=${basedir}/${build.dir}/classes.dex" />
         <arg path="${classes.dir}/main" />
         <fileset dir="${lib.runtime}" includes="*.jar" erroronmissingdir="false" />
       </apply>
 
-      <exec executable="${platform.tools.dir}/aapt" failonerror="true">
+      <exec executable="${build.tools.dir}/aapt" failonerror="true">
         <arg value="package" />
         <arg value="-M" />
         <arg path="@{manifest}" />
