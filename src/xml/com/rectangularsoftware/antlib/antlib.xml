@@ -265,7 +265,6 @@
     <attribute name="dialect" default="testng" description="Set to 'junit' to generate XML for junitreport." />
     <attribute name="headless" default="false" />
     <attribute name="mincoverage" default="60" />
-    <attribute name="classpath" default=""/>
     <attribute name="coverageExcludeRegex" default="" />
 
     <sequential>
@@ -278,6 +277,7 @@
         <dirset dir="." includes="**/${java.dir}/test-resources" />
         <fileset dir="${temp.dir}" includes="*.jar"/>
         <fileset dir="." includes="**/${lib.dir}/**/*.jar"/>
+        <pathelement path="${target.dir}/android.jar" />
       </path>
 
       <taskdef resource="tasks.properties" classpathref="test.path" />
@@ -303,7 +303,6 @@
               haltonfailure="false"
               useDefaultListeners="false"
               listeners="org.uncommons.reportng.HTMLReporter,org.uncommons.reportng.JUnitXMLReporter">
-        <classpath path="@{classpath}" />
         <xmlfileset dir="." includes="@{suites}"/>
         <sysproperty key="java.awt.headless" value="@{headless}" />
         <sysproperty key="net.sourceforge.cobertura.datafile"
