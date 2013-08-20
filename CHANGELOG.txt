@@ -2,3 +2,7 @@ Changes in version 1.0
 ----------------------
 
 * Forked Uncommons Antlib 0.3.3 and removed DocBook and Maven support.
+
+* Converted names, packages and paths to Rectangular Software ones.
+
+* Simplified macros by assuming all projects are Android projects.

@@ -42,9 +42,27 @@
         <property name="dist.dir" value="dist" />
         <property name="release.dir" value="release" />
         <property name="encoding" value="utf-8" />
+
+        <!-- Defaults for Android projects.  Requires sdk.dir, tools.version and target to have already been set. -->
+        <property name="resource.dir" value="res" />
+        <property name="asset.dir" value="assets" />
+        <property name="target.dir" value="${sdk.dir}/platforms/${target}" />
+        <property name="tools.dir" value="${sdk.dir}/tools" />
+        <property name="build.tools.dir" value="${sdk.dir}/build-tools/${tools.version}" />
+        <path id="android.antlibs">
+          <pathelement path="${sdk.dir}/tools/lib/ant-tasks.jar" />
+          <pathelement path="${sdk.dir}/tools/lib/sdklib.jar" />
+          <pathelement path="${sdk.dir}/tools/lib/androidprefs.jar" />
+        </path>
+        <condition property="dx.executable" value="dx.bat" else="dx">
+          <os family="windows" />
+        </condition>
+        <taskdef name="apkbuilder" classname="com.android.ant.ApkBuilderTask" classpathref="android.antlibs" />
+
       </current:once>
     </sequential>
   </macrodef>
+
 
   <!-- This macro deletes all build artifacts from a module. -->
   <macrodef name="clean">
@@ -96,7 +114,6 @@
     <attribute name="module"/>
     <attribute name="source" default="1.6"/>
     <attribute name="target" default="1.6"/>
-    <attribute name="bootclasspath" default=""/>
     <element name="additionalclasspath" optional="true"/>
     <sequential>
       <current:defaults />
@@ -117,7 +134,7 @@
                             tree="main"
                             source="@{source}"
                             target="@{target}"
-                            bootclasspath="@{bootclasspath}">
+                            bootclasspath="${target.dir}/android.jar">
         <treeclasspath>
           <path refid="moduleclasspath" />
         </treeclasspath>
@@ -126,7 +143,7 @@
                             tree="test"
                             source="@{source}"
                             target="@{target}"
-                            bootclasspath="@{bootclasspath}">
+                            bootclasspath="${target.dir}/android.jar">
         <treeclasspath>
           <!-- Add the main classes to the classpath for unit test compilation. -->
           <path location="${modules.dir}/@{module}/${classes.dir}/main" />
@@ -140,12 +157,11 @@
   <!-- Shrink and obfuscate a module's class files. -->
   <macrodef name="obfuscate">
     <attribute name="module"/>
-    <attribute name="bootclasspathjar"/>
     <attribute name="usemixedcaseclassnames" default="true"/>
-    <attribute name="overloadaggressively" default="true"/>
     <attribute name="defaultpackage" default=""/>
     <attribute name="printmapping" default="false"/>
-    <element name="additionaloptions" optional="true"/>
+    <element name="configuration" optional="true"/>
+    <element name="additionalclasspath" optional="true"/>
     <sequential>
       <taskdef resource="proguard/ant/task.properties" classpath="${lib.compiletime}/proguard/proguard.jar" />
       <move file="${modules.dir}/@{module}/${classes.dir}/main" todir="${modules.dir}/@{module}/${build.dir}/unobfuscated" />
@@ -155,19 +171,44 @@
                 usemixedcaseclassnames="@{usemixedcaseclassnames}"
                 allowaccessmodification="true"
                 skipnonpubliclibraryclassmembers="false"
-                overloadaggressively="@{overloadaggressively}"
+                overloadaggressively="false"
                 printmapping="@{printmapping}"
                 defaultpackage="@{defaultpackage}">
-        <libraryjar path="@{bootclasspathjar}" />
+        <libraryjar path="${target.dir}/android.jar" />
         <libraryjar>
           <fileset dir="${lib.runtime}" includes="**/*.jar" erroronmissingdir="false"/>
         </libraryjar>
+        <libraryjar>
+          <additionalclasspath />
+        </libraryjar>
         <injar location="${modules.dir}/@{module}/${build.dir}/unobfuscated/main" />
-        <outjar location="${modules.dir}/@{module}/${classes.dir}/main" />        
+        <outjar location="${modules.dir}/@{module}/${classes.dir}/main" />
+
+        <configuration />
         <keep extends="java.lang.Enum">
           <method name="values" />
         </keep>
-        <additionaloptions/>
+        <!-- Don't rename activities or other components otherwise the Android manifest will be wrong. -->
+        <keep extends="android.app.Activity" />
+        <keep extends="android.app.Application" />
+        <keep extends="android.app.Service" />
+        <keep extends="android.content.BroadcastReceiver" />
+        <keep extends="android.content.ContentProvider" />
+        <keep extends="android.app.Fragment" />
+        <keep extends="android.support.v4.app.Fragment" />
+        <dontnote filter="android.support.v4.app.Fragment" /> <!-- Support library might not be present. -->
+        <keepclassmembers>
+          <field type="android.os.Parcelable$Creator" name="CREATOR" />
+        </keepclassmembers>
+        <!-- Preserve names and constructors needed to instantiate views from XML. -->
+        <keepclasseswithmembers extends="android.view.View">
+          <constructor access="public" parameters="android.content.Context,android.util.AttributeSet"/>
+        </keepclasseswithmembers>
+        <!-- Preserve names and constructors needed to instantiate preferences from XML. -->
+        <keepclasseswithmembers extends="android.preference.Preference">
+          <constructor access="public" parameters="android.content.Context,android.util.AttributeSet"/>
+        </keepclasseswithmembers>
+
       </proguard>
     </sequential>
   </macrodef>
@@ -394,40 +435,11 @@
   </macrodef>
 
 
-  <!-- Set default properties for Android projects.  Requires sdk.dir, tools.version and target to have
-      already been set. -->
-  <macrodef name="android-defaults">
-    <sequential>
-      <current:defaults />
-      <current:once property="rectangular-antlib.android">
-        <property name="resource.dir" value="res" />
-        <property name="asset.dir" value="assets" />
-
-        <property name="target.dir" value="${sdk.dir}/platforms/${target}" />
-        <property name="tools.dir" value="${sdk.dir}/tools" />
-        <property name="build.tools.dir" value="${sdk.dir}/build-tools/${tools.version}" />
-
-        <path id="android.antlibs">
-          <pathelement path="${sdk.dir}/tools/lib/ant-tasks.jar" />
-          <pathelement path="${sdk.dir}/tools/lib/sdklib.jar" />
-          <pathelement path="${sdk.dir}/tools/lib/androidprefs.jar" />
-        </path>
-
-        <condition property="dx.executable" value="dx.bat" else="dx">
-          <os family="windows" />
-        </condition>
-
-        <taskdef name="apkbuilder" classname="com.android.ant.ApkBuilderTask" classpathref="android.antlibs" />
-      </current:once>
-    </sequential>
-  </macrodef>
-
-
   <!-- Generate the Android R.java source file from the resources directory. -->
-  <macrodef name="android-resources">
+  <macrodef name="resources">
     <attribute name="manifest" default="AndroidManifest.xml" />
     <sequential>
-      <current:android-defaults />
+      <current:defaults />
       <!-- Git does not store empty directories, so we have to make sure the asset directory exists. -->
       <mkdir dir="${asset.dir}" />
       <mkdir dir="${generated.dir}/main" />
@@ -449,59 +461,13 @@
   </macrodef>
 
 
-  <!-- Specialised obfuscation macro, pre-configured for obfuscating android applications. -->
-  <macrodef name="android-obfuscate">
-    <attribute name="module"/>
-    <attribute name="defaultpackage" default=""/>
-    <attribute name="usemixedcaseclassnames" default="true"/>
-    <attribute name="printmapping" default="false"/>
-    <element name="configuration" optional="true"/>
-    <element name="additionalclasspath" optional="true"/>
-    <sequential>
-      <current:obfuscate module="@{module}"
-                         bootclasspathjar="${target.dir}/android.jar"
-                         usemixedcaseclassnames="@{usemixedcaseclassnames}"
-                         overloadaggressively="false"
-                         defaultpackage="@{defaultpackage}"
-                         printmapping="@{printmapping}">
-        <additionaloptions>
-          <configuration />
-          <!-- Don't rename activities or other components otherwise the Android manifest will be wrong. -->
-          <keep extends="android.app.Activity" />
-          <keep extends="android.app.Application" />
-          <keep extends="android.app.Service" />
-          <keep extends="android.content.BroadcastReceiver" />
-          <keep extends="android.content.ContentProvider" />
-          <keep extends="android.app.Fragment" />
-          <keep extends="android.support.v4.app.Fragment" />
-          <dontnote filter="android.support.v4.app.Fragment" /> <!-- Support library might not be present. -->
-          <keepclassmembers>
-            <field type="android.os.Parcelable$Creator" name="CREATOR" />
-          </keepclassmembers>
-          <!-- Preserve names and constructors needed to instantiate views from XML. -->
-          <keepclasseswithmembers extends="android.view.View">
-            <constructor access="public" parameters="android.content.Context,android.util.AttributeSet"/>
-          </keepclasseswithmembers>
-          <!-- Preserve names and constructors needed to instantiate preferences from XML. -->
-          <keepclasseswithmembers extends="android.preference.Preference">
-            <constructor access="public" parameters="android.content.Context,android.util.AttributeSet"/>
-          </keepclasseswithmembers>
-          <libraryjar>
-            <additionalclasspath />
-          </libraryjar>
-        </additionaloptions>
-      </current:obfuscate>
-    </sequential>
-  </macrodef>
-
-
-  <macrodef name="android-package">
+  <macrodef name="package">
     <attribute name="debug" />
     <attribute name="manifest" />
     <attribute name="name"/>
     <attribute name="package" />
     <sequential>
-      <current:android-defaults />
+      <current:defaults />
 
       <apply executable="${build.tools.dir}/${dx.executable}" parallel="true" failonerror="true">
         <arg value="--dex" />
@@ -539,16 +505,16 @@
   </macrodef>
 
 
-  <macrodef name="android-package-debug">
+  <macrodef name="package-debug">
     <attribute name="manifest" default="AndroidManifest.xml" />
     <attribute name="name" default="${ant.project.name}-debug"/>
     <attribute name="package" />
     <sequential>
-      <current:android-defaults />
+      <current:defaults />
 
       <!-- This property has to be set for 1.5 projects because apkbuilder is expecting it. -->
       <property name="out.debug.unaligned.package" value="${build.dir}/@{name}-unaligned.apk" />
-      <current:android-package debug="true" manifest="@{manifest}" name="@{name}-unaligned" package="@{package}"/>
+      <current:package debug="true" manifest="@{manifest}" name="@{name}-unaligned" package="@{package}"/>
 
       <exec executable="${tools.dir}/zipalign" failonerror="true">
         <arg value="-f" />
@@ -560,16 +526,16 @@
   </macrodef>
 
 
-  <macrodef name="android-package-release">
+  <macrodef name="package-release">
     <attribute name="manifest" default="AndroidManifest.xml" />
     <attribute name="name" default="${ant.project.name}"/>
     <attribute name="package" />
     <sequential>
-      <current:android-defaults />
+      <current:defaults />
 
       <!-- This property has to be set for 1.5 projects because apkbuilder is expecting it. -->
       <property name="out.release.unaligned.package" value="${build.dir}/@{name}-unaligned.apk" />
-      <current:android-package debug="false" manifest="@{manifest}" name="@{name}-unsigned" package="@{package}"/>
+      <current:package debug="false" manifest="@{manifest}" name="@{name}-unsigned" package="@{package}"/>
 
       <!-- Gets passwords -->
       <input message="Please enter keystore password (store:${key.store}):" addproperty="key.password">
@@ -595,12 +561,12 @@
   </macrodef>
 
   <!-- Repackage an Android APK for deployment on a BlackBerry device. -->
-  <macrodef name="android-bar">
+  <macrodef name="bar">
     <attribute name="package" />
     <attribute name="token" />
     <attribute name="author" />
     <sequential>
-      <current:android-defaults />
+      <current:defaults />
       <exec executable="apk2bar" failonerror="true">
         <arg value="@{package}" />
         <arg value="${sdk.dir}" />
@@ -613,12 +579,12 @@
     </sequential>
   </macrodef>
 
-  <macrodef name="android-bar-sign">
+  <macrodef name="bar-sign">
     <attribute name="bar" />
     <attribute name="certificate" />
     <attribute name="password" />
     <sequential>
-      <current:android-defaults />
+      <current:defaults />
       <exec executable="batchbar-signer" failonerror="true">
         <arg value="@{bar}" />
         <arg value="@{certificate}" />

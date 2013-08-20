@@ -15,7 +15,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 ========================================================================== -->
-<project name="uncommons-antlib" default="dist" basedir=".">
+<project name="rectangular-antlib" default="dist" basedir=".">
 
   <description>Ant build file for the Rectangular Antlib project.</description>
 
@@ -35,8 +35,6 @@
            debug="on"
            deprecation="on"
            optimize="on"
-           source="1.5"
-           target="1.5"
            srcdir="./src/java/main"
            includeantruntime="false">
       <classpath>
