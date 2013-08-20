@@ -289,7 +289,8 @@
         <fileset dir="." includes="**/${build.dir}/*.jar" excludes="**/${build.dir}/*-src.jar" />
       </copy>
       <cobertura-instrument todir="${temp.dir}"
-                            datafile="${temp.dir}/cobertura.ser">
+                            datafile="${temp.dir}/cobertura.ser"
+                            ignoreTrivial="true">
         <includeClasses regex=".*" />
         <excludeClasses regex="@{coverageExcludeRegex}" />
         <fileset dir="${temp.dir}/originals" includes="*.jar"/>
