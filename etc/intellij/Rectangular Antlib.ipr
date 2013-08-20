@@ -445,14 +445,14 @@
     </group>
   </component>
   <component name="ProjectDetails">
-    <option name="projectName" value="Uncommons Antlib" />
+    <option name="projectName" value="Rectangular Antlib" />
   </component>
   <component name="ProjectKey">
     <option name="state" value="https://uncommons-antlib.dev.java.net/svn/uncommons-antlib/trunk/etc/intellij/Uncommons%20Antlib.ipr" />
   </component>
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Uncommons Antlib.iml" filepath="$PROJECT_DIR$/Uncommons Antlib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Rectangular Antlib.iml" filepath="$PROJECT_DIR$/Rectangular Antlib.iml" />
     </modules>
   </component>
   <component name="ProjectResources">

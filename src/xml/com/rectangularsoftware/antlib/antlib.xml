@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <!-- =========================================================================
-  Copyright 2008-2012 Daniel W. Dyer
+  Copyright 2013 Rectangular Software Ltd.
+  Copyright 2008-2013 Daniel W. Dyer
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,12 +17,12 @@
 ========================================================================== -->
 <antlib xmlns:current="ant:current">
 
-  <taskdef name="once" classname="org.uncommons.antlib.tasks.Once" />
-  <taskdef name="gzip" classname="org.uncommons.antlib.tasks.GZip" />
+  <taskdef name="once" classname="com.rectangularsoftware.antlib.tasks.Once" />
+  <taskdef name="gzip" classname="com.rectangularsoftware.antlib.tasks.GZip" />
 
   <macrodef name="defaults">
     <sequential>
-      <current:once property="uncommons-antlib.defaults">
+      <current:once property="rectangular-antlib.defaults">
         <!-- The directory under which each of the modules directories is found. -->
         <property name="modules.dir" location="." />
         <!-- Per-module locations. -->
@@ -398,7 +399,7 @@
   <macrodef name="android-defaults">
     <sequential>
       <current:defaults />
-      <current:once property="uncommons-antlib.android">
+      <current:once property="rectangular-antlib.android">
         <property name="resource.dir" value="res" />
         <property name="asset.dir" value="assets" />
 

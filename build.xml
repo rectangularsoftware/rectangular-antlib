@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <!-- =========================================================================
-  Copyright 2008-2012 Daniel W. Dyer
+  Copyright 2013 Rectangular Software Ltd.
+  Copyright 2008-2013 Daniel W. Dyer
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may notP use this file except in compliance with the License.
@@ -16,7 +17,7 @@
 ========================================================================== -->
 <project name="uncommons-antlib" default="dist" basedir=".">
 
-  <description>Ant build file for the Uncommons Antlib project.</description>
+  <description>Ant build file for the Rectangular Antlib project.</description>
 
   <property name="version" value="1.0" />
   <property name="artifact.identifier" value="${ant.project.name}-${version}" />
