@@ -157,18 +157,16 @@
   <!-- Shrink and obfuscate a module's class files. -->
   <macrodef name="obfuscate">
     <attribute name="module"/>
-    <attribute name="usemixedcaseclassnames" default="true"/>
     <attribute name="defaultpackage" default=""/>
     <attribute name="printmapping" default="false"/>
     <element name="configuration" optional="true"/>
     <element name="additionalclasspath" optional="true"/>
     <sequential>
       <taskdef resource="proguard/ant/task.properties" classpath="${sdk.dir}/tools/proguard/lib/proguard.jar" />
-      <move file="${modules.dir}/@{module}/${classes.dir}/main" todir="${modules.dir}/@{module}/${build.dir}/unobfuscated" />
       <proguard shrink="true"
                 obfuscate="true"
                 optimize="true"
-                usemixedcaseclassnames="@{usemixedcaseclassnames}"
+                usemixedcaseclassnames="true"
                 allowaccessmodification="true"
                 skipnonpubliclibraryclassmembers="false"
                 overloadaggressively="false"
@@ -181,8 +179,8 @@
         <libraryjar>
           <additionalclasspath />
         </libraryjar>
-        <injar location="${modules.dir}/@{module}/${build.dir}/unobfuscated/main" />
-        <outjar location="${modules.dir}/@{module}/${classes.dir}/main" />
+        <injar location="${modules.dir}/@{module}/${classes.dir}/main" />
+        <outjar location="${modules.dir}/@{module}/${build.dir}/obfuscated.jar" />
 
         <configuration />
         <keep extends="java.lang.Enum">
@@ -294,6 +292,7 @@
         <includeClasses regex=".*" />
         <excludeClasses regex="@{coverageExcludeRegex}" />
         <fileset dir="${temp.dir}/originals" includes="*.jar"/>
+        <auxClasspath path="${classes.dir}/main" />
       </cobertura-instrument>
 
       <!-- Run the unit tests on the instrumented classes. -->
@@ -466,13 +465,14 @@
     <attribute name="manifest" />
     <attribute name="name"/>
     <attribute name="package" />
+    <attribute name="classesjar" />
     <sequential>
       <current:defaults />
 
       <apply executable="${build.tools.dir}/${dx.executable}" parallel="true" failonerror="true">
         <arg value="--dex" />
         <arg value="--output=${basedir}/${build.dir}/classes.dex" />
-        <arg path="${classes.dir}/main" />
+        <arg path="${build.dir}/@{classesjar}" />
         <fileset dir="${lib.runtime}" includes="*.jar" erroronmissingdir="false" />
       </apply>
 
@@ -514,7 +514,11 @@
 
       <!-- This property has to be set for 1.5 projects because apkbuilder is expecting it. -->
       <property name="out.debug.unaligned.package" value="${build.dir}/@{name}-unaligned.apk" />
-      <current:package debug="true" manifest="@{manifest}" name="@{name}-unaligned" package="@{package}"/>
+      <current:package debug="true"
+                       manifest="@{manifest}"
+                       name="@{name}-unaligned"
+                       package="@{package}"
+                       classesjar="unobfuscated.jar"/>
 
       <exec executable="${tools.dir}/zipalign" failonerror="true">
         <arg value="-f" />
@@ -535,7 +539,11 @@
 
       <!-- This property has to be set for 1.5 projects because apkbuilder is expecting it. -->
       <property name="out.release.unaligned.package" value="${build.dir}/@{name}-unaligned.apk" />
-      <current:package debug="false" manifest="@{manifest}" name="@{name}-unsigned" package="@{package}"/>
+      <current:package debug="false"
+                       manifest="@{manifest}"
+                       name="@{name}-unsigned"
+                       package="@{package}"
+                       classesjar="obfuscated.jar"/>
 
       <!-- Gets passwords -->
       <input message="Please enter keystore password (store:${key.store}):" addproperty="key.password">
