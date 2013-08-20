@@ -14,11 +14,10 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 ========================================================================== -->
-<antlib xmlns:current="ant:current" xmlns:maven="urn:maven-artifact-ant">
+<antlib xmlns:current="ant:current">
 
   <taskdef name="once" classname="org.uncommons.antlib.tasks.Once" />
   <taskdef name="gzip" classname="org.uncommons.antlib.tasks.GZip" />
-  <taskdef name="docbook" classname="org.uncommons.antlib.tasks.docbook.DocBook" />
 
   <macrodef name="defaults">
     <sequential>
@@ -390,75 +389,6 @@
                     includes="*.txt" />
         <additionalcontents/>
       </zip>
-    </sequential>
-  </macrodef>
-
-  
-  <!-- Builds the module POM file and source JARs required by Maven and
-       then deploys the whole lot to a Maven repository. -->
-  <macrodef name="maven-deploy">
-    <attribute name="module"/>
-    <attribute name="version"/>
-    <attribute name="repository" default="https://oss.sonatype.org/service/local/staging/deploy/maven2/"/>
-    <attribute name="username" />
-    <attribute name="password" />
-
-    <sequential>
-      <current:defaults />
-
-      <!-- Do this configuration only once, no matter how many times this macro is called
-           (which typically happens when deploying multiple modules). -->
-      <current:once property="uncommons-antlib.maven-config">
-        <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant">
-          <classpath>
-            <fileset dir="${lib.dir}" includes="**/*.jar"/>
-          </classpath>
-        </typedef>
-        <!-- Install the HTTP transfer module (this is needed for the Sonatype Maven repository). -->
-        <maven:install-provider artifactId="wagon-http-lightweight" version="2.4" />
-      </current:once>
-
-      <!-- Create a copy of the module POM file with the version number populated. -->
-      <copy file="${modules.dir}/@{module}/pom.xml"
-            tofile="${modules.dir}/@{module}/${build.dir}/pom.xml">
-        <filterset>
-          <filter token="VERSION" value="@{version}"/>
-        </filterset>
-      </copy>
-      <maven:pom id="@{module}.pom" file="${modules.dir}/@{module}/${build.dir}/pom.xml" />
-
-      <!-- Create the POM properties file. -->
-      <propertyfile file="${modules.dir}/@{module}/${build.dir}/pom.properties">
-        <entry key="version" value="@{version}"/>
-        <entry key="groupId" value="${@{module}.pom.groupId}"/>
-        <entry key="artifactId" value="${@{module}.pom.artifactId}"/>
-      </propertyfile>
-
-      <!-- Insert the POM and properties file into the previously built module JAR file. -->
-      <jar update="true" jarfile="${modules.dir}/@{module}/${build.dir}/${@{module}.pom.artifactId}-@{version}.jar">
-        <zipfileset dir="${modules.dir}/@{module}/${build.dir}"
-                    includes="pom.xml,pom.properties"
-                    prefix="META-INF/maven/${@{module}.pom.groupId}/${@{module}.pom.artifactId}" />
-      </jar>
-
-      <!-- Create source JARs for the main code and the tests. -->
-      <current:source module="@{module}" tree="main" jarfile="${@{module}.pom.artifactId}-@{version}-sources.jar"/>
-      <current:source module="@{module}" tree="test" jarfile="${@{module}.pom.artifactId}-@{version}-test-sources.jar"/>
-
-      <maven:remoteRepository id="maven.repository" url="@{repository}">
-        <authentication username="@{username}" password="@{password}"/>
-      </maven:remoteRepository>
-
-      <maven:deploy file="${modules.dir}/@{module}/${build.dir}/${@{module}.pom.artifactId}-@{version}.jar">
-        <remoteRepository refid="maven.repository"/>
-        <pom refid="@{module}.pom"/>
-        <attach file="${modules.dir}/@{module}/${build.dir}/${@{module}.pom.artifactId}-@{version}-sources.jar"
-                type="jar"
-                classifier="sources"/>
-        <attach file="${modules.dir}/@{module}/${build.dir}/${@{module}.pom.artifactId}-@{version}-test-sources.jar"
-                type="jar"
-                classifier="test-sources"/>
-      </maven:deploy>
     </sequential>
   </macrodef>
 
