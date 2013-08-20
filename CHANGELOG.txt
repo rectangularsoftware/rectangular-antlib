@@ -6,3 +6,7 @@ Changes in version 1.0
 * Converted names, packages and paths to Rectangular Software ones.
 
 * Simplified macros by assuming all projects are Android projects.
+
+* Updated to latest versions of TestNG, ReportNG and Cobertura.
+
+* Removed bundled Proguard.  Now uses Android SDK version instead.

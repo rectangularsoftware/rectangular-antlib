@@ -163,7 +163,7 @@
     <element name="configuration" optional="true"/>
     <element name="additionalclasspath" optional="true"/>
     <sequential>
-      <taskdef resource="proguard/ant/task.properties" classpath="${lib.compiletime}/proguard/proguard.jar" />
+      <taskdef resource="proguard/ant/task.properties" classpath="${sdk.dir}/tools/proguard/lib/proguard.jar" />
       <move file="${modules.dir}/@{module}/${classes.dir}/main" todir="${modules.dir}/@{module}/${build.dir}/unobfuscated" />
       <proguard shrink="true"
                 obfuscate="true"
