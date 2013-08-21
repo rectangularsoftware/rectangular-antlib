@@ -12,3 +12,7 @@ Changes in version 1.0
 * Removed bundled Proguard.  Now uses Android SDK version instead.
 
 * Fix for Proguard obfuscation on case-insensitive file systems.
+
+* Output Proguard mapping file by default.
+
+* Load properties from local.properties by default.

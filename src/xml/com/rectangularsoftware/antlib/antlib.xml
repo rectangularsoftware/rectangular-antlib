@@ -18,11 +18,11 @@
 <antlib xmlns:current="ant:current">
 
   <taskdef name="once" classname="com.rectangularsoftware.antlib.tasks.Once" />
-  <taskdef name="gzip" classname="com.rectangularsoftware.antlib.tasks.GZip" />
 
   <macrodef name="defaults">
     <sequential>
       <current:once property="rectangular-antlib.defaults">
+        <property file="local.properties" />
         <property name="src.dir" value="./src" />
         <property name="java.dir" value="${src.dir}/java" />
         <property name="build.dir" value="./build"/>
@@ -133,7 +133,7 @@
   <!-- Shrink and obfuscate the project class files. -->
   <macrodef name="obfuscate">
     <attribute name="defaultpackage" default=""/>
-    <attribute name="printmapping" default="false"/>
+    <attribute name="printmapping" default="${build.dir}/mapping.txt"/>
     <element name="configuration" optional="true"/>
     <element name="additionalclasspath" optional="true"/>
     <sequential>
