@@ -36,8 +36,6 @@
         <property name="coverage.dir" value="${docs.dir}/coverage" />
         <property name="test-results.dir" value="${docs.dir}/test-results" />
         <property name="temp.dir" value="./temp" />
-        <property name="dist.dir" value="./dist" />
-        <property name="release.dir" value="./release" />
         <property name="encoding" value="utf-8" />
 
         <!-- Defaults for Android projects.  Requires sdk.dir, tools.version and target to have already been set. -->
@@ -55,7 +53,6 @@
           <os family="windows" />
         </condition>
         <taskdef name="apkbuilder" classname="com.android.ant.ApkBuilderTask" classpathref="android.antlibs" />
-
       </current:once>
     </sequential>
   </macrodef>
@@ -231,7 +228,7 @@
   <!-- Runs TestNG unit tests, generates a report using ReportNG and measures
        coverage with Cobertura. -->
   <macrodef name="test">
-    <attribute name="suites" />
+    <attribute name="suites" default="testng.xml"/>
     <attribute name="title" default="Unit Test Report" />
     <attribute name="reportdir" default="${test-results.dir}" />
     <attribute name="dialect" default="testng" description="Set to 'junit' to generate XML for junitreport." />
@@ -373,14 +370,13 @@
     <attribute name="manifest" />
     <attribute name="name"/>
     <attribute name="package" />
-    <attribute name="classesjar" />
     <sequential>
       <current:defaults />
 
       <apply executable="${build.tools.dir}/${dx.executable}" parallel="true" failonerror="true">
         <arg value="--dex" />
         <arg value="--output=${basedir}/${build.dir}/classes.dex" />
-        <arg path="${build.dir}/@{classesjar}" />
+        <arg path="${build.dir}/${ant.project.name}.jar" />
         <fileset dir="${lib.runtime}" includes="*.jar" erroronmissingdir="false" />
       </apply>
 
@@ -425,8 +421,7 @@
       <current:package debug="true"
                        manifest="@{manifest}"
                        name="@{name}-unaligned"
-                       package="@{package}"
-                       classesjar="${ant.project.name}.jar"/>
+                       package="@{package}"/>
 
       <exec executable="${tools.dir}/zipalign" failonerror="true">
         <arg value="-f" />
@@ -450,8 +445,7 @@
       <current:package debug="false"
                        manifest="@{manifest}"
                        name="@{name}-unsigned"
-                       package="@{package}"
-                       classesjar="${ant.project.name}.jar"/>
+                       package="@{package}"/>
 
       <!-- Gets passwords -->
       <input message="Please enter keystore password (store:${key.store}):" addproperty="key.password">
