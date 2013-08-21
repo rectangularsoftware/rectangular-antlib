@@ -24,10 +24,10 @@ DEPENDENCIES
 CONVENTIONS
 
   Currently, in version 1.0, Rectangular Antlib retains the conventions
-  inherited from Uncommons Antlib except, since there is only one module, the
-  project directory and module directory are the same thing.  See
-  https://github.com/dwdyer/uncommons-antlib/wiki/Conventions for full details
-  of the Uncommons Antlib conventions.
+  inherited from Uncommons Antlib (though these can be overridden by specifying
+  the appropriate build properties).  The only difference is, since there is
+  only one module, the project directory and module directory are the same
+  thing.  See the Wiki for details of the conventions used.
 
   In subsequent versions of the Rectangular Antlib the conventions will be
   updated to be more consistent with the standard Android project layout. This
