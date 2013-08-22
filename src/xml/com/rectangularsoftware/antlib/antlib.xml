@@ -24,6 +24,23 @@
       <current:once property="rectangular-antlib.defaults">
         <property file="local.properties" />
 
+        <antversion property="required.version" atleast="1.9.1"/>
+        <fail unless="required.version"
+              message="Rectangular Antlib requires Apache Ant 1.9.1 or later. Current version: ${ant.version}."/>
+        <fail unless="sdk.dir"
+              message="Rectangular Antlib requires the sdk.dir property to be to set to the location of the Android SDK." />
+        <fail unless="target"
+              message="Rectangular Antlib requires the target property to be to set to the required Android platform version (e.g. android-18)." />
+
+        <!-- Find the most recent version of the Android build tools to use. -->
+        <pathconvert property="build.tools.dir">
+          <last count="1">
+            <sort>
+              <dirset dir="${sdk.dir}/build-tools" includes="*"/>
+            </sort>
+          </last>
+        </pathconvert>
+
         <!-- By default, src, res, assets and other Android directories/files are assumed to
              be in the project root.  Setting this property overrides that.  This is useful, for
              example, if you have some preliminary step that assembles the app files from
@@ -50,7 +67,6 @@
         <property name="asset.dir" value="${app.root}/assets" />
         <property name="target.dir" value="${sdk.dir}/platforms/${target}" />
         <property name="tools.dir" value="${sdk.dir}/tools" />
-        <property name="build.tools.dir" value="${sdk.dir}/build-tools/${tools.version}" />
         <path id="android.antlibs">
           <pathelement path="${sdk.dir}/tools/lib/ant-tasks.jar" />
           <pathelement path="${sdk.dir}/tools/lib/sdklib.jar" />
