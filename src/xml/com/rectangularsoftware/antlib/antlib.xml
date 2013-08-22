@@ -23,24 +23,31 @@
     <sequential>
       <current:once property="rectangular-antlib.defaults">
         <property file="local.properties" />
-        <property name="src.dir" value="./src" />
+
+        <!-- By default, src, res, assets and other Android directories/files are assumed to
+             be in the project root.  Setting this property overrides that.  This is useful, for
+             example, if you have some preliminary step that assembles the app files from
+             multiple locations (e.g. for an app with two versions, the preliminary step could
+             combine common files and version-specific files in a single tree rooted at this
+             location). -->
+        <property name="app.root" value="." />
+
+        <property name="src.dir" value="${app.root}/src" />
         <property name="java.dir" value="${src.dir}/java" />
         <property name="build.dir" value="./build"/>
         <property name="classes.dir" value="${build.dir}/classes" />
         <property name="generated.dir" value="${build.dir}/generated" />
-        <property name="lib.dir" value="./lib"/>
-        <property name="lib.compiletime" value="${lib.dir}/compiletime" />
-        <property name="lib.runtime" value="${lib.dir}/runtime" />
+        <property name="lib.compiletime" value="./lib/compiletime" />
+        <property name="lib.runtime" value="${app.root}/lib/runtime" />
         <property name="docs.dir" value="./docs"/>
         <property name="api.dir" value="${docs.dir}/api"/>
         <property name="coverage.dir" value="${docs.dir}/coverage" />
         <property name="test-results.dir" value="${docs.dir}/test-results" />
-        <property name="temp.dir" value="./temp" />
+        <property name="cobertura.dir" value="${build.dir}/cobertura" />
         <property name="encoding" value="utf-8" />
 
-        <!-- Defaults for Android projects.  Requires sdk.dir, tools.version and target to have already been set. -->
-        <property name="resource.dir" value="./res" />
-        <property name="asset.dir" value="./assets" />
+        <property name="resource.dir" value="${app.root}/res" />
+        <property name="asset.dir" value="${app.root}/assets" />
         <property name="target.dir" value="${sdk.dir}/platforms/${target}" />
         <property name="tools.dir" value="${sdk.dir}/tools" />
         <property name="build.tools.dir" value="${sdk.dir}/build-tools/${tools.version}" />
@@ -63,7 +70,6 @@
     <sequential>
       <current:defaults />
       <delete dir="${docs.dir}" />
-      <delete dir="${temp.dir}" />
       <delete dir="${build.dir}"/>
     </sequential>
   </macrodef>
@@ -239,12 +245,12 @@
     <sequential>
       <current:defaults />
       
-      <mkdir dir="${temp.dir}/originals" />
+      <mkdir dir="${cobertura.dir}" />
       
       <path id="test.path">
         <pathelement path="${classes.dir}/test"/>
         <pathelement path="${java.dir}/test-resources"/>
-        <fileset dir="${temp.dir}" includes="*.jar"/>
+        <fileset dir="${cobertura.dir}" includes="*.jar"/>
         <fileset dir="${lib.compiletime}" includes="**/*.jar"/>
         <fileset dir="${lib.runtime}" includes="**/*.jar" erroronmissingdir="false"/>
         <pathelement path="${target.dir}/android.jar" />
@@ -254,16 +260,12 @@
       <taskdef resource="testngtasks" classpathref="test.path"/>
 
       <!-- Bytecode instrumentation to enable collection of test coverage data. -->
-      <copy todir="${temp.dir}/originals" flatten="true">
-        <!-- Instrument binary JARs, ignore source JARs. -->
-        <fileset dir="${build.dir}" includes="*.jar" excludes="*-src.jar" />
-      </copy>
-      <cobertura-instrument todir="${temp.dir}"
-                            datafile="${temp.dir}/cobertura.ser"
+      <cobertura-instrument todir="${cobertura.dir}"
+                            datafile="${cobertura.dir}/cobertura.ser"
                             ignoreTrivial="true">
         <includeClasses regex=".*" />
         <excludeClasses regex="@{coverageExcludeRegex}" />
-        <fileset dir="${temp.dir}/originals" includes="*.jar"/>
+        <fileset dir="${build.dir}" includes="*.jar" excludes="*-src.jar" />
         <auxClasspath path="${build.dir}/${ant.project.name}.jar" />
       </cobertura-instrument>
 
@@ -278,7 +280,7 @@
         <xmlfileset dir="." includes="@{suites}"/>
         <sysproperty key="java.awt.headless" value="@{headless}" />
         <sysproperty key="net.sourceforge.cobertura.datafile"
-                     file="${temp.dir}/cobertura.ser" />
+                     file="${cobertura.dir}/cobertura.ser" />
         <sysproperty key="org.uncommons.reportng.title"
                      value="@{title}" />
         <sysproperty key="org.uncommons.reportng.coverage-report"
@@ -292,22 +294,21 @@
       <mkdir dir="${coverage.dir}" />
       <cobertura-report format="html"
                         destdir="${coverage.dir}"
-                        datafile="${temp.dir}/cobertura.ser">
+                        datafile="${cobertura.dir}/cobertura.ser">
         <dirset dir="." includes="**/${java.dir}/main" />
       </cobertura-report>
       <!-- Generate an XML coverage report so that Hudson can graph trends. -->
       <cobertura-report format="xml"
                         destdir="${coverage.dir}"
-                        datafile="${temp.dir}/cobertura.ser">
+                        datafile="${cobertura.dir}/cobertura.ser">
         <dirset dir="." includes="**/${java.dir}/main" />
       </cobertura-report>
 
       <!-- If the coverage is poor, fail. -->
       <cobertura-check totallinerate="@{mincoverage}"
                        totalbranchrate="@{mincoverage}"
-                       datafile="${temp.dir}/cobertura.ser"/>
+                       datafile="${cobertura.dir}/cobertura.ser"/>
 
-      <delete dir="${temp.dir}" />
     </sequential>
   </macrodef>
 
@@ -339,9 +340,23 @@
   </macrodef>
 
 
+  <!-- Combine two or more sets of Android files to make a single tree for building an app from. -->
+  <macrodef name="merge-trees">
+    <attribute name="todir" default="${app.root}" />
+    <element name="trees" optional="false" implicit="true" />
+    <sequential>
+      <current:defaults />
+      <mkdir dir="@{todir}" />
+      <copy todir="@{todir}">
+        <trees />
+      </copy>
+    </sequential>
+  </macrodef>
+
+
   <!-- Generate the Android R.java source file from the resources directory. -->
   <macrodef name="resources">
-    <attribute name="manifest" default="AndroidManifest.xml" />
+    <attribute name="manifest" default="${app.root}/AndroidManifest.xml" />
     <sequential>
       <current:defaults />
       <!-- Git does not store empty directories, so we have to make sure the asset directory exists. -->
@@ -410,7 +425,7 @@
 
 
   <macrodef name="package-debug">
-    <attribute name="manifest" default="AndroidManifest.xml" />
+    <attribute name="manifest" default="${app.root}/AndroidManifest.xml" />
     <attribute name="name" default="${ant.project.name}-debug"/>
     <attribute name="package" />
     <sequential>
@@ -434,7 +449,7 @@
 
 
   <macrodef name="package-release">
-    <attribute name="manifest" default="AndroidManifest.xml" />
+    <attribute name="manifest" default="${app.root}/AndroidManifest.xml" />
     <attribute name="name" default="${ant.project.name}"/>
     <attribute name="package" />
     <sequential>

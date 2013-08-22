@@ -16,3 +16,5 @@ Changes in version 1.0
 * Output Proguard mapping file by default.
 
 * Load properties from local.properties by default.
+
+* Improved support for building multiple versions of the same app.
