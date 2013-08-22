@@ -17,7 +17,7 @@ LICENCE
 
 DEPENDENCIES
 
-  Rectangular Antlib requires APACHE ANT VERSION 1.7.1 or later and an
+  Rectangular Antlib requires APACHE ANT VERSION 1.9.1 or later and an
   up-to-date installation of the Android SDK.
 
 

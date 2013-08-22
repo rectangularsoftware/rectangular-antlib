@@ -15,7 +15,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 ========================================================================== -->
-<antlib xmlns:current="ant:current">
+<antlib xmlns:current="ant:current" xmlns:if="ant:if" xmlns:unless="ant:unless">
 
   <taskdef name="once" classname="com.rectangularsoftware.antlib.tasks.Once" />
 
@@ -137,10 +137,10 @@
   <macrodef name="obfuscate">
     <attribute name="defaultpackage" default=""/>
     <attribute name="printmapping" default="${build.dir}/mapping.txt"/>
-    <element name="configuration" optional="true"/>
+    <attribute name="config" default=""/>
     <element name="additionalclasspath" optional="true"/>
     <sequential>
-      <taskdef resource="proguard/ant/task.properties" classpath="${sdk.dir}/tools/proguard/lib/proguard.jar" />
+      <taskdef resource="proguard/ant/task.properties" classpath="${lib.compiletime}/proguard/proguard.jar" />
       <move file="${build.dir}/${ant.project.name}.jar" tofile="${build.dir}/${ant.project.name}-unobfuscated.jar" />
       <proguard shrink="true"
                 obfuscate="true"
@@ -161,7 +161,7 @@
         <injar location="${build.dir}/${ant.project.name}-unobfuscated.jar" />
         <outjar location="${build.dir}/${ant.project.name}.jar" />
 
-        <configuration />
+        <configuration file="@{config}" unless:blank="@{config}"/>
         <keep extends="java.lang.Enum">
           <method name="values" />
         </keep>
@@ -408,6 +408,7 @@
         <arg value="-F" />
         <arg path="${build.dir}/@{name}.ap_" />
         <arg line="--rename-manifest-package @{package}"/>
+        <arg line="--debug-mode" if:true="@{debug}" />
       </exec>
 
       <apkbuilder outfolder="${build.dir}"
