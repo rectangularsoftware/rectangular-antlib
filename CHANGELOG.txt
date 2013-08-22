@@ -7,9 +7,7 @@ Changes in version 1.0
 
 * Simplified macros by assuming all projects are single-module Android apps.
 
-* Updated to latest versions of TestNG, ReportNG and Cobertura.
-
-* Removed bundled Proguard.  Now uses Android SDK version instead.
+* Updated to latest versions of TestNG, ReportNG, Cobertura and Proguard.
 
 * Fix for Proguard obfuscation on case-insensitive file systems.
 
@@ -18,3 +16,14 @@ Changes in version 1.0
 * Load properties from local.properties by default.
 
 * Improved support for building multiple versions of the same app.
+
+* Improved support for incremental build (avoid rebuilding artifacts
+  unnecessarily).
+
+* Derive latest build tools version automatically so it doesn't have to be
+  specified unless a different version should be used.
+
+* Make all debug builds debuggable regardless of manifest.
+
+* Helpful error messages if required properties are not set on minimum Ant
+  version is not met.
