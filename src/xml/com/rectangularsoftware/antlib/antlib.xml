@@ -60,6 +60,7 @@
           <os family="windows" />
         </condition>
         <taskdef name="apkbuilder" classname="com.android.ant.ApkBuilderTask" classpathref="android.antlibs" />
+        <taskdef resource="net/sf/antcontrib/antlib.xml" classpath="${lib.compiletime}/ant-contrib/ant-contrib-1.0b3.jar"/>
       </current:once>
     </sequential>
   </macrodef>
@@ -244,7 +245,8 @@
 
     <sequential>
       <current:defaults />
-      
+
+      <delete dir="${cobertura.dir}" />
       <mkdir dir="${cobertura.dir}" />
       
       <path id="test.path">
@@ -295,13 +297,13 @@
       <cobertura-report format="html"
                         destdir="${coverage.dir}"
                         datafile="${cobertura.dir}/cobertura.ser">
-        <dirset dir="." includes="**/${java.dir}/main" />
+        <fileset dir="${java.dir}/main" />
       </cobertura-report>
       <!-- Generate an XML coverage report so that Hudson can graph trends. -->
       <cobertura-report format="xml"
                         destdir="${coverage.dir}"
                         datafile="${cobertura.dir}/cobertura.ser">
-        <dirset dir="." includes="**/${java.dir}/main" />
+        <fileset dir="${java.dir}/main" />
       </cobertura-report>
 
       <!-- If the coverage is poor, fail. -->
@@ -359,23 +361,38 @@
     <attribute name="manifest" default="${app.root}/AndroidManifest.xml" />
     <sequential>
       <current:defaults />
+
       <!-- Git does not store empty directories, so we have to make sure the asset directory exists. -->
       <mkdir dir="${asset.dir}" />
       <mkdir dir="${generated.dir}/main" />
-      <exec executable="${build.tools.dir}/aapt" failonerror="true">
-        <arg value="package" />
-        <arg value="-m" />
-        <arg value="-M" />
-        <arg path="@{manifest}" />
-        <arg value="-S" />
-        <arg path="${resource.dir}" />
-        <arg value="-A" />
-        <arg path="${asset.dir}" />
-        <arg value="-J" />
-        <arg path="${generated.dir}/main" />
-        <arg value="-I" />
-        <arg path="${target.dir}/android.jar" />
-      </exec>
+
+      <outofdate>
+        <sourcefiles>
+          <fileset dir="${asset.dir}" />
+          <fileset dir="${resource.dir}" />
+          <pathelement path="${app.root}/AndroidManifest.xml" />
+        </sourcefiles>
+        <targetfiles>
+          <fileset dir="${generated.dir}/main" includes="**/R.java"/>
+        </targetfiles>
+        <sequential>
+          <exec executable="${build.tools.dir}/aapt" failonerror="true">
+            <arg value="package" />
+            <arg value="-m" />
+            <arg value="-M" />
+            <arg path="@{manifest}" />
+            <arg value="-S" />
+            <arg path="${resource.dir}" />
+            <arg value="-A" />
+            <arg path="${asset.dir}" />
+            <arg value="-J" />
+            <arg path="${generated.dir}/main" />
+            <arg value="-I" />
+            <arg path="${target.dir}/android.jar" />
+          </exec>
+        </sequential>
+      </outofdate>
+
     </sequential>
   </macrodef>
 
@@ -388,38 +405,73 @@
     <sequential>
       <current:defaults />
 
-      <apply executable="${build.tools.dir}/${dx.executable}" parallel="true" failonerror="true">
-        <arg value="--dex" />
-        <arg value="--output=${basedir}/${build.dir}/classes.dex" />
-        <arg path="${build.dir}/${ant.project.name}.jar" />
-        <fileset dir="${lib.runtime}" includes="*.jar" erroronmissingdir="false" />
-      </apply>
+      <outofdate>
+        <sourcefiles>
+          <pathelement path="${build.dir}/${ant.project.name}.jar" />
+        </sourcefiles>
+        <targetfiles>
+          <pathelement path="${build.dir}/classes.dex" />
+        </targetfiles>
+        <sequential>
+          <apply executable="${build.tools.dir}/${dx.executable}" parallel="true" failonerror="true">
+            <arg value="--dex" />
+            <arg value="--output=${basedir}/${build.dir}/classes.dex" />
+            <arg path="${build.dir}/${ant.project.name}.jar" />
+            <fileset dir="${lib.runtime}" includes="*.jar" erroronmissingdir="false" />
+          </apply>
+        </sequential>
+      </outofdate>
 
-      <exec executable="${build.tools.dir}/aapt" failonerror="true">
-        <arg value="package" />
-        <arg value="-M" />
-        <arg path="@{manifest}" />
-        <arg value="-S" />
-        <arg path="${resource.dir}" />
-        <arg value="-A" />
-        <arg path="${asset.dir}" />
-        <arg value="-I" />
-        <arg path="${target.dir}/android.jar" />
-        <arg value="-F" />
-        <arg path="${build.dir}/@{name}.ap_" />
-        <arg line="--rename-manifest-package @{package}"/>
-        <arg line="--debug-mode" if:true="@{debug}" />
-      </exec>
+      <outofdate>
+        <sourcefiles>
+          <fileset dir="${asset.dir}" />
+          <fileset dir="${resource.dir}" />
+          <pathelement path="${app.root}/AndroidManifest.xml" />
+        </sourcefiles>
+        <targetfiles>
+          <pathelement path="${build.dir}/@{name}.ap_" />
+        </targetfiles>
+        <sequential>
+          <exec executable="${build.tools.dir}/aapt" failonerror="true">
+            <arg value="package" />
+            <arg value="-M" />
+            <arg path="@{manifest}" />
+            <arg value="-S" />
+            <arg path="${resource.dir}" />
+            <arg value="-A" />
+            <arg path="${asset.dir}" />
+            <arg value="-I" />
+            <arg path="${target.dir}/android.jar" />
+            <arg value="-F" />
+            <arg path="${build.dir}/@{name}.ap_" />
+            <arg line="--rename-manifest-package @{package}"/>
+            <arg line="--debug-mode" if:true="@{debug}" />
+            <arg line="-f" />
+          </exec>
+        </sequential>
+      </outofdate>
 
-      <apkbuilder outfolder="${build.dir}"
-                  apkfilepath="${build.dir}/@{name}.apk"
-                  resourcefile="@{name}.ap_"
-                  debugpackaging="@{debug}"
-                  debugsigning="@{debug}">
-        <dex path="${build.dir}/classes.dex" />
-        <sourcefolder path="${java.dir}/main" />
-        <jarfolder path="${lib.runtime}" />
-      </apkbuilder>
+      <outofdate>
+        <sourcefiles>
+          <pathelement path="${build.dir}/classes.dex" />
+          <pathelement path="${build.dir}/@{name}.ap_" />
+          <fileset dir="${lib.runtime}" />
+        </sourcefiles>
+        <targetfiles>
+          <pathelement path="${build.dir}/@{name}.apk" />
+        </targetfiles>
+        <sequential>
+          <apkbuilder outfolder="${build.dir}"
+                      apkfilepath="${build.dir}/@{name}.apk"
+                      resourcefile="@{name}.ap_"
+                      debugpackaging="@{debug}"
+                      debugsigning="@{debug}">
+            <dex path="${build.dir}/classes.dex" />
+            <sourcefolder path="${java.dir}/main" />
+            <jarfolder path="${lib.runtime}" />
+          </apkbuilder>
+        </sequential>
+      </outofdate>
 
     </sequential>
   </macrodef>
