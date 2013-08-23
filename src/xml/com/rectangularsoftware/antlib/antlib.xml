@@ -157,7 +157,6 @@
     <element name="additionalclasspath" optional="true"/>
     <sequential>
       <taskdef resource="proguard/ant/task.properties" classpath="${lib.compiletime}/proguard/proguard.jar" />
-      <move file="${build.dir}/${ant.project.name}.jar" tofile="${build.dir}/${ant.project.name}-unobfuscated.jar" />
       <proguard shrink="true"
                 obfuscate="true"
                 optimize="true"
@@ -174,8 +173,8 @@
         <libraryjar>
           <additionalclasspath />
         </libraryjar>
-        <injar location="${build.dir}/${ant.project.name}-unobfuscated.jar" />
-        <outjar location="${build.dir}/${ant.project.name}.jar" />
+        <injar location="${build.dir}/${ant.project.name}.jar" />
+        <outjar location="${build.dir}/${ant.project.name}-obfuscated.jar" />
 
         <configuration file="@{config}" unless:blank="@{config}"/>
         <keep extends="java.lang.Enum">
@@ -422,12 +421,15 @@
     <sequential>
       <current:defaults />
 
+      <condition property="classes.jar" value="${ant.project.name}-obfuscated.jar" else="${ant.project.name}.jar">
+        <available file="${ant.project.name}-obfuscated.jar" />
+      </condition>
       <local name="skip.dex" />
-      <uptodate property="skip.dex" targetfile="${build.dir}/classes.dex" srcfile="${build.dir}/${ant.project.name}.jar" />
+      <uptodate property="skip.dex" targetfile="${build.dir}/classes.dex" srcfile="${build.dir}/${classes.jar}" />
       <apply executable="${build.tools.dir}/${dx.executable}" parallel="true" failonerror="true" unless:set="skip.dex">
         <arg value="--dex" />
         <arg value="--output=${basedir}/${build.dir}/classes.dex" />
-        <arg path="${build.dir}/${ant.project.name}.jar" />
+        <arg path="${build.dir}/${classes.jar}" />
         <fileset dir="${lib.runtime}" includes="*.jar" erroronmissingdir="false" />
       </apply>
 
@@ -461,7 +463,7 @@
         <srcresources>
           <fileset dir="${build.dir}" includes="classes.dex" />
           <fileset dir="${build.dir}" includes="@{name}.ap_" />
-          <fileset dir="${lib.runtime}" />
+          <fileset dir="${lib.runtime}" includes="*.jar" erroronmissingdir="false" />
         </srcresources>
       </uptodate>
       <apkbuilder outfolder="${build.dir}"
