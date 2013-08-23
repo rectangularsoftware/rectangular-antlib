@@ -391,7 +391,7 @@
         <srcresources>
           <fileset dir="${asset.dir}" />
           <fileset dir="${resource.dir}" />
-          <fileset dir="${app.root}" includes="AndroidManifest.xml" />
+          <fileset file="@{manifest}" />
         </srcresources>
       </uptodate>
       <exec executable="${build.tools.dir}/aapt" failonerror="true" unless:set="skip.resources">
@@ -439,7 +439,7 @@
         <srcresources>
           <fileset dir="${asset.dir}" />
           <fileset dir="${resource.dir}" />
-          <fileset dir="${app.root}" includes="AndroidManifest.xml" />
+          <fileset file="@{manifest}" />
         </srcresources>
       </uptodate>
       <exec executable="${build.tools.dir}/aapt" failonerror="true" unless:set="skip.aapt">
