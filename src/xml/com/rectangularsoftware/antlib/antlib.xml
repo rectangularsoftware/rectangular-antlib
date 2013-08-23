@@ -499,7 +499,7 @@
       <local name="skip.align"/>
       <uptodate property="skip.align"
                 targetfile="${build.dir}/@{name}.apk"
-                srcfile="${out.release.unaligned.package}" />
+                srcfile="${out.debug.unaligned.package}" />
       <exec executable="${tools.dir}/zipalign" failonerror="true" unless:set="skip.align">
         <arg value="-f" />
         <arg value="4" />
