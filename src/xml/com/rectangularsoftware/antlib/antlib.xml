@@ -417,10 +417,11 @@
     <attribute name="debug" />
     <attribute name="manifest" />
     <attribute name="name"/>
-    <attribute name="package" />
+    <attribute name="package" default=""/>
     <sequential>
       <current:defaults />
 
+      <local name="classes.jar" />
       <condition property="classes.jar" value="${ant.project.name}-obfuscated.jar" else="${ant.project.name}.jar">
         <available file="${ant.project.name}-obfuscated.jar" />
       </condition>
@@ -453,7 +454,7 @@
         <arg path="${target.dir}/android.jar" />
         <arg value="-F" />
         <arg path="${build.dir}/@{name}.ap_" />
-        <arg line="--rename-manifest-package @{package}"/>
+        <arg line="--rename-manifest-package @{package}" unless:blank="@{package}"/>
         <arg line="--debug-mode" if:true="@{debug}" />
         <arg line="-f" />
       </exec>
@@ -484,7 +485,7 @@
   <macrodef name="package-debug">
     <attribute name="manifest" default="${app.root}/AndroidManifest.xml" />
     <attribute name="name" default="${ant.project.name}-debug"/>
-    <attribute name="package" />
+    <attribute name="package" default=""/>
     <sequential>
       <current:defaults />
 
@@ -495,7 +496,11 @@
                        name="@{name}-unaligned"
                        package="@{package}"/>
 
-      <exec executable="${tools.dir}/zipalign" failonerror="true">
+      <local name="skip.align"/>
+      <uptodate property="skip.align"
+                targetfile="${build.dir}/@{name}.apk"
+                srcfile="${out.release.unaligned.package}" />
+      <exec executable="${tools.dir}/zipalign" failonerror="true" unless:set="skip.align">
         <arg value="-f" />
         <arg value="4" />
         <arg path="${out.debug.unaligned.package}" />
@@ -508,7 +513,7 @@
   <macrodef name="package-release">
     <attribute name="manifest" default="${app.root}/AndroidManifest.xml" />
     <attribute name="name" default="${ant.project.name}"/>
-    <attribute name="package" />
+    <attribute name="package" default=""/>
     <sequential>
       <current:defaults />
 
@@ -519,11 +524,16 @@
                        name="@{name}-unsigned"
                        package="@{package}"/>
 
+      <local name="skip.signing"/>
+      <uptodate property="skip.signing"
+                targetfile="${out.release.unaligned.package}"
+                srcfile="${build.dir}/@{name}-unsigned.apk" />
       <!-- Gets passwords -->
-      <input message="Please enter keystore password (store:${key.store}):" addproperty="key.password">
+      <input message="Please enter keystore password (store:${key.store}):"
+             addproperty="key.password"
+             unless:set="skip.signing">
         <handler type="secure" />
       </input>
-
       <!-- Signs the APK -->
       <signjar jar="${build.dir}/@{name}-unsigned.apk"
                signedjar="${out.release.unaligned.package}"
@@ -531,9 +541,14 @@
                storepass="${key.password}"
                alias="${key.alias}"
                keypass="${key.password}"
-               verbose="${verbose}" />
+               verbose="${verbose}"
+               unless:set="skip.signing"/>
 
-      <exec executable="${tools.dir}/zipalign" failonerror="true">
+      <local name="skip.align"/>
+      <uptodate property="skip.align"
+                targetfile="${build.dir}/@{name}.apk"
+                srcfile="${out.release.unaligned.package}" />
+      <exec executable="${tools.dir}/zipalign" failonerror="true" unless:set="skip.align">
         <arg value="-f"/>
         <arg value="4"/>
         <arg path="${out.release.unaligned.package}"/>

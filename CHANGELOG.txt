@@ -25,5 +25,5 @@ Changes in version 1.0
 
 * Make all debug builds debuggable regardless of manifest.
 
-* Helpful error messages if required properties are not set on minimum Ant
+* Helpful error messages if required properties are not set or minimum Ant
   version is not met.
