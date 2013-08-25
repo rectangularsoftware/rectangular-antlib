@@ -345,11 +345,15 @@
                windowtitle="@{title}"
                encoding="${encoding}">
         <classpath>
-          <fileset dir="." includes="**/${lib.runtime}/*.jar" />
+          <fileset dir="${lib.runtime}" includes="**/*.jar" />
         </classpath>
-        <fileset dir="." defaultexcludes="yes" includes="**/${java.dir}/main/**/*.java,**/${generated.dir}/main/**/*.java" excludes="@{excludes}" />
-        <header><![CDATA[@{title}<br><small>(Version @{version})</small>]]></header>
-        <link href="http://docs.oracle.com/javase/6/docs/api/"/>
+        <fileset dir="${java.dir}/main" defaultexcludes="yes" excludes="@{excludes}" />
+        <fileset dir="${generated.dir}/main" defaultexcludes="yes" excludes="@{excludes}" />
+        <header unless:blank="@{version}"><![CDATA[@{title}<br><small>(Version @{version})</small>]]></header>
+        <header if:blank="@{version}"><![CDATA[@{title}]]></header>
+        <link href="https://developer.android.com/reference/"
+              offline="true"
+              packagelistLoc="${sdk.dir}/docs/reference/"/>
         <additionalconfig />
       </javadoc>
     </sequential>
