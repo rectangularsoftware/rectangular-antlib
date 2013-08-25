@@ -136,10 +136,14 @@
                             source="@{source}"
                             target="@{target}"
                             bootclasspath="${target.dir}/android.jar" />
+      <condition property="has.tests">
+        <available file="${java.dir}/test" />
+      </condition>
       <current:compile.tree tree="test"
                             source="@{source}"
                             target="@{target}"
-                            bootclasspath="${target.dir}/android.jar">
+                            bootclasspath="${target.dir}/android.jar"
+                            if:true="has.tests">
         <treeclasspath>
           <!-- Add the main classes to the classpath for unit test compilation. -->
           <path location="${classes.dir}/main" />

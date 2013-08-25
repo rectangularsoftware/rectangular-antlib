@@ -3,6 +3,8 @@ Changes in version 1.0.1
 
 * Fixes for Javadoc macro.
 
+* Added check to avoid failing the build when there are no test sources.
+
 
 Changes in version 1.0
 ----------------------
