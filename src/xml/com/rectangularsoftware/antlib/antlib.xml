@@ -18,6 +18,7 @@
 <antlib xmlns:current="ant:current" xmlns:if="ant:if" xmlns:unless="ant:unless">
 
   <taskdef name="once" classname="com.rectangularsoftware.antlib.tasks.Once" />
+  <taskdef name="installapk" classname="com.rectangularsoftware.antlib.tasks.InstallAPK" />
 
   <macrodef name="defaults">
     <sequential>
@@ -584,12 +585,7 @@
       </pathconvert>
       <property name="apk" value="@{apk}" />
 
-      <exec executable="${sdk.dir}/platform-tools/adb">
-        <arg value="@{device}" if:true="@{device}"/>
-        <arg value="install" />
-        <arg value="-r" />
-        <arg value="${apk}" />
-      </exec>
+      <current:installapk apk="${apk}" />
     </sequential>
   </macrodef>
 
