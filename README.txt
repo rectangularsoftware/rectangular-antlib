@@ -1,5 +1,5 @@
 Rectangular Antlib - Tools for building Android apps with Apache Ant
-(C) Copyright 2013 Rectangular Software Ltd.
+(C) Copyright 2013-2014 Rectangular Software Ltd.
 (C) Copyright 2008-2013 Daniel W. Dyer
 
 SYNOPSIS

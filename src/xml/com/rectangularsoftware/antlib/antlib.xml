@@ -565,6 +565,35 @@
     </sequential>
   </macrodef>
 
+
+  <!-- Install an APK on a single device or emulator. -->
+  <macrodef name="install">
+    <attribute name="device" default=""/>
+    <attribute name="apk" default=""/>
+    <sequential>
+      <current:defaults />
+
+      <!-- If APK attribute is not specified, default to newest APK found in the build directory. -->
+      <pathconvert property="apk" unless:true="@{apk}">
+        <first count="1">
+          <sort>
+            <fileset dir="${build.dir}" includes="*.apk" excludes="*unaligned.apk"/>
+            <reverse><date /></reverse>
+          </sort>
+        </first>
+      </pathconvert>
+      <property name="apk" value="@{apk}" />
+
+      <exec executable="${sdk.dir}/platform-tools/adb">
+        <arg value="@{device}"/>
+        <arg value="install" />
+        <arg value="-r" />
+        <arg value="${apk}" />
+      </exec>
+    </sequential>
+  </macrodef>
+
+
   <!-- Repackage an Android APK for deployment on a BlackBerry device. -->
   <macrodef name="bar">
     <attribute name="package" />
