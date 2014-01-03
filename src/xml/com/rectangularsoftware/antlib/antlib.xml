@@ -585,7 +585,7 @@
       <property name="apk" value="@{apk}" />
 
       <exec executable="${sdk.dir}/platform-tools/adb">
-        <arg value="@{device}"/>
+        <arg value="@{device}" if:true="@{device}"/>
         <arg value="install" />
         <arg value="-r" />
         <arg value="${apk}" />
