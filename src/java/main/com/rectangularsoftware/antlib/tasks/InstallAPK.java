@@ -9,7 +9,6 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -35,11 +34,14 @@ public class InstallAPK extends Task
     @Override
     public void execute() throws BuildException
     {
-        checkArguments();
+        if (apkFile == null)
+        {
+            throw new BuildException("APK file must be specified");
+        }
         try
         {
             List<String> devices = getDeviceIdentifiers();
-            System.out.printf("Installing %s on %d devices...%n", apkFile, devices.size());
+            System.out.printf("Installing %s on %d device(s)...%n", apkFile, devices.size());
             ExecutorService executor = Executors.newFixedThreadPool(devices.size());
             List<Future<Void>> futures = new ArrayList<Future<Void>>(devices.size());
             for (final String device : devices)
@@ -60,15 +62,7 @@ public class InstallAPK extends Task
             executor.shutdown();
             executor.awaitTermination(60, TimeUnit.SECONDS);
         }
-        catch (ExecutionException ex)
-        {
-            throw new BuildException(ex.getCause());
-        }
-        catch (IOException ex)
-        {
-            throw new BuildException(ex);
-        }
-        catch (InterruptedException ex)
+        catch (Exception ex)
         {
             throw new BuildException(ex);
         }
@@ -94,14 +88,7 @@ public class InstallAPK extends Task
         {
             for (String line = reader.readLine(); line != null; line = reader.readLine())
             {
-                if (tag != null)
-                {
-                    out.printf("[%s] %s%n", tag, line.trim());
-                }
-                else
-                {
-                    out.println(line);
-                }
+                out.println(tag != null ? String.format("[%s] %s", tag, line.trim()) : line);
             }
         }
         finally
@@ -136,14 +123,5 @@ public class InstallAPK extends Task
             reader.close();
         }
         return devices;
-    }
-
-
-    private void checkArguments() throws BuildException
-    {
-        if (apkFile == null)
-        {
-            throw new BuildException("APK file must be specified");
-        }
     }
 }
