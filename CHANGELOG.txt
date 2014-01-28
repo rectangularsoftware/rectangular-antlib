@@ -1,3 +1,9 @@
+Changes in version 1.1.1
+------------------------
+
+* Bug fix for previous version failing to build test sources.
+
+
 Changes in version 1.1
 ----------------------
 

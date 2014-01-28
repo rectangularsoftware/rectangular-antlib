@@ -19,7 +19,7 @@
 
   <description>Ant build file for the Rectangular Antlib project.</description>
 
-  <property name="version" value="1.1" />
+  <property name="version" value="1.1.1" />
   <property name="artifact.identifier" value="${ant.project.name}-${version}" />
 
   <target name="clean">

@@ -140,16 +140,17 @@
       <condition property="has.tests">
         <available file="${java.dir}/test" />
       </condition>
-      <current:compile.tree tree="test"
-                            source="@{source}"
-                            target="@{target}"
-                            bootclasspath="${target.dir}/android.jar"
-                            if:true="has.tests">
-        <treeclasspath>
-          <!-- Add the main classes to the classpath for unit test compilation. -->
-          <path location="${classes.dir}/main" />
-        </treeclasspath>
-      </current:compile.tree>
+      <sequential if:true="${has.tests}">
+        <current:compile.tree tree="test"
+                              source="@{source}"
+                              target="@{target}"
+                              bootclasspath="${target.dir}/android.jar">
+          <treeclasspath>
+            <!-- Add the main classes to the classpath for unit test compilation. -->
+            <path location="${classes.dir}/main" />
+          </treeclasspath>
+        </current:compile.tree>
+      </sequential>
     </sequential>
   </macrodef>
 
