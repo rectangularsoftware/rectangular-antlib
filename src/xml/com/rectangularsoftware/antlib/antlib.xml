@@ -77,6 +77,7 @@
           <os family="windows" />
         </condition>
         <taskdef name="apkbuilder" classname="com.android.ant.ApkBuilderTask" classpathref="android.antlibs" />
+        <taskdef name="aidl" classname="com.android.ant.AidlExecTask" classpathref="android.antlibs" />
       </current:once>
     </sequential>
   </macrodef>
@@ -418,7 +419,19 @@
         <arg value="-I" />
         <arg path="${target.dir}/android.jar" />
       </exec>
+    </sequential>
+  </macrodef>
 
+
+  <macrodef name="aidl">
+    <sequential>
+      <current:defaults />
+      <aidl executable="${build.tools.dir}/aidl"
+            framework="${target.dir}/framework.aidl"
+            genFolder="${generated.dir}/main"
+            aidlOutFolder="${build.dir}">
+        <source path="${java.dir}/main"/>
+      </aidl>
     </sequential>
   </macrodef>
 
