@@ -1,7 +1,12 @@
-Changes in version 1.1.1
-------------------------
+Changes in version 1.2
+----------------------
 
 * Bug fix for previous version failing to build test sources.
+
+* Added macro for compiling AIDL files.
+
+* Fix for new location of zipalign executable (now requires build tools >=
+  version 20.0.0).
 
 
 Changes in version 1.1

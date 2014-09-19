@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!-- =========================================================================
-  Copyright 2013 Rectangular Software Ltd.
+  Copyright 2013-2014 Rectangular Software Ltd.
   Copyright 2008-2013 Daniel W. Dyer
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -67,7 +67,6 @@
         <property name="resource.dir" value="${app.root}/res" />
         <property name="asset.dir" value="${app.root}/assets" />
         <property name="target.dir" value="${sdk.dir}/platforms/${target}" />
-        <property name="tools.dir" value="${sdk.dir}/tools" />
         <path id="android.antlibs">
           <pathelement path="${sdk.dir}/tools/lib/ant-tasks.jar" />
           <pathelement path="${sdk.dir}/tools/lib/sdklib.jar" />
@@ -523,7 +522,7 @@
       <uptodate property="skip.align"
                 targetfile="${build.dir}/@{name}.apk"
                 srcfile="${out.debug.unaligned.package}" />
-      <exec executable="${tools.dir}/zipalign" failonerror="true" unless:set="skip.align">
+      <exec executable="${build.tools.dir}/zipalign" failonerror="true" unless:set="skip.align">
         <arg value="-f" />
         <arg value="4" />
         <arg path="${out.debug.unaligned.package}" />
@@ -571,7 +570,7 @@
       <uptodate property="skip.align"
                 targetfile="${build.dir}/@{name}.apk"
                 srcfile="${out.release.unaligned.package}" />
-      <exec executable="${tools.dir}/zipalign" failonerror="true" unless:set="skip.align">
+      <exec executable="${build.tools.dir}/zipalign" failonerror="true" unless:set="skip.align">
         <arg value="-f"/>
         <arg value="4"/>
         <arg path="${out.release.unaligned.package}"/>

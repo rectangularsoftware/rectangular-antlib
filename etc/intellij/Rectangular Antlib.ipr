@@ -33,9 +33,7 @@
       </profile>
     </annotationProcessing>
   </component>
-  <component name="CopyrightManager" default="">
-    <module2copyright />
-  </component>
+  <component name="CopyrightManager" default="" />
   <component name="CppTools.Loader" reportImplicitCastToBool="false" warnedAboutFileOutOfSourceRoot="true" version="2" compilerSelect="AUTO" />
   <component name="DependenciesAnalyzeManager">
     <option name="myForwardDirection" value="false" />
