@@ -1,3 +1,11 @@
+Changes in verison 1.2.1
+------------------------
+
+* Set overwrite for copy task in merge-trees macro to ensure that the second
+* file takes precedence in the case of the same file being present in more than
+* one tree.
+
+
 Changes in version 1.2
 ----------------------
 

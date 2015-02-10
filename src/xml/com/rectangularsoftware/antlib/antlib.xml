@@ -373,7 +373,7 @@
     <sequential>
       <current:defaults />
       <mkdir dir="@{todir}" />
-      <copy todir="@{todir}">
+      <copy todir="@{todir}" overwrite="true">
         <trees />
       </copy>
     </sequential>
