@@ -564,6 +564,8 @@
                alias="${key.alias}"
                keypass="${key.password}"
                verbose="${verbose}"
+               sigalg="MD5withRSA"
+               digestalg="SHA1"
                unless:set="skip.signing"/>
 
       <local name="skip.align"/>
