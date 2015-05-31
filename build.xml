@@ -28,13 +28,15 @@
     <delete dir="./release"/>
   </target>
 
-  
+
   <target name="compile">
     <mkdir dir="./build/classes/main" />
     <javac destdir="./build/classes/main"
            debug="on"
            deprecation="on"
            optimize="on"
+           source="1.6"
+           target="1.6"
            srcdir="./src/java/main"
            includeantruntime="false">
       <classpath>
