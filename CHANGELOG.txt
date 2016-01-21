@@ -1,3 +1,11 @@
+Changes in verison 1.2.2
+------------------------
+
+* Use Android SDK Proguard library instead of bundled one.
+
+* Removed obsolete BlackBerry packaging macros.
+
+
 Changes in verison 1.2.1
 ------------------------
 

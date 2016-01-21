@@ -162,7 +162,7 @@
     <attribute name="config" default=""/>
     <element name="additionalclasspath" optional="true"/>
     <sequential>
-      <taskdef resource="proguard/ant/task.properties" classpath="${lib.compiletime}/proguard/proguard.jar" />
+      <taskdef resource="proguard/ant/task.properties" classpath="${sdk.dir}/tools/proguard/lib/proguard.jar" />
       <proguard shrink="true"
                 obfuscate="true"
                 optimize="true"
@@ -601,40 +601,6 @@
       <property name="apk" value="@{apk}" />
 
       <current:installapk apk="${apk}" />
-    </sequential>
-  </macrodef>
-
-
-  <!-- Repackage an Android APK for deployment on a BlackBerry device. -->
-  <macrodef name="bar">
-    <attribute name="package" />
-    <attribute name="token" />
-    <attribute name="author" />
-    <sequential>
-      <current:defaults />
-      <exec executable="apk2bar" failonerror="true">
-        <arg value="@{package}" />
-        <arg value="${sdk.dir}" />
-        <!--<arg value="-d" />-->
-        <!--<arg value="@{token}" />-->
-        <arg value="-a" />
-        <arg value="@{author}" />
-        <arg value="-w2" />
-      </exec>
-    </sequential>
-  </macrodef>
-
-  <macrodef name="bar-sign">
-    <attribute name="bar" />
-    <attribute name="certificate" />
-    <attribute name="password" />
-    <sequential>
-      <current:defaults />
-      <exec executable="batchbar-signer" failonerror="true">
-        <arg value="@{bar}" />
-        <arg value="@{certificate}" />
-        <arg value="@{password}" />
-      </exec>
     </sequential>
   </macrodef>
 
