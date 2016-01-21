@@ -291,7 +291,8 @@
       <mkdir dir="@{reportdir}/html" />
 
       <!-- Run the unit tests on the instrumented classes. -->
-      <junit haltonfailure="false">
+      <junit haltonfailure="false"
+             fork="true">
         <classpath refid="test.path" />
         <sysproperty key="java.awt.headless" value="@{headless}" />
         <sysproperty key="net.sourceforge.cobertura.datafile"
