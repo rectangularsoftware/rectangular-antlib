@@ -1,5 +1,8 @@
-Changes in verison 1.2.2
-------------------------
+Changes in verison 1.3
+----------------------
+
+* Use JUnit 4 instead of TestNG for unit tests to ensure compatibility with
+  standard Android testing tools.
 
 * Use Android SDK Proguard library instead of bundled one.
 

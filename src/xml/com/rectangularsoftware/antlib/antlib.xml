@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!-- =========================================================================
-  Copyright 2013-2014 Rectangular Software Ltd.
+  Copyright 2013-2016 Rectangular Software Ltd.
   Copyright 2008-2013 Daniel W. Dyer
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -255,10 +255,7 @@
   <!-- Runs TestNG unit tests, generates a report using ReportNG and measures
        coverage with Cobertura. -->
   <macrodef name="test">
-    <attribute name="suites" default="testng.xml"/>
-    <attribute name="title" default="Unit Test Report" />
     <attribute name="reportdir" default="${test-results.dir}" />
-    <attribute name="dialect" default="testng" description="Set to 'junit' to generate XML for junitreport." />
     <attribute name="headless" default="false" />
     <attribute name="mincoverage" default="60" />
     <attribute name="coverageExcludeRegex" default="" />
@@ -279,7 +276,6 @@
       </path>
 
       <taskdef resource="tasks.properties" classpathref="test.path" />
-      <taskdef resource="testngtasks" classpathref="test.path"/>
 
       <!-- Bytecode instrumentation to enable collection of test coverage data. -->
       <cobertura-instrument todir="${cobertura.dir}"
@@ -291,26 +287,28 @@
         <auxClasspath path="${build.dir}/${ant.project.name}.jar" />
       </cobertura-instrument>
 
-      <!-- Run the unit tests on the instrumented classes. -->
-      <mkdir dir="@{reportdir}" />
+      <mkdir dir="@{reportdir}/xml" />
+      <mkdir dir="@{reportdir}/html" />
 
-      <testng classpathref="test.path"
-              outputdir="@{reportdir}"
-              haltonfailure="false"
-              useDefaultListeners="false"
-              listeners="org.uncommons.reportng.HTMLReporter,org.uncommons.reportng.JUnitXMLReporter">
-        <xmlfileset dir="." includes="@{suites}"/>
+      <!-- Run the unit tests on the instrumented classes. -->
+      <junit haltonfailure="false">
+        <classpath refid="test.path" />
         <sysproperty key="java.awt.headless" value="@{headless}" />
         <sysproperty key="net.sourceforge.cobertura.datafile"
                      file="${cobertura.dir}/cobertura.ser" />
-        <sysproperty key="org.uncommons.reportng.title"
-                     value="@{title}" />
-        <sysproperty key="org.uncommons.reportng.coverage-report"
-                     value="../../coverage/index.html" />
-        <sysproperty key="org.uncommons.reportng.xml-dialect"
-                     value="@{dialect}"/>
-      </testng>
-      <delete file="velocity.log" />
+        <formatter type="xml"/>
+        <batchtest todir="@{reportdir}/xml">
+          <fileset dir="${classes.dir}/test" includes="**/*Test.class"/>
+        </batchtest>
+      </junit>
+
+      <!-- Generate the HTML test report. -->
+      <junitreport todir="@{reportdir}/html">
+        <fileset dir="@{reportdir}/xml">
+          <include name="*.xml"/>
+        </fileset>
+        <report format="frames" todir="@{reportdir}/html"/>
+      </junitreport>
 
       <!-- Generate the HTML coverage report. -->
       <mkdir dir="${coverage.dir}" />
