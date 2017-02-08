@@ -162,7 +162,7 @@
     <attribute name="config" default=""/>
     <element name="additionalclasspath" optional="true"/>
     <sequential>
-      <taskdef resource="proguard/ant/task.properties" classpath="${sdk.dir}/tools/proguard/lib/proguard.jar" />
+      <taskdef resource="proguard/ant/task.properties" classpath="${lib.compiletime}/proguard/proguard.jar" />
       <proguard shrink="true"
                 obfuscate="true"
                 optimize="true"
